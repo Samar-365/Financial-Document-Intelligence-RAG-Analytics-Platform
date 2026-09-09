@@ -6,6 +6,10 @@ from app.document_processing.text_extractor import (
     ExtractedPageTextDTO,
     ScannedPDFError,
 )
+from app.document_processing.table_extractor import (
+    TableExtractor,
+    ExtractedTableDTO,
+)
 
 __all__ = [
     "PDFValidator",
@@ -13,4 +17,6 @@ __all__ = [
     "TextExtractor",
     "ExtractedPageTextDTO",
     "ScannedPDFError",
+    "TableExtractor",
+    "ExtractedTableDTO",
 ]
