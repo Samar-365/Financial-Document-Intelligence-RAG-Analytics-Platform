@@ -17,5 +17,7 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Added TableExtractor with pdfplumber bounding-box detection and pipe-delimited markdown serializer.
 - Target files: app/document_processing/table_extractor.py, tests/document_processing/test_table_extractor.py
 - Tests: 5/5 unit tests passed (15/15 total suite).
+- Commit: af164d5
+
 
 
