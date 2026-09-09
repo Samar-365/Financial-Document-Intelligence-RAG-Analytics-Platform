@@ -43,11 +43,11 @@ Streamlit sidebar navigation with the following pages:
 
 | # | Icon | Page Name | Path | Description |
 |---|---|---|---|---|
-| 1 | 📊 | Dashboard | `pages/1_📊_Dashboard.py` | Company overview, health score, KPIs, risks |
-| 2 | 📄 | Upload | `pages/2_📄_Upload.py` | Document upload and management |
-| 3 | 📈 | Analysis | `pages/3_📈_Analysis.py` | Detailed financial metrics, ratios, charts |
-| 4 | 🤖 | AI Analyst | `pages/4_🤖_AI_Analyst.py` | Natural-language Q&A chat interface |
-| 5 | 🔄 | Comparison | `pages/5_🔄_Comparison.py` | Multi-document comparison |
+| 1 | | Dashboard | `pages/1_Dashboard.py` | Company overview, health score, KPIs, risks |
+| 2 | | Upload | `pages/2_Upload.py` | Document upload and management |
+| 3 | | Analysis | `pages/3_Analysis.py` | Detailed financial metrics, ratios, charts |
+| 4 | | AI Analyst | `pages/4_AI_Analyst.py` | Natural-language Q&A chat interface |
+| 5 | | Comparison | `pages/5_Comparison.py` | Multi-document comparison |
 
 ### Sidebar Components
 
@@ -66,49 +66,49 @@ The main landing page providing a high-level financial overview of the selected 
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  📊 Financial Document Intelligence                         │
-│  Company: ABC Ltd.  │  Period: FY2025  │  Status: ✅ PROCESSED│
+│ Financial Document Intelligence │
+│ Company: ABC Ltd. │ Period: FY2025 │ Status: PROCESSED│
 ├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─── Financial Health Score ───┐                           │
-│  │                              │                           │
-│  │         78 / 100             │                           │
-│  │     ████████████░░░░         │                           │
-│  │                              │                           │
-│  │  Growth:        86  ████▊    │                           │
-│  │  Profitability: 82  ████▏   │                           │
-│  │  Liquidity:     71  ███▌    │                           │
-│  │  Leverage:      74  ███▋    │                           │
-│  │  Cash Flow:     77  ███▊    │                           │
-│  └──────────────────────────────┘                           │
-│                                                             │
+│ │
+│ ┌─── Financial Health Score ───┐ │
+│ │ │ │
+│ │ 78 / 100 │ │
+│ │ ████████████░░░░ │ │
+│ │ │ │
+│ │ Growth: 86 ████▊ │ │
+│ │ Profitability: 82 ████▏ │ │
+│ │ Liquidity: 71 ███▌ │ │
+│ │ Leverage: 74 ███▋ │ │
+│ │ Cash Flow: 77 ███▊ │ │
+│ └──────────────────────────────┘ │
+│ │
 ├──────────┬──────────┬──────────┬──────────┬─────────────────┤
-│ Revenue  │ EBITDA   │ Net Inc  │ Debt     │ Cash Flow       │
-│ ₹11,450  │ ₹2,340   │ ₹1,410  │ ₹3,900   │ ₹2,680         │
-│ +12.4% ↑ │ +11.4% ↑ │ +17.5% ↑│ -7.1% ↓  │ +15.2% ↑       │
+│ Revenue │ EBITDA │ Net Inc │ Debt │ Cash Flow │
+│ ₹11,450 │ ₹2,340 │ ₹1,410 │ ₹3,900 │ ₹2,680 │
+│ +12.4% ↑ │ +11.4% ↑ │ +17.5% ↑│ -7.1% ↓ │ +15.2% ↑ │
 ├──────────┴──────────┴──────────┴──────────┴─────────────────┤
-│                                                             │
-│  📈 Financial Trends                                        │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  [Plotly line chart: Revenue, Profit, Debt trends]   │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
+│ │
+│ Financial Trends │
+│ ┌─────────────────────────────────────────────────────┐ │
+│ │ [Plotly line chart: Revenue, Profit, Debt trends] │ │
+│ └─────────────────────────────────────────────────────┘ │
+│ │
 ├─────────────────────────────────────────────────────────────┤
-│  ⚠️ Risk Summary                                           │
-│                                                             │
-│  🔴 HIGH   Increasing interest expenses (+18% YoY)         │
-│  🟡 MEDIUM New environmental compliance requirements        │
-│  🟢 LOW    Increased domestic market competition            │
-│                                                             │
+│ Risk Summary │
+│ │
+│ HIGH Increasing interest expenses (+18% YoY) │
+│ MEDIUM New environmental compliance requirements │
+│ LOW Increased domestic market competition │
+│ │
 ├─────────────────────────────────────────────────────────────┤
-│  🤖 AI Insights                                            │
-│                                                             │
-│  • Revenue grew by 12.4% driven by domestic demand          │
-│  • Debt decreased by 7.1%, strengthening balance sheet      │
-│  • Operating cash flow improved by 15.2%                    │
-│  • Regulatory risk: new compliance deadline FY2027          │
-│                                                             │
-│  Sources: Pages 42, 87, 103, 156                           │
+│ AI Insights │
+│ │
+│ • Revenue grew by 12.4% driven by domestic demand │
+│ • Debt decreased by 7.1%, strengthening balance sheet │
+│ • Operating cash flow improved by 15.2% │
+│ • Regulatory risk: new compliance deadline FY2027 │
+│ │
+│ Sources: Pages 42, 87, 103, 156 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -142,36 +142,36 @@ Interface for uploading new financial documents and managing existing ones.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  📄 Document Management                                     │
+│ Document Management │
 ├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─── Upload New Document ──────────────────────────────┐  │
-│  │                                                       │  │
-│  │  ┌─────────────────────────────────────────────┐     │  │
-│  │  │                                             │     │  │
-│  │  │     📎 Drag and drop your PDF here          │     │  │
-│  │  │        or click to browse                    │     │  │
-│  │  │                                             │     │  │
-│  │  │     Accepted: PDF (max 50 MB)               │     │  │
-│  │  └─────────────────────────────────────────────┘     │  │
-│  │                                                       │  │
-│  │  Company: [________________]  (optional)              │  │
-│  │  Financial Year: [________]   (optional)              │  │
-│  │  Document Type: [▼ Annual Report         ]            │  │
-│  │                                                       │  │
-│  │  [ 📤 Upload & Process ]                              │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                             │
+│ │
+│ ┌─── Upload New Document ──────────────────────────────┐ │
+│ │ │ │
+│ │ ┌─────────────────────────────────────────────┐ │ │
+│ │ │ │ │ │
+│ │ │ Drag and drop your PDF here │ │ │
+│ │ │ or click to browse │ │ │
+│ │ │ │ │ │
+│ │ │ Accepted: PDF (max 50 MB) │ │ │
+│ │ └─────────────────────────────────────────────┘ │ │
+│ │ │ │
+│ │ Company: [________________] (optional) │ │
+│ │ Financial Year: [________] (optional) │ │
+│ │ Document Type: [▼ Annual Report ] │ │
+│ │ │ │
+│ │ [ Upload & Process ] │ │
+│ └───────────────────────────────────────────────────────┘ │
+│ │
 ├─────────────────────────────────────────────────────────────┤
-│  📋 Uploaded Documents                                      │
-│                                                             │
-│  ┌──────────────────┬──────────┬────────┬────────┬───────┐ │
-│  │ Filename         │ Company  │ Year   │ Status │ Action│ │
-│  ├──────────────────┼──────────┼────────┼────────┼───────┤ │
-│  │ ABC_AR_2025.pdf  │ ABC Ltd. │ FY2025 │ ✅ DONE│ 🗑️   │ │
-│  │ ABC_AR_2024.pdf  │ ABC Ltd. │ FY2024 │ ✅ DONE│ 🗑️   │ │
-│  │ XYZ_Q3_2025.pdf  │ XYZ Corp │ Q3'25  │ ⏳ ...  │ —    │ │
-│  └──────────────────┴──────────┴────────┴────────┴───────┘ │
+│ Uploaded Documents │
+│ │
+│ ┌──────────────────┬──────────┬────────┬────────┬───────┐ │
+│ │ Filename │ Company │ Year │ Status │ Action│ │
+│ ├──────────────────┼──────────┼────────┼────────┼───────┤ │
+│ │ ABC_AR_2025.pdf │ ABC Ltd. │ FY2025 │ DONE│ │ │
+│ │ ABC_AR_2024.pdf │ ABC Ltd. │ FY2024 │ DONE│ │ │
+│ │ XYZ_Q3_2025.pdf │ XYZ Corp │ Q3'25 │ ... │ — │ │
+│ └──────────────────┴──────────┴────────┴────────┴───────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -199,10 +199,10 @@ Interface for uploading new financial documents and managing existing ones.
 
 | Status | Badge | Color |
 |---|---|---|
-| UPLOADED | ⬜ Uploaded | Gray |
-| PROCESSING | ⏳ Processing | Yellow |
-| PROCESSED | ✅ Processed | Green |
-| FAILED | ❌ Failed | Red |
+| UPLOADED | Uploaded | Gray |
+| PROCESSING | Processing | Yellow |
+| PROCESSED | Processed | Green |
+| FAILED | Failed | Red |
 
 ---
 
@@ -214,50 +214,50 @@ Detailed view of extracted financial metrics, ratios, and trends.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  📈 Financial Analysis — ABC Ltd. (FY2025)                  │
+│ Financial Analysis — ABC Ltd. (FY2025) │
 ├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌── Income Statement Metrics ──────────────────────────┐  │
-│  │  Revenue     Gross Profit   EBITDA    Op. Income      │  │
-│  │  ₹11,450 Cr  ₹4,580 Cr     ₹2,340 Cr ₹1,890 Cr      │  │
-│  │  +12.4%      +14.1%         +11.4%    +10.2%          │  │
-│  │  Net Income  EPS                                       │  │
-│  │  ₹1,410 Cr   ₹28.20                                   │  │
-│  │  +17.5%      +18.3%                                    │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                             │
-│  ┌── Balance Sheet Metrics ─────────────────────────────┐  │
-│  │  Total Assets  Total Liab.  Total Debt  Cash          │  │
-│  │  ₹18,500 Cr    ₹9,800 Cr   ₹3,900 Cr   ₹2,150 Cr    │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                             │
-│  ┌── Cash Flow Metrics ─────────────────────────────────┐  │
-│  │  Operating CF   Free CF                                │  │
-│  │  ₹2,680 Cr      ₹1,850 Cr                             │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                             │
+│ │
+│ ┌── Income Statement Metrics ──────────────────────────┐ │
+│ │ Revenue Gross Profit EBITDA Op. Income │ │
+│ │ ₹11,450 Cr ₹4,580 Cr ₹2,340 Cr ₹1,890 Cr │ │
+│ │ +12.4% +14.1% +11.4% +10.2% │ │
+│ │ Net Income EPS │ │
+│ │ ₹1,410 Cr ₹28.20 │ │
+│ │ +17.5% +18.3% │ │
+│ └───────────────────────────────────────────────────────┘ │
+│ │
+│ ┌── Balance Sheet Metrics ─────────────────────────────┐ │
+│ │ Total Assets Total Liab. Total Debt Cash │ │
+│ │ ₹18,500 Cr ₹9,800 Cr ₹3,900 Cr ₹2,150 Cr │ │
+│ └───────────────────────────────────────────────────────┘ │
+│ │
+│ ┌── Cash Flow Metrics ─────────────────────────────────┐ │
+│ │ Operating CF Free CF │ │
+│ │ ₹2,680 Cr ₹1,850 Cr │ │
+│ └───────────────────────────────────────────────────────┘ │
+│ │
 ├─────────────────────────────────────────────────────────────┤
-│  📊 Financial Ratios                                        │
-│  ┌────────────────────┬────────┬────────────────────────┐  │
-│  │ Ratio              │ Value  │ Interpretation          │  │
-│  ├────────────────────┼────────┼────────────────────────┤  │
-│  │ Revenue Growth     │ 12.25% │ Strong growth           │  │
-│  │ Profit Margin      │ 12.31% │ Healthy profitability   │  │
-│  │ EBITDA Margin      │ 20.44% │ Good operating profit   │  │
-│  │ Current Ratio      │ 1.65x  │ Adequate liquidity      │  │
-│  │ Debt-to-Equity     │ 0.45x  │ Conservative leverage   │  │
-│  │ Return on Assets   │ 7.62%  │ Efficient asset use     │  │
-│  │ Return on Equity   │ 16.21% │ Good shareholder return │  │
-│  │ OCF Ratio          │ 1.12x  │ Strong cash coverage    │  │
-│  └────────────────────┴────────┴────────────────────────┘  │
-│                                                             │
+│ Financial Ratios │
+│ ┌────────────────────┬────────┬────────────────────────┐ │
+│ │ Ratio │ Value │ Interpretation │ │
+│ ├────────────────────┼────────┼────────────────────────┤ │
+│ │ Revenue Growth │ 12.25% │ Strong growth │ │
+│ │ Profit Margin │ 12.31% │ Healthy profitability │ │
+│ │ EBITDA Margin │ 20.44% │ Good operating profit │ │
+│ │ Current Ratio │ 1.65x │ Adequate liquidity │ │
+│ │ Debt-to-Equity │ 0.45x │ Conservative leverage │ │
+│ │ Return on Assets │ 7.62% │ Efficient asset use │ │
+│ │ Return on Equity │ 16.21% │ Good shareholder return │ │
+│ │ OCF Ratio │ 1.12x │ Strong cash coverage │ │
+│ └────────────────────┴────────┴────────────────────────┘ │
+│ │
 ├─────────────────────────────────────────────────────────────┤
-│  📈 Trend Charts                                            │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  [Plotly bar chart: Revenue by period]               │   │
-│  │  [Plotly line chart: Profit margins over time]       │   │
-│  │  [Plotly bar chart: Debt vs Cash comparison]         │   │
-│  └─────────────────────────────────────────────────────┘   │
+│ Trend Charts │
+│ ┌─────────────────────────────────────────────────────┐ │
+│ │ [Plotly bar chart: Revenue by period] │ │
+│ │ [Plotly line chart: Profit margins over time] │ │
+│ │ [Plotly bar chart: Debt vs Cash comparison] │ │
+│ └─────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -280,40 +280,40 @@ Chat interface for asking natural-language questions about uploaded documents.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  🤖 AI Financial Analyst                                    │
+│ AI Financial Analyst │
 ├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Document: [▼ ABC_Annual_Report_2025.pdf    ] [All Docs]   │
-│                                                             │
-│  ┌── Suggested Questions ───────────────────────────────┐  │
-│  │ • What was the company's revenue in FY2025?           │  │
-│  │ • What were the major risks mentioned?                │  │
-│  │ • How did EBITDA change compared to last year?        │  │
-│  │ • What is the company's debt position?                │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                             │
-│  ┌── Chat History ──────────────────────────────────────┐  │
-│  │                                                       │  │
-│  │  👤 What was the company's revenue in FY2025?         │  │
-│  │                                                       │  │
-│  │  🤖 ABC Ltd reported total revenue of ₹11,450 crore  │  │
-│  │     for FY2025, representing a year-over-year         │  │
-│  │     increase of 12.25% compared to ₹10,200 crore     │  │
-│  │     in FY2024.                                        │  │
-│  │                                                       │  │
-│  │     📎 Sources:                                       │  │
-│  │     • Annual Report 2025, Page 87                     │  │
-│  │       Consolidated Statement of Profit & Loss         │  │
-│  │     • Annual Report 2025, Page 42                     │  │
-│  │       Management Discussion & Analysis                │  │
-│  │                                                       │  │
-│  │  ⏱️ Response time: 2.1s | Chunks retrieved: 5        │  │
-│  │                                                       │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                             │
-│  ┌──────────────────────────────────────────┐ [Send 📨]    │
-│  │ Ask a question about the documents...     │              │
-│  └──────────────────────────────────────────┘              │
+│ │
+│ Document: [▼ ABC_Annual_Report_2025.pdf ] [All Docs] │
+│ │
+│ ┌── Suggested Questions ───────────────────────────────┐ │
+│ │ • What was the company's revenue in FY2025? │ │
+│ │ • What were the major risks mentioned? │ │
+│ │ • How did EBITDA change compared to last year? │ │
+│ │ • What is the company's debt position? │ │
+│ └───────────────────────────────────────────────────────┘ │
+│ │
+│ ┌── Chat History ──────────────────────────────────────┐ │
+│ │ │ │
+│ │ What was the company's revenue in FY2025? │ │
+│ │ │ │
+│ │ ABC Ltd reported total revenue of ₹11,450 crore │ │
+│ │ for FY2025, representing a year-over-year │ │
+│ │ increase of 12.25% compared to ₹10,200 crore │ │
+│ │ in FY2024. │ │
+│ │ │ │
+│ │ Sources: │ │
+│ │ • Annual Report 2025, Page 87 │ │
+│ │ Consolidated Statement of Profit & Loss │ │
+│ │ • Annual Report 2025, Page 42 │ │
+│ │ Management Discussion & Analysis │ │
+│ │ │ │
+│ │ Response time: 2.1s | Chunks retrieved: 5 │ │
+│ │ │ │
+│ └───────────────────────────────────────────────────────┘ │
+│ │
+│ ┌──────────────────────────────────────────┐ [Send ] │
+│ │ Ask a question about the documents... │ │
+│ └──────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -347,41 +347,41 @@ Side-by-side comparison of two financial documents.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  🔄 Document Comparison                                     │
+│ Document Comparison │
 ├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Document A: [▼ ABC_Annual_Report_2024.pdf ]                │
-│  Document B: [▼ ABC_Annual_Report_2025.pdf ]                │
-│                                                             │
-│  [ 🔄 Compare ]                                             │
-│                                                             │
+│ │
+│ Document A: [▼ ABC_Annual_Report_2024.pdf ] │
+│ Document B: [▼ ABC_Annual_Report_2025.pdf ] │
+│ │
+│ [ Compare ] │
+│ │
 ├─────────────────────────────────────────────────────────────┤
-│  📊 Metric Comparison                                       │
-│  ┌───────────────┬──────────┬──────────┬─────────┬────────┐│
-│  │ Metric        │ FY2024   │ FY2025   │ Change  │ Trend  ││
-│  ├───────────────┼──────────┼──────────┼─────────┼────────┤│
-│  │ Revenue       │ ₹10,200  │ ₹11,450  │ +12.25% │ 📈     ││
-│  │ EBITDA        │ ₹2,100   │ ₹2,340   │ +11.43% │ 📈     ││
-│  │ Net Income    │ ₹1,200   │ ₹1,410   │ +17.50% │ 📈     ││
-│  │ Total Debt    │ ₹4,200   │ ₹3,900   │ -7.14%  │ 📉     ││
-│  │ Cash          │ ₹1,800   │ ₹2,150   │ +19.44% │ 📈     ││
-│  └───────────────┴──────────┴──────────┴─────────┴────────┘│
-│                                                             │
+│ Metric Comparison │
+│ ┌───────────────┬──────────┬──────────┬─────────┬────────┐│
+│ │ Metric │ FY2024 │ FY2025 │ Change │ Trend ││
+│ ├───────────────┼──────────┼──────────┼─────────┼────────┤│
+│ │ Revenue │ ₹10,200 │ ₹11,450 │ +12.25% │ ││
+│ │ EBITDA │ ₹2,100 │ ₹2,340 │ +11.43% │ ││
+│ │ Net Income │ ₹1,200 │ ₹1,410 │ +17.50% │ ││
+│ │ Total Debt │ ₹4,200 │ ₹3,900 │ -7.14% │ ││
+│ │ Cash │ ₹1,800 │ ₹2,150 │ +19.44% │ ││
+│ └───────────────┴──────────┴──────────┴─────────┴────────┘│
+│ │
 ├─────────────────────────────────────────────────────────────┤
-│  ⚠️ Risk Changes                                           │
-│                                                             │
-│  🆕 New:     Data privacy compliance requirements           │
-│  ✏️ Changed: Debt exposure (High → Medium)                  │
-│  ❌ Removed: (none)                                         │
-│                                                             │
+│ Risk Changes │
+│ │
+│ New: Data privacy compliance requirements │
+│ Changed: Debt exposure (High → Medium) │
+│ Removed: (none) │
+│ │
 ├─────────────────────────────────────────────────────────────┤
-│  🤖 AI Comparison Summary                                   │
-│                                                             │
-│  ABC Ltd. demonstrated strong financial improvement...      │
-│  Revenue grew 12.25% with net income increasing faster      │
-│  at 17.5%, indicating improving margins...                  │
-│                                                             │
-│  📎 Sources: AR 2024 pp. 87, 103 | AR 2025 pp. 87, 103    │
+│ AI Comparison Summary │
+│ │
+│ ABC Ltd. demonstrated strong financial improvement... │
+│ Revenue grew 12.25% with net income increasing faster │
+│ at 17.5%, indicating improving margins... │
+│ │
+│ Sources: AR 2024 pp. 87, 103 | AR 2025 pp. 87, 103 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -394,7 +394,7 @@ Side-by-side comparison of two financial documents.
 | **Metric comparison table** | Side-by-side values with absolute and percentage changes |
 | **Risk changes** | Lists new, removed, and changed risks between documents |
 | **AI summary** | LLM-generated comparison narrative with citations |
-| **Trend indicators** | Visual indicators (📈 📉 ➡️) for each metric change |
+| **Trend indicators** | Visual indicators ( ) for each metric change |
 
 ### Validation
 

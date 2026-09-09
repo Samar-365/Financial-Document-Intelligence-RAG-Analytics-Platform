@@ -92,30 +92,30 @@ Manages uploaded documents, system configuration, and users.
 The system follows this architecture:
 
                   ┌──────────────────────┐
-                  │       User           │
+                  │ User │
                   └──────────┬───────────┘
                              │
                              ▼
                   ┌──────────────────────┐
-                  │   Streamlit UI       │
+                  │ Streamlit UI │
                   └──────────┬───────────┘
                              │
                              ▼
                   ┌──────────────────────┐
-                  │      FastAPI         │
-                  │      Backend         │
+                  │ FastAPI │
+                  │ Backend │
                   └──────────┬───────────┘
                              │
             ┌────────────────┼────────────────┐
-            │                │                │
-            ▼                ▼                ▼
-     Document Engine     RAG Engine      Analytics Engine
-            │                │                │
-            ▼                ▼                ▼
-        PDF Parser       Vector DB       Financial Metrics
-        Text Extractor   Embeddings      Risk Analysis
-        Chunking         Retriever        Health Score
-            │                │                │
+            │ │ │
+            ▼ ▼ ▼
+     Document Engine RAG Engine Analytics Engine
+            │ │ │
+            ▼ ▼ ▼
+        PDF Parser Vector DB Financial Metrics
+        Text Extractor Embeddings Risk Analysis
+        Chunking Retriever Health Score
+            │ │ │
             └────────────────┼────────────────┘
                              ▼
                        PostgreSQL
@@ -259,12 +259,12 @@ Sources:
 The system shall allow users to compare financial metrics across different periods.
 
 Example
-              FY2024       FY2025       Change
+              FY2024 FY2025 Change
 
-Revenue       ₹10,200 Cr   ₹11,450 Cr   +12.25%
-EBITDA        ₹2,100 Cr    ₹2,340 Cr    +11.43%
-Net Income    ₹1,200 Cr    ₹1,410 Cr    +17.50%
-Debt          ₹4,200 Cr    ₹3,900 Cr    -7.14%
+Revenue ₹10,200 Cr ₹11,450 Cr +12.25%
+EBITDA ₹2,100 Cr ₹2,340 Cr +11.43%
+Net Income ₹1,200 Cr ₹1,410 Cr +17.50%
+Debt ₹4,200 Cr ₹3,900 Cr -7.14%
 
 The system should calculate:
 
@@ -289,11 +289,11 @@ Example:
 Financial Health Score
         78 / 100
 
-Growth              86
-Profitability       82
-Liquidity           71
-Leverage            74
-Cash Flow           77
+Growth 86
+Profitability 82
+Liquidity 71
+Leverage 74
+Cash Flow 77
 
 The scoring methodology shall be documented and transparent.
 
@@ -406,18 +406,18 @@ The backend shall expose APIs for major functionality.
 
 Example endpoints:
 
-POST   /documents/upload
-GET    /documents
-GET    /documents/{id}
+POST /documents/upload
+GET /documents
+GET /documents/{id}
 DELETE /documents/{id}
 
-POST   /documents/{id}/process
+POST /documents/{id}/process
 
-POST   /query
-POST   /compare
+POST /query
+POST /compare
 
-GET    /analytics/{document_id}
-GET    /health
+GET /analytics/{document_id}
+GET /health
 19. Non-Functional Requirements
 NFR-01: Performance
 Normal dashboard operations should respond within a few seconds.
@@ -539,9 +539,9 @@ CI/CD	GitHub Actions
               Process Document
                       │
           ┌───────────┴───────────┐
-          ▼                       ▼
-    Extract Text             Extract Tables
-          │                       │
+          ▼ ▼
+    Extract Text Extract Tables
+          │ │
           └───────────┬───────────┘
                       ▼
                  Create Chunks
@@ -553,12 +553,12 @@ CI/CD	GitHub Actions
                 Store in Vector DB
                       │
           ┌───────────┼────────────┐
-          ▼           ▼            ▼
-       Ask Q&A     Analytics    Comparison
-          │           │            │
-          ▼           ▼            ▼
-       RAG       Metrics/Score   YoY Analysis
-          │           │            │
+          ▼ ▼ ▼
+       Ask Q&A Analytics Comparison
+          │ │ │
+          ▼ ▼ ▼
+       RAG Metrics/Score YoY Analysis
+          │ │ │
           └───────────┼────────────┘
                       ▼
                   Dashboard
@@ -674,43 +674,43 @@ That development order will keep the project manageable.
 The finished application should look conceptually like:
 
 ┌─────────────────────────────────────────────────────┐
-│       FINANCIAL DOCUMENT INTELLIGENCE               │
+│ FINANCIAL DOCUMENT INTELLIGENCE │
 ├─────────────────────────────────────────────────────┤
-│                                                     │
-│  Company: ABC Ltd.              FY: 2025            │
-│                                                     │
-│  Financial Health                                 │
-│                                                     │
-│              78 / 100                              │
-│                                                     │
+│ │
+│ Company: ABC Ltd. FY: 2025 │
+│ │
+│ Financial Health │
+│ │
+│ 78 / 100 │
+│ │
 ├──────────────┬──────────────┬───────────────────────┤
-│ Revenue      │ EBITDA       │ Net Income            │
-│ ₹11,450 Cr   │ ₹2,340 Cr    │ ₹1,410 Cr             │
-│ +12.4%       │ +11.4%       │ +17.5%                │
+│ Revenue │ EBITDA │ Net Income │
+│ ₹11,450 Cr │ ₹2,340 Cr │ ₹1,410 Cr │
+│ +12.4% │ +11.4% │ +17.5% │
 ├──────────────┴──────────────┴───────────────────────┤
-│                                                     │
-│ 📈 Financial Trends                                 │
-│                                                     │
-│ [Revenue / Profit Charts]                           │
-│                                                     │
+│ │
+│ Financial Trends │
+│ │
+│ [Revenue / Profit Charts] │
+│ │
 ├─────────────────────────────────────────────────────┤
-│ 🤖 Ask the Financial Analyst                        │
-│                                                     │
-│ "What were the major risks mentioned in FY2025?"   │
-│                                                     │
-│ [Ask]                                               │
-│                                                     │
+│ Ask the Financial Analyst │
+│ │
+│ "What were the major risks mentioned in FY2025?" │
+│ │
+│ [Ask] │
+│ │
 ├─────────────────────────────────────────────────────┤
-│ AI INSIGHTS                                         │
-│                                                     │
-│ • Revenue increased by 12.4%                        │
-│ • Debt decreased by 7.1%                            │
-│ • Operating cash flow improved                      │
-│ • Regulatory risk remains significant               │
-│                                                     │
-│ Sources: Annual Report 2025, pp. 42, 87, 103       │
+│ AI INSIGHTS │
+│ │
+│ • Revenue increased by 12.4% │
+│ • Debt decreased by 7.1% │
+│ • Operating cash flow improved │
+│ • Regulatory risk remains significant │
+│ │
+│ Sources: Annual Report 2025, pp. 42, 87, 103 │
 └─────────────────────────────────────────────────────┘
-🎯 Most important point
+Most important point
 
 For the Decimal Point Analytics campus drive, I'd position this project as:
 

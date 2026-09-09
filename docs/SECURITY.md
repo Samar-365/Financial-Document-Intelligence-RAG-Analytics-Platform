@@ -66,7 +66,7 @@ File Upload
     ↓
 6. Password Protection Check
     ↓
-✅ Accept or ❌ Reject
+Accept or Reject
 ```
 
 ### Implementation
@@ -76,7 +76,7 @@ import magic
 from pathlib import Path
 
 ALLOWED_MIME_TYPES = {"application/pdf"}
-MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB
+MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024 # 50 MB
 PDF_MAGIC_BYTES = b"%PDF-"
 
 def validate_upload(file_content: bytes, filename: str) -> None:
@@ -401,15 +401,15 @@ When a document is deleted, the system removes:
 
 | Mitigation | Implemented | Notes |
 |---|---|---|
-| Input validation | ✅ | All file and query inputs validated |
-| ORM queries | ✅ | No raw SQL with user input |
-| Secrets in env vars | ✅ | .env gitignored |
-| File isolation | ✅ | UUID naming, path validation |
-| Prompt structure | ✅ | System/context/user separation |
-| Authentication | ⏳ Planned | Bearer token for production |
-| Rate limiting | ⏳ Planned | Per-endpoint limits |
-| Log sanitization | ✅ | No secrets in logs |
-| RBAC | 🔮 Future | Role-based access control |
-| Local LLM option | 🔮 Future | Ollama integration for sensitive data |
+| Input validation | | All file and query inputs validated |
+| ORM queries | | No raw SQL with user input |
+| Secrets in env vars | | .env gitignored |
+| File isolation | | UUID naming, path validation |
+| Prompt structure | | System/context/user separation |
+| Authentication | Planned | Bearer token for production |
+| Rate limiting | Planned | Per-endpoint limits |
+| Log sanitization | | No secrets in logs |
+| RBAC | Future | Role-based access control |
+| Local LLM option | Future | Ollama integration for sensitive data |
 
-> **Legend**: ✅ Implemented in MVP | ⏳ Planned for production | 🔮 Future enhancement
+> **Legend**: Implemented in MVP | Planned for production | Future enhancement

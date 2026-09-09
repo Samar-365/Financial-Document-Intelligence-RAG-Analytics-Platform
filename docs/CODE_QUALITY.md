@@ -34,13 +34,13 @@ mypy app/ --ignore-missing-imports
 All function signatures must include type annotations:
 
 ```python
-# ✅ Correct
+# Correct
 def calculate_ratio(numerator: float, denominator: float) -> Optional[float]:
     if denominator == 0:
         return None
     return numerator / denominator
 
-# ❌ Incorrect
+# Incorrect
 def calculate_ratio(numerator, denominator):
     return numerator / denominator
 ```
@@ -96,14 +96,14 @@ def extract_metrics(chunks: List[Chunk], document_id: UUID) -> List[ExtractedMet
 ## 6. Exception Handling
 
 ```python
-# ✅ Specific exceptions with context
+# Specific exceptions with context
 try:
     text = extract_pdf_text(file_path)
 except PDFReadError as e:
     logger.error(f"PDF extraction failed: {e}", extra={"file": file_path})
     raise ProcessingError(f"Could not extract text from PDF") from e
 
-# ❌ Bare except
+# Bare except
 try:
     text = extract_pdf_text(file_path)
 except:

@@ -147,7 +147,7 @@ The system is designed as a monolithic application for the MVP, with a modular a
 ```mermaid
 graph TB
     subgraph External
-        User[👤 User]
+        User[ User]
         OpenAI[OpenAI API]
     end
     

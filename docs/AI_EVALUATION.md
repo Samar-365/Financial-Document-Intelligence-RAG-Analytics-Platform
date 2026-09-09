@@ -262,8 +262,8 @@ flowchart TD
     C -->|All Done| I[Generate Evaluation Report]
     I --> J[Compare Against Targets]
     J --> K{All Targets Met?}
-    K -->|Yes| L[✅ Pipeline Quality Acceptable]
-    K -->|No| M[🔧 Identify Improvement Areas]
+    K -->|Yes| L[ Pipeline Quality Acceptable]
+    K -->|No| M[ Identify Improvement Areas]
 ```
 
 ### Running Evaluation
@@ -294,26 +294,26 @@ Questions Evaluated: 14
 
 METRIC SUMMARY
 ─────────────────────────────────────────────
-Metric                  Score    Target  Status
+Metric Score Target Status
 ─────────────────────────────────────────────
-Retrieval Precision     82.0%    ≥ 80%   ✅ PASS
-Retrieval Recall        76.5%    ≥ 75%   ✅ PASS
-Answer Relevance        0.84     ≥ 0.8   ✅ PASS
-Citation Accuracy       91.3%    ≥ 90%   ✅ PASS
-Faithfulness            96.2%    ≥ 95%   ✅ PASS
-Hallucination Rate      3.8%     ≤ 5%    ✅ PASS
-Avg Response Latency    2.3s     < 5s    ✅ PASS
+Retrieval Precision 82.0% ≥ 80% PASS
+Retrieval Recall 76.5% ≥ 75% PASS
+Answer Relevance 0.84 ≥ 0.8 PASS
+Citation Accuracy 91.3% ≥ 90% PASS
+Faithfulness 96.2% ≥ 95% PASS
+Hallucination Rate 3.8% ≤ 5% PASS
+Avg Response Latency 2.3s < 5s PASS
 ─────────────────────────────────────────────
 
 CATEGORY BREAKDOWN
 ─────────────────────────────────────────────
-Category          Count   Avg Relevance  Avg Faithful
+Category Count Avg Relevance Avg Faithful
 ─────────────────────────────────────────────
-Factual            5       0.89           98%
-Analytical         3       0.81           95%
-Risk               2       0.80           94%
-Comparative        1       0.78           93%
-Negative           3       N/A            100%
+Factual 5 0.89 98%
+Analytical 3 0.81 95%
+Risk 2 0.80 94%
+Comparative 1 0.78 93%
+Negative 3 N/A 100%
 ─────────────────────────────────────────────
 
 FAILED CASES

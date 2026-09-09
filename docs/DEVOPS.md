@@ -262,7 +262,7 @@ flowchart TD
     C --> C2[Black - Formatting]
     C --> C3[Mypy - Type Checking]
     C1 & C2 & C3 --> D{All Pass?}
-    D -->|No| E[❌ Fail - Fix Required]
+    D -->|No| E[ Fail - Fix Required]
     D -->|Yes| F[Test Job]
     F --> F1[Start PostgreSQL Service]
     F1 --> F2[Install Dependencies]
@@ -271,7 +271,7 @@ flowchart TD
     G -->|No| E
     G -->|Yes| H{Main Branch?}
     H -->|Yes| I[Build Docker Image]
-    H -->|No| J[✅ PR Checks Pass]
+    H -->|No| J[ PR Checks Pass]
     I --> K[Deploy]
     K --> L[Health Check]
 
@@ -354,8 +354,8 @@ flowchart LR
     BUILD --> REG[Container Registry]
     REG --> DEPLOY[Deploy]
     DEPLOY --> HC[Health Check]
-    HC -->|✅| DONE[Live]
-    HC -->|❌| ROLL[Rollback]
+    HC -->|| DONE[Live]
+    HC -->|| ROLL[Rollback]
 ```
 
 ---

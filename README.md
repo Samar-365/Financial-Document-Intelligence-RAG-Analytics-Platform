@@ -96,16 +96,16 @@ Upload PDF → Extract & Chunk → Embed → Index → Query → Analyze → Vis
 
 | Capability | Generic Chatbot | This Platform |
 |---|---|---|
-| Document Q&A | ✅ | ✅ |
-| Source citations | ❌ | ✅ |
-| Financial metric extraction | ❌ | ✅ |
-| Financial ratio calculation | ❌ | ✅ |
-| Year-over-year comparison | ❌ | ✅ |
-| Financial health scoring | ❌ | ✅ |
-| Risk identification | ❌ | ✅ |
-| Analytics dashboard | ❌ | ✅ |
-| Hallucination mitigation | ❌ | ✅ |
-| Multi-document comparison | ❌ | ✅ |
+| Document Q&A | | |
+| Source citations | | |
+| Financial metric extraction | | |
+| Financial ratio calculation | | |
+| Year-over-year comparison | | |
+| Financial health scoring | | |
+| Risk identification | | |
+| Analytics dashboard | | |
+| Hallucination mitigation | | |
+| Multi-document comparison | | |
 
 ---
 
@@ -328,7 +328,7 @@ flowchart TD
 | Leverage | 20% | Debt burden and capital structure |
 | Cash Flow | 15% | Cash generation and operational efficiency |
 
->  The financial health score is an **indicative analytical metric** designed for research and educational purposes. It is not a certified credit rating, investment recommendation, or professional financial advice.
+> The financial health score is an **indicative analytical metric** designed for research and educational purposes. It is not a certified credit rating, investment recommendation, or professional financial advice.
 
 ---
 
@@ -383,11 +383,11 @@ System Response:
 ```
 Financial Health Score: 78/100
 
-  Growth:        86/100  ████████▌
-  Profitability:  82/100  ████████▏
-  Liquidity:     71/100  ███████
-  Leverage:      74/100  ███████▍
-  Cash Flow:     77/100  ███████▋
+  Growth: 86/100 ████████▌
+  Profitability: 82/100 ████████▏
+  Liquidity: 71/100 ███████
+  Leverage: 74/100 ███████▍
+  Cash Flow: 77/100 ███████▋
 
   AI Insights:
   • Revenue increased by 12.4% driven by [evidence]
@@ -400,7 +400,7 @@ Financial Health Score: 78/100
 
 ## Screenshots
 
-> 📸 Screenshots will be added after the frontend implementation is complete.
+> Screenshots will be added after the frontend implementation is complete.
 >
 > Planned screenshots:
 > - Dashboard overview with KPI cards and health score
@@ -554,88 +554,88 @@ docker-compose up --build
 ```
 project-root/
 │
-├── app/                          # Backend application
-│   ├── api/                      # FastAPI route handlers
-│   │   ├── __init__.py
-│   │   ├── documents.py          # Document upload/management endpoints
-│   │   ├── query.py              # RAG query endpoint
-│   │   ├── analytics.py          # Financial analytics endpoints
-│   │   └── health.py             # Health check endpoint
-│   ├── core/                     # Application configuration
-│   │   ├── __init__.py
-│   │   ├── config.py             # Settings and environment variables
-│   │   ├── database.py           # Database connection and session
-│   │   └── security.py           # Authentication and validation
-│   ├── models/                   # SQLAlchemy ORM models
-│   │   ├── __init__.py
-│   │   ├── document.py
-│   │   ├── chunk.py
-│   │   ├── financial_metric.py
-│   │   └── analysis_result.py
-│   ├── schemas/                  # Pydantic request/response schemas
-│   │   ├── __init__.py
-│   │   ├── document.py
-│   │   ├── query.py
-│   │   └── analytics.py
-│   ├── services/                 # Business logic layer
-│   │   ├── __init__.py
-│   │   ├── document_service.py
-│   │   └── comparison_service.py
-│   ├── document_processing/      # Document ingestion pipeline
-│   │   ├── __init__.py
-│   │   ├── pdf_extractor.py
-│   │   ├── text_cleaner.py
-│   │   ├── section_detector.py
-│   │   └── chunking.py
-│   ├── rag/                      # RAG pipeline
-│   │   ├── __init__.py
-│   │   ├── embeddings.py
-│   │   ├── vector_store.py
-│   │   ├── retriever.py
-│   │   └── generator.py
-│   ├── analytics/                # Financial analytics engine
-│   │   ├── __init__.py
-│   │   ├── metric_extractor.py
-│   │   ├── ratio_calculator.py
-│   │   ├── health_score.py
-│   │   └── risk_analyzer.py
-│   ├── utils/                    # Shared utilities
-│   │   ├── __init__.py
-│   │   ├── logger.py
-│   │   └── validators.py
-│   └── main.py                   # FastAPI application entry point
+├── app/ # Backend application
+│ ├── api/ # FastAPI route handlers
+│ │ ├── __init__.py
+│ │ ├── documents.py # Document upload/management endpoints
+│ │ ├── query.py # RAG query endpoint
+│ │ ├── analytics.py # Financial analytics endpoints
+│ │ └── health.py # Health check endpoint
+│ ├── core/ # Application configuration
+│ │ ├── __init__.py
+│ │ ├── config.py # Settings and environment variables
+│ │ ├── database.py # Database connection and session
+│ │ └── security.py # Authentication and validation
+│ ├── models/ # SQLAlchemy ORM models
+│ │ ├── __init__.py
+│ │ ├── document.py
+│ │ ├── chunk.py
+│ │ ├── financial_metric.py
+│ │ └── analysis_result.py
+│ ├── schemas/ # Pydantic request/response schemas
+│ │ ├── __init__.py
+│ │ ├── document.py
+│ │ ├── query.py
+│ │ └── analytics.py
+│ ├── services/ # Business logic layer
+│ │ ├── __init__.py
+│ │ ├── document_service.py
+│ │ └── comparison_service.py
+│ ├── document_processing/ # Document ingestion pipeline
+│ │ ├── __init__.py
+│ │ ├── pdf_extractor.py
+│ │ ├── text_cleaner.py
+│ │ ├── section_detector.py
+│ │ └── chunking.py
+│ ├── rag/ # RAG pipeline
+│ │ ├── __init__.py
+│ │ ├── embeddings.py
+│ │ ├── vector_store.py
+│ │ ├── retriever.py
+│ │ └── generator.py
+│ ├── analytics/ # Financial analytics engine
+│ │ ├── __init__.py
+│ │ ├── metric_extractor.py
+│ │ ├── ratio_calculator.py
+│ │ ├── health_score.py
+│ │ └── risk_analyzer.py
+│ ├── utils/ # Shared utilities
+│ │ ├── __init__.py
+│ │ ├── logger.py
+│ │ └── validators.py
+│ └── main.py # FastAPI application entry point
 │
-├── frontend/                     # Streamlit frontend
-│   ├── app.py                    # Main Streamlit application
-│   ├── pages/
-│   │   ├── dashboard.py
-│   │   ├── upload.py
-│   │   ├── analysis.py
-│   │   ├── analyst.py
-│   │   └── comparison.py
-│   └── components/
-│       ├── kpi_card.py
-│       ├── health_gauge.py
-│       └── chat_interface.py
+├── frontend/ # Streamlit frontend
+│ ├── app.py # Main Streamlit application
+│ ├── pages/
+│ │ ├── dashboard.py
+│ │ ├── upload.py
+│ │ ├── analysis.py
+│ │ ├── analyst.py
+│ │ └── comparison.py
+│ └── components/
+│ ├── kpi_card.py
+│ ├── health_gauge.py
+│ └── chat_interface.py
 │
-├── tests/                        # Test suite
-│   ├── unit/
-│   ├── integration/
-│   ├── api/
-│   └── evaluation/
+├── tests/ # Test suite
+│ ├── unit/
+│ ├── integration/
+│ ├── api/
+│ └── evaluation/
 │
-├── data/                         # Data storage (gitignored)
-│   ├── uploads/
-│   ├── faiss_index/
-│   └── evaluation/
+├── data/ # Data storage (gitignored)
+│ ├── uploads/
+│ ├── faiss_index/
+│ └── evaluation/
 │
-├── docs/                         # Project documentation
+├── docs/ # Project documentation
 │
-├── scripts/                      # Utility scripts
-│   ├── setup_db.py
-│   └── seed_data.py
+├── scripts/ # Utility scripts
+│ ├── setup_db.py
+│ └── seed_data.py
 │
-├── .env.example                  # Environment variable template
+├── .env.example # Environment variable template
 ├── .gitignore
 ├── Dockerfile
 ├── docker-compose.yml

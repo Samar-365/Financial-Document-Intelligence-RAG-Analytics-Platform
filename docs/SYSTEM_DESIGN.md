@@ -129,8 +129,8 @@ The document processing pipeline transforms raw PDF files into indexed, searchab
 
 ```mermaid
 flowchart TD
-    PDF[📄 PDF Upload] --> V{Validation}
-    V -->|Invalid| ERR[❌ Error Response]
+    PDF[ PDF Upload] --> V{Validation}
+    V -->|Invalid| ERR[ Error Response]
     V -->|Valid| TE[Text Extraction<br/>PyMuPDF + pdfplumber]
     TE --> TC[Text Cleaning<br/>Normalization]
     TC --> SD[Section Detection<br/>Header Analysis]
@@ -139,10 +139,10 @@ flowchart TD
     ME --> EG[Embedding Generation<br/>all-MiniLM-L6-v2]
     EG --> VS[Vector Storage<br/>FAISS Index]
     VS --> DB[(PostgreSQL<br/>Chunks + Metadata)]
-    DB --> DONE[✅ Status: PROCESSED]
+    DB --> DONE[ Status: PROCESSED]
     
-    TE -->|Failure| PF[⚠️ Partial Failure<br/>Log & Continue]
-    EG -->|Failure| EF[⚠️ Embedding Error<br/>Log & Retry]
+    TE -->|Failure| PF[ Partial Failure<br/>Log & Continue]
+    EG -->|Failure| EF[ Embedding Error<br/>Log & Retry]
 
     style PDF fill:#e3f2fd
     style DONE fill:#e8f5e9
@@ -259,7 +259,7 @@ The Retrieval-Augmented Generation pipeline is the core intelligence layer that 
 
 ```mermaid
 flowchart TD
-    UQ[👤 User Question] --> QP[Query Processing<br/>Clean & Normalize]
+    UQ[ User Question] --> QP[Query Processing<br/>Clean & Normalize]
     QP --> QE[Query Embedding<br/>all-MiniLM-L6-v2]
     QE --> VS[Vector Search<br/>FAISS Top-K]
     VS --> RF[Relevance Filtering<br/>Score ≥ 0.3 threshold]
@@ -271,7 +271,7 @@ flowchart TD
     PC --> LLM[LLM Generation<br/>GPT-4o-mini]
     LLM --> CG[Citation Generation<br/>Map claims → sources]
     CG --> RV[Response Validation<br/>Faithfulness check]
-    RV --> R[📋 Response<br/>Answer + Citations]
+    RV --> R[ Response<br/>Answer + Citations]
 
     style UQ fill:#e3f2fd
     style R fill:#e8f5e9
@@ -506,7 +506,7 @@ The system extracts 12 key financial metrics from document content:
 
 The financial health score is an **indicative analytical metric** that summarizes a company's financial condition into a single 0–100 score, broken down across five dimensions.
 
-> ⚠️ **Disclaimer**: This score is designed for research and educational purposes. It is **not** a certified credit rating, investment recommendation, or professional financial advice. Users should consult qualified financial professionals for investment decisions.
+> **Disclaimer**: This score is designed for research and educational purposes. It is **not** a certified credit rating, investment recommendation, or professional financial advice. Users should consult qualified financial professionals for investment decisions.
 
 ### Scoring Dimensions
 
