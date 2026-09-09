@@ -10,6 +10,7 @@ from app.document_processing.table_extractor import (
     TableExtractor,
     ExtractedTableDTO,
 )
+from app.document_processing.cleaner import TextCleaner
 
 __all__ = [
     "PDFValidator",
@@ -19,4 +20,5 @@ __all__ = [
     "ScannedPDFError",
     "TableExtractor",
     "ExtractedTableDTO",
+    "TextCleaner",
 ]

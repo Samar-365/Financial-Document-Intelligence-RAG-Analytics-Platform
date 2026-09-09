@@ -19,5 +19,11 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 5/5 unit tests passed (15/15 total suite).
 - Commit: af164d5
 
+[2026-09-10] Module 1.4: Financial Text Normalizer & Cleaner
+- Added TextCleaner for ligature/dash/space normalization, word dehyphenation, and running header/footer stripping.
+- Target files: app/document_processing/cleaner.py, tests/document_processing/test_cleaner.py
+- Tests: 6/6 unit tests passed (21/21 total suite).
+
+
 
 
