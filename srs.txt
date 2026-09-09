@@ -1,0 +1,721 @@
+Software Requirements Specification (SRS)
+Financial Document Intelligence & RAG Analytics Platform
+
+Version: 1.0
+Project Type: AI/ML + Financial Analytics
+Target Users: Financial analysts, students, researchers, investment analysts
+Primary Technologies: Python, FastAPI, PostgreSQL, RAG, LLM, Streamlit, Docker
+
+1. Introduction
+1.1 Purpose
+
+The Financial Document Intelligence & RAG Analytics Platform is an AI-powered system designed to extract, analyze, and retrieve information from financial documents such as:
+
+Annual reports
+Quarterly reports
+Earnings reports
+Investor presentations
+Financial statements
+
+The system combines Natural Language Processing (NLP), Retrieval-Augmented Generation (RAG), financial data extraction, and analytics to allow users to interact with financial documents using natural language.
+
+The platform will provide grounded answers with document references, automatically extract important financial metrics, compare financial performance across years, and generate basic financial risk and health insights.
+
+2. Objectives
+
+The main objectives are:
+
+Enable users to upload financial documents.
+Extract text and relevant tables from uploaded documents.
+Store and index document content for efficient retrieval.
+Allow users to ask natural-language questions about documents.
+Generate answers grounded in the uploaded documents.
+Provide source/page references for generated answers.
+Automatically extract key financial metrics.
+Compare financial performance across different periods.
+Generate a financial health score.
+Identify major business and financial risks.
+Present results through an intuitive analytics dashboard.
+3. Scope
+3.1 In Scope
+
+The system will support:
+
+PDF document upload
+Document parsing
+Text extraction
+Document chunking
+Embedding generation
+Vector-based semantic search
+RAG-based question answering
+Source citation
+Financial metric extraction
+Year-over-year comparison
+Financial health scoring
+Risk identification
+Dashboard visualization
+Document management
+REST API
+Docker-based deployment
+3.2 Out of Scope
+
+The initial version will not provide:
+
+Actual investment advice
+Automated trading
+Stock buy/sell recommendations
+Real-time brokerage integration
+Certified financial reporting
+Guaranteed financial predictions
+
+The system is intended for analytical and informational purposes.
+
+4. Target Users
+Financial Analyst
+
+Uses the platform to quickly analyze company reports and extract relevant information.
+
+Investment Researcher
+
+Uses the system to compare companies and understand financial performance.
+
+Student/Researcher
+
+Uses financial documents for academic or analytical purposes.
+
+Administrator
+
+Manages uploaded documents, system configuration, and users.
+
+5. System Overview
+
+The system follows this architecture:
+
+                  ┌──────────────────────┐
+                  │       User           │
+                  └──────────┬───────────┘
+                             │
+                             ▼
+                  ┌──────────────────────┐
+                  │   Streamlit UI       │
+                  └──────────┬───────────┘
+                             │
+                             ▼
+                  ┌──────────────────────┐
+                  │      FastAPI         │
+                  │      Backend         │
+                  └──────────┬───────────┘
+                             │
+            ┌────────────────┼────────────────┐
+            │                │                │
+            ▼                ▼                ▼
+     Document Engine     RAG Engine      Analytics Engine
+            │                │                │
+            ▼                ▼                ▼
+        PDF Parser       Vector DB       Financial Metrics
+        Text Extractor   Embeddings      Risk Analysis
+        Chunking         Retriever        Health Score
+            │                │                │
+            └────────────────┼────────────────┘
+                             ▼
+                       PostgreSQL
+6. Functional Requirements
+FR-01: User Document Upload
+
+The system shall allow users to upload financial documents in PDF format.
+
+Requirements
+Maximum file size shall be configurable.
+The system shall validate file type.
+Duplicate documents should be detected where possible.
+Upload status shall be displayed to the user.
+
+Input: PDF document
+Output: Successfully uploaded document
+
+FR-02: Document Processing
+
+The system shall process uploaded documents automatically.
+
+Processing pipeline:
+
+PDF
+ ↓
+Text Extraction
+ ↓
+Cleaning
+ ↓
+Section Detection
+ ↓
+Chunking
+ ↓
+Metadata Generation
+ ↓
+Embedding Generation
+ ↓
+Vector Database
+
+Each chunk should retain metadata such as:
+
+Document ID
+Page number
+Section
+Company
+Financial year
+Source location
+7. FR-03: Financial Information Extraction
+
+The system shall automatically identify important financial information from documents.
+
+Metrics
+
+The system should attempt to extract:
+
+Revenue
+Gross profit
+EBITDA
+Operating income
+Net income
+EPS
+Total assets
+Total liabilities
+Total debt
+Cash
+Operating cash flow
+Free cash flow
+
+Example:
+
+Company: ABC Ltd.
+
+Revenue:
+FY2024 → ₹10,200 Cr
+FY2025 → ₹11,450 Cr
+
+Growth → +12.25%
+8. FR-04: Natural Language Q&A
+
+Users shall be able to ask questions about uploaded documents.
+
+Example
+
+User:
+
+What was the company's revenue in FY2025?
+
+System:
+
+The company's FY2025 revenue was ₹11,450 crore.
+
+Source: Annual Report 2025, Page 87.
+
+The system should avoid generating unsupported information.
+
+9. FR-05: Retrieval-Augmented Generation
+
+The RAG pipeline shall:
+
+Receive user question.
+Convert question into an embedding.
+Search the vector database.
+Retrieve relevant document chunks.
+Pass retrieved context to the LLM.
+Generate an answer.
+Attach source references.
+User Question
+      ↓
+Query Embedding
+      ↓
+Vector Search
+      ↓
+Relevant Chunks
+      ↓
+LLM
+      ↓
+Grounded Answer
+      ↓
+Citation
+10. FR-06: Source Citation
+
+Every document-based answer should provide supporting references whenever possible.
+
+Citation information should include:
+
+Document name
+Page number
+Relevant section
+
+Example:
+
+Answer:
+Revenue increased by 12.4% in FY2025.
+
+Sources:
+• ABC Annual Report 2025
+• Page 87
+• Consolidated Statement of Profit & Loss
+11. FR-07: Financial Comparison
+
+The system shall allow users to compare financial metrics across different periods.
+
+Example
+              FY2024       FY2025       Change
+
+Revenue       ₹10,200 Cr   ₹11,450 Cr   +12.25%
+EBITDA        ₹2,100 Cr    ₹2,340 Cr    +11.43%
+Net Income    ₹1,200 Cr    ₹1,410 Cr    +17.50%
+Debt          ₹4,200 Cr    ₹3,900 Cr    -7.14%
+
+The system should calculate:
+
+Percentage Change
+
+(Current − Previous) / Previous × 100
+12. FR-08: Financial Health Score
+
+The system shall generate an indicative financial health score between 0 and 100.
+
+The score can be calculated using factors such as:
+
+Revenue growth
+Profitability
+Liquidity
+Debt/Leverage
+Cash flow
+Earnings growth
+
+Example:
+
+Financial Health Score
+        78 / 100
+
+Growth              86
+Profitability       82
+Liquidity           71
+Leverage            74
+Cash Flow           77
+
+The scoring methodology shall be documented and transparent.
+
+13. FR-09: Risk Analysis
+
+The system shall identify major risks mentioned in financial documents.
+
+Risk categories
+Financial risk
+Market risk
+Operational risk
+Regulatory risk
+Credit risk
+Liquidity risk
+Business risk
+
+Example:
+
+Risk Analysis
+
+HIGH
+• Increasing debt exposure
+
+MEDIUM
+• Regulatory uncertainty
+
+LOW
+• Short-term liquidity concerns
+
+The system should provide the source supporting each identified risk.
+
+14. FR-10: Document Comparison
+
+Users shall be able to select multiple documents belonging to the same company.
+
+Example:
+
+ABC Ltd.
+
+Annual Report 2024
+        VS
+Annual Report 2025
+
+The system shall identify:
+
+Changed financial metrics
+New risks
+Removed risks
+Changes in management outlook
+Revenue/profit changes
+Major business developments
+15. FR-11: Dashboard
+
+The application shall provide a dashboard containing:
+
+Overview
+Company name
+Reporting period
+Document status
+Financial health score
+Financial KPIs
+Revenue
+EBITDA
+Net income
+EPS
+Debt
+Cash flow
+Visualizations
+Revenue trend
+Profit trend
+Debt trend
+Cash flow trend
+Financial health score
+AI Insights
+Key findings
+Major risks
+Management outlook
+Significant changes
+16. FR-12: Search
+
+Users shall be able to search documents using:
+
+Keywords
+Natural-language questions
+Financial terms
+Company names
+Sections
+
+The search system should support semantic search rather than relying only on exact keyword matching.
+
+17. FR-13: Document Management
+
+Users should be able to:
+
+View uploaded documents
+Delete documents
+View document metadata
+Select documents for analysis
+View processing status
+
+Possible statuses:
+
+UPLOADED
+PROCESSING
+PROCESSED
+FAILED
+18. FR-14: REST API
+
+The backend shall expose APIs for major functionality.
+
+Example endpoints:
+
+POST   /documents/upload
+GET    /documents
+GET    /documents/{id}
+DELETE /documents/{id}
+
+POST   /documents/{id}/process
+
+POST   /query
+POST   /compare
+
+GET    /analytics/{document_id}
+GET    /health
+19. Non-Functional Requirements
+NFR-01: Performance
+Normal dashboard operations should respond within a few seconds.
+Document processing time should depend on document size.
+Vector search should return results quickly.
+NFR-02: Reliability
+
+The system should gracefully handle:
+
+Corrupted PDFs
+Unsupported files
+Missing financial information
+API failures
+LLM failures
+NFR-03: Security
+
+The system shall:
+
+Validate uploaded files.
+Restrict file types.
+Avoid exposing documents unnecessarily.
+Protect API credentials using environment variables.
+Avoid storing API keys in source code.
+NFR-04: Scalability
+
+The architecture should allow future migration from:
+
+FAISS
+
+to:
+
+PostgreSQL + pgvector
+
+or another production-grade vector database.
+
+NFR-05: Explainability
+
+Financial scores and AI-generated insights should provide supporting evidence wherever possible.
+
+NFR-06: Maintainability
+
+The project should follow modular architecture:
+
+Frontend
+Backend
+Document Processing
+RAG
+Analytics
+Database
+Models
+Utilities
+20. Database Design
+
+A basic PostgreSQL schema can contain:
+
+users
+Field	Type
+user_id	UUID
+name	VARCHAR
+email	VARCHAR
+created_at	TIMESTAMP
+documents
+Field	Type
+document_id	UUID
+filename	VARCHAR
+company	VARCHAR
+financial_year	VARCHAR
+upload_date	TIMESTAMP
+status	VARCHAR
+document_chunks
+Field	Type
+chunk_id	UUID
+document_id	UUID
+content	TEXT
+page_number	INTEGER
+section	VARCHAR
+embedding	VECTOR
+financial_metrics
+Field	Type
+metric_id	UUID
+document_id	UUID
+metric_name	VARCHAR
+value	DECIMAL
+period	VARCHAR
+unit	VARCHAR
+analysis_results
+Field	Type
+analysis_id	UUID
+document_id	UUID
+health_score	DECIMAL
+risk_summary	TEXT
+generated_at	TIMESTAMP
+21. Technology Requirements
+Component	Technology
+Programming	Python
+Frontend	Streamlit
+Backend	FastAPI
+Database	PostgreSQL
+Vector Search	FAISS / pgvector
+NLP	Sentence Transformers
+LLM	LLM API / local model
+PDF Processing	PyMuPDF / pdfplumber
+Data Analysis	Pandas
+ML	Scikit-learn / XGBoost
+Visualization	Plotly
+Containerization	Docker
+Version Control	Git + GitHub
+CI/CD	GitHub Actions
+22. High-Level User Flow
+                    START
+                      │
+                      ▼
+               Upload PDF
+                      │
+                      ▼
+              Validate Document
+                      │
+                      ▼
+              Process Document
+                      │
+          ┌───────────┴───────────┐
+          ▼                       ▼
+    Extract Text             Extract Tables
+          │                       │
+          └───────────┬───────────┘
+                      ▼
+                 Create Chunks
+                      │
+                      ▼
+                Generate Embeddings
+                      │
+                      ▼
+                Store in Vector DB
+                      │
+          ┌───────────┼────────────┐
+          ▼           ▼            ▼
+       Ask Q&A     Analytics    Comparison
+          │           │            │
+          ▼           ▼            ▼
+       RAG       Metrics/Score   YoY Analysis
+          │           │            │
+          └───────────┼────────────┘
+                      ▼
+                  Dashboard
+23. Error Handling
+
+The system should display appropriate messages.
+
+Invalid PDF
+
+"The uploaded file is not a valid PDF."
+
+Empty document
+
+"No readable text was found in this document."
+
+Information unavailable
+
+Instead of hallucinating:
+
+"The requested information could not be reliably identified in the uploaded documents."
+
+LLM/API failure
+
+"The AI service is temporarily unavailable. Please try again."
+
+24. Testing Requirements
+Unit Testing
+
+Test:
+
+PDF extraction
+Chunking
+Financial calculations
+Metric extraction
+Risk scoring
+API endpoints
+Integration Testing
+
+Test:
+
+Upload → Processing → Embedding → Retrieval → LLM → Response
+RAG Evaluation
+
+Measure:
+
+Retrieval precision
+Retrieval recall
+Answer relevance
+Citation correctness
+Hallucination rate
+API Testing
+
+Use:
+
+Pytest
+FastAPI TestClient
+Postman
+25. Future Enhancements
+
+Once the MVP works, these would make the project considerably stronger:
+
+Phase 2
+Multi-company comparison
+Financial sentiment analysis
+FinBERT
+Automatic earnings-call analysis
+Advanced financial ratios
+Phase 3
+Agentic financial research workflow
+Automated report generation
+Web-based financial data integration
+Time-series forecasting
+Anomaly detection
+Portfolio analytics
+Phase 4
+Local LLM deployment
+Role-based access control
+Enterprise document security
+Model monitoring
+Docker/Kubernetes deployment
+26. MVP Definition
+
+Don't try to implement everything initially.
+
+Your MVP should be:
+
+        Upload PDF
+            ↓
+      Extract Text
+            ↓
+       Chunk Document
+            ↓
+      Create Embeddings
+            ↓
+       Vector Database
+            ↓
+      Ask Questions
+            ↓
+       RAG Retrieval
+            ↓
+       LLM Response
+            ↓
+      Page Citations
+
+Then add:
+
+MVP → Financial extraction → Comparison → Dashboard → Health score → Risk analysis → Deployment
+
+That development order will keep the project manageable.
+
+27. Expected Final Product
+
+The finished application should look conceptually like:
+
+┌─────────────────────────────────────────────────────┐
+│       FINANCIAL DOCUMENT INTELLIGENCE               │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  Company: ABC Ltd.              FY: 2025            │
+│                                                     │
+│  Financial Health                                 │
+│                                                     │
+│              78 / 100                              │
+│                                                     │
+├──────────────┬──────────────┬───────────────────────┤
+│ Revenue      │ EBITDA       │ Net Income            │
+│ ₹11,450 Cr   │ ₹2,340 Cr    │ ₹1,410 Cr             │
+│ +12.4%       │ +11.4%       │ +17.5%                │
+├──────────────┴──────────────┴───────────────────────┤
+│                                                     │
+│ 📈 Financial Trends                                 │
+│                                                     │
+│ [Revenue / Profit Charts]                           │
+│                                                     │
+├─────────────────────────────────────────────────────┤
+│ 🤖 Ask the Financial Analyst                        │
+│                                                     │
+│ "What were the major risks mentioned in FY2025?"   │
+│                                                     │
+│ [Ask]                                               │
+│                                                     │
+├─────────────────────────────────────────────────────┤
+│ AI INSIGHTS                                         │
+│                                                     │
+│ • Revenue increased by 12.4%                        │
+│ • Debt decreased by 7.1%                            │
+│ • Operating cash flow improved                      │
+│ • Regulatory risk remains significant               │
+│                                                     │
+│ Sources: Annual Report 2025, pp. 42, 87, 103       │
+└─────────────────────────────────────────────────────┘
+🎯 Most important point
+
+For the Decimal Point Analytics campus drive, I'd position this project as:
+
+An end-to-end financial analytics platform powered by RAG and AI
+
+rather than:
+
+An LLM chatbot for financial PDFs.
