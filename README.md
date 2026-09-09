@@ -1,11 +1,10 @@
-<p align="center">
-  <h1 align="center">📊 Financial Document Intelligence & RAG Analytics Platform</h1>
-  <p align="center">
+<h1> Financial Document Intelligence & RAG Analytics Platform</h1>
+  <p>
     <strong>AI-powered financial document analysis platform combining Retrieval-Augmented Generation with explainable financial analytics to deliver citation-grounded insights from corporate filings.</strong>
   </p>
 </p>
 
-<p align="center">
+<p>
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
@@ -14,7 +13,7 @@
   <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI">
 </p>
 
-<p align="center">
+<p>
   <img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/Status-In%20Development-yellow?style=flat-square" alt="Status">
   <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen?style=flat-square" alt="PRs Welcome">
@@ -112,34 +111,34 @@ Upload PDF → Extract & Chunk → Embed → Index → Query → Analyze → Vis
 
 ## Key Features
 
-### 🔍 RAG-Powered Financial Q&A
+### RAG-Powered Financial Q&A
 Ask natural-language questions about uploaded financial documents. Answers are generated from retrieved document evidence, not fabricated by the LLM.
 
-### 📎 Citation-Grounded Responses
+### Citation-Grounded Responses
 Every answer includes document name, page number, and relevant section references — enabling users to verify AI-generated insights.
 
-### 📊 Automated Financial Metric Extraction
+### Automated Financial Metric Extraction
 Automatically identifies and extracts 12 key financial metrics: Revenue, Gross Profit, EBITDA, Operating Income, Net Income, EPS, Total Assets, Total Liabilities, Debt, Cash, Operating Cash Flow, and Free Cash Flow.
 
-### 📈 Financial Ratio Analysis
+### Financial Ratio Analysis
 Calculates 8 financial ratios including Revenue Growth, Profit Margin, EBITDA Margin, Current Ratio, Debt-to-Equity, ROA, ROE, and Operating Cash Flow Ratio.
 
-### 🏥 Financial Health Scoring
+### Financial Health Scoring
 Generates an explainable 0–100 financial health score across 5 dimensions: Growth (20%), Profitability (25%), Liquidity (20%), Leverage (20%), and Cash Flow (15%).
 
-### ⚠️ Risk Identification
+### Risk Identification
 Identifies financial, market, operational, regulatory, credit, liquidity, and business risks from document evidence — each with severity level, supporting evidence, and source page.
 
-### 📉 Year-over-Year Comparison
+### Year-over-Year Comparison
 Compares financial performance across periods with percentage change calculations and trend identification.
 
-### 🖥️ Interactive Dashboard
+### Interactive Dashboard
 Streamlit-based analytics dashboard with KPI cards, trend charts, risk summaries, and AI insights.
 
-### 📄 Multi-Document Comparison
+### Multi-Document Comparison
 Compare two financial documents (e.g., FY2024 vs FY2025 annual reports) to identify metric changes, new risks, and business developments.
 
-### 🔎 Semantic Document Search
+### Semantic Document Search
 Search across all uploaded documents using natural language, financial terms, or keywords — powered by vector similarity search.
 
 ---
@@ -148,7 +147,7 @@ Search across all uploaded documents using natural language, financial terms, or
 
 ```mermaid
 graph TB
-    User[👤 User] --> UI[Streamlit Frontend]
+    User[ User] --> UI[Streamlit Frontend]
     UI --> API[FastAPI Backend]
     
     API --> DocEngine[Document Processing Engine]
@@ -224,18 +223,18 @@ graph TB
 
 ```mermaid
 flowchart LR
-    A[📄 Upload PDF] --> B[✅ Validate]
-    B --> C[📝 Extract Text]
-    C --> D[✂️ Chunk]
-    D --> E[🧮 Embed]
-    E --> F[💾 Store]
+    A[ Upload PDF] --> B[ Validate]
+    B --> C[ Extract Text]
+    C --> D[ Chunk]
+    D --> E[ Embed]
+    E --> F[ Store]
     F --> G{User Action}
-    G --> H[❓ Ask Question]
-    G --> I[📊 View Analytics]
-    G --> J[🔄 Compare Documents]
-    H --> K[🔍 RAG Pipeline]
-    I --> L[📈 Dashboard]
-    J --> M[📋 Comparison Report]
+    G --> H[ Ask Question]
+    G --> I[ View Analytics]
+    G --> J[ Compare Documents]
+    H --> K[ RAG Pipeline]
+    I --> L[ Dashboard]
+    J --> M[ Comparison Report]
 ```
 
 ### Step-by-Step Flow
@@ -266,7 +265,7 @@ flowchart TD
     PP --> LLM[LLM Generation<br/>GPT-4o-mini]
     LLM --> CG[Citation Generation<br/>Source Mapping]
     CG --> RV[Response Validation<br/>Hallucination Check]
-    RV --> R[📋 Grounded Response<br/>+ Citations]
+    RV --> R[ Grounded Response<br/>+ Citations]
 
     style Q fill:#e3f2fd
     style R fill:#e8f5e9
@@ -329,7 +328,7 @@ flowchart TD
 | Leverage | 20% | Debt burden and capital structure |
 | Cash Flow | 15% | Cash generation and operational efficiency |
 
-> ⚠️ The financial health score is an **indicative analytical metric** designed for research and educational purposes. It is not a certified credit rating, investment recommendation, or professional financial advice.
+>  The financial health score is an **indicative analytical metric** designed for research and educational purposes. It is not a certified credit rating, investment recommendation, or professional financial advice.
 
 ---
 
@@ -361,7 +360,7 @@ User uploads: "ABC_Ltd_Annual_Report_2025.pdf"
 → Generates 487 embeddings (384-dim each)
 → Stores in vector database
 → Extracts 12 financial metrics
-→ Status: PROCESSED ✅
+→ Status: PROCESSED 
 ```
 
 ### 2. Ask a Question
@@ -795,6 +794,3 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
 ---
 
-<p align="center">
-  <strong>Built with ❤️ for financial intelligence</strong>
-</p>
