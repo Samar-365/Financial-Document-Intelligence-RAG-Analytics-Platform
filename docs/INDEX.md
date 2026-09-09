@@ -95,7 +95,7 @@ This centralized portal organizes all **35 project documentation assets** into c
 - [docs/ROADMAP.md](file:///c:/Users/samar/Desktop/projects/Financial%20Document%20Intelligence%20&%20RAG%20Analytics%20Platform/docs/ROADMAP.md) 
   *Five-phase development roadmap (MVP through Enterprise Scaling) with Gantt milestones, deliverables, dependencies, and Definition of Done.*
 - [docs/TEAM_DEVELOPMENT_PLAN.md](file:///c:/Users/samar/Desktop/projects/Financial%20Document%20Intelligence%20&%20RAG%20Analytics%20Platform/docs/TEAM_DEVELOPMENT_PLAN.md) 
-  *3-developer execution plan with RACI ownership matrix, parallel interface contracts, and 4-sprint milestone roadmap.*
+  *4-developer execution plan with RACI ownership matrix, parallel interface contracts, and 4-sprint milestone roadmap.*
 - [docs/FUTURE_ENHANCEMENTS.md](file:///c:/Users/samar/Desktop/projects/Financial%20Document%20Intelligence%20&%20RAG%20Analytics%20Platform/docs/FUTURE_ENHANCEMENTS.md) 
   *Thirteen prioritized future features ranked by difficulty, business value, and architectural prerequisite.*
 
