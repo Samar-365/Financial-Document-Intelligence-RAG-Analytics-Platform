@@ -80,7 +80,7 @@ sequenceDiagram
     API->>DB: UPDATE status = PROCESSED
     
     API-->>UI: 200 "Processing complete"
-    UI-->>User: Status: ✅ PROCESSED
+    UI-->>User: Status: PROCESSED
 ```
 
 ---

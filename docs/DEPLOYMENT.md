@@ -54,7 +54,7 @@ source venv/bin/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
-pip install -r requirements-dev.txt  # For testing and dev tools
+pip install -r requirements-dev.txt # For testing and dev tools
 
 # 4. Set up PostgreSQL database
 createdb financial_intelligence
@@ -294,17 +294,17 @@ LOG_LEVEL=INFO
 
 | # | Item | Status |
 |---|---|---|
-| 1 | Enable API authentication | ⏳ |
-| 2 | Use strong `SECRET_KEY` | ⏳ |
-| 3 | Set `APP_ENV=production` and `DEBUG=false` | ⏳ |
-| 4 | Use managed PostgreSQL (e.g., AWS RDS, Cloud SQL) | ⏳ |
-| 5 | Enable HTTPS/TLS | ⏳ |
-| 6 | Configure rate limiting | ⏳ |
-| 7 | Set up log aggregation | ⏳ |
-| 8 | Configure backup strategy for database | ⏳ |
-| 9 | Set resource limits on Docker containers | ⏳ |
-| 10 | Migrate from FAISS to pgvector for persistence | ⏳ |
-| 11 | Set up monitoring and alerting | ⏳ |
+| 1 | Enable API authentication | |
+| 2 | Use strong `SECRET_KEY` | |
+| 3 | Set `APP_ENV=production` and `DEBUG=false` | |
+| 4 | Use managed PostgreSQL (e.g., AWS RDS, Cloud SQL) | |
+| 5 | Enable HTTPS/TLS | |
+| 6 | Configure rate limiting | |
+| 7 | Set up log aggregation | |
+| 8 | Configure backup strategy for database | |
+| 9 | Set resource limits on Docker containers | |
+| 10 | Migrate from FAISS to pgvector for persistence | |
+| 11 | Set up monitoring and alerting | |
 
 ### Recommended Cloud Services
 
@@ -457,10 +457,10 @@ graph TB
         end
     end
     
-    User[👤 User] --> FE
+    User[ User] --> FE
     FE --> BE
     BE --> DB
-    BE --> OpenAI[☁️ OpenAI API]
+    BE --> OpenAI[ OpenAI API]
     
     DB --- V1
     BE --- V2
@@ -478,7 +478,7 @@ graph TB
 ```mermaid
 graph TB
     subgraph Internet
-        User[👤 Users]
+        User[ Users]
     end
     
     subgraph Cloud Provider
@@ -501,7 +501,7 @@ graph TB
     end
     
     subgraph External
-        OpenAI[☁️ OpenAI API]
+        OpenAI[ OpenAI API]
     end
     
     User --> LB

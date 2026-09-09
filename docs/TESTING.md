@@ -28,15 +28,15 @@
 
 ```
           ┌─────────┐
-          │   UI    │  Manual / Smoke tests
+          │ UI │ Manual / Smoke tests
          ┌┴─────────┴┐
-         │    RAG    │  Evaluation framework
+         │ RAG │ Evaluation framework
         ┌┴───────────┴┐
-        │    API     │  Endpoint tests (TestClient)
+        │ API │ Endpoint tests (TestClient)
        ┌┴─────────────┴┐
-       │ Integration  │  Pipeline tests
+       │ Integration │ Pipeline tests
       ┌┴───────────────┴┐
-      │   Unit Tests   │  Functions & classes
+      │ Unit Tests │ Functions & classes
       └─────────────────┘
 ```
 

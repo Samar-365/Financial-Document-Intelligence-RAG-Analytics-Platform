@@ -9,43 +9,43 @@ This document outlines the phased development and evolution roadmap for the **Fi
 ```mermaid
 gantt
     title Development & Engineering Roadmap
-    dateFormat  YYYY-MM-DD
+    dateFormat YYYY-MM-DD
     section Phase 1: MVP Core
-    Doc Ingestion & Hybrid Extraction  :done, p1_1, 2026-01-01, 2026-01-20
-    Chunking & FAISS Vector Index      :done, p1_2, 2026-01-15, 2026-02-05
-    RAG Pipeline & Source Citations   :done, p1_3, 2026-02-01, 2026-02-25
-    Streamlit Baseline UI             :done, p1_4, 2026-02-20, 2026-03-10
+    Doc Ingestion & Hybrid Extraction :done, p1_1, 2026-01-01, 2026-01-20
+    Chunking & FAISS Vector Index :done, p1_2, 2026-01-15, 2026-02-05
+    RAG Pipeline & Source Citations :done, p1_3, 2026-02-01, 2026-02-25
+    Streamlit Baseline UI :done, p1_4, 2026-02-20, 2026-03-10
 
     section Phase 2: Financial Analytics
-    12 Metric & 8 Ratio Engine         :active, p2_1, 2026-03-15, 2026-04-15
-    PostgreSQL Storage & Schemas      :active, p2_2, 2026-04-01, 2026-04-30
-    5-Dimension Health Score System   :p2_3, 2026-04-20, 2026-05-20
-    FastAPI Core REST API Endpoints   :p2_4, 2026-05-10, 2026-06-05
+    12 Metric & 8 Ratio Engine :active, p2_1, 2026-03-15, 2026-04-15
+    PostgreSQL Storage & Schemas :active, p2_2, 2026-04-01, 2026-04-30
+    5-Dimension Health Score System :p2_3, 2026-04-20, 2026-05-20
+    FastAPI Core REST API Endpoints :p2_4, 2026-05-10, 2026-06-05
 
     section Phase 3: Advanced Analytics & Viz
     Plotly Visual Analytics Dashboard :p3_1, 2026-06-10, 2026-07-10
-    Multi-Document Period Comparison   :p3_2, 2026-07-01, 2026-07-30
+    Multi-Document Period Comparison :p3_2, 2026-07-01, 2026-07-30
     7-Category Risk Extraction Module :p3_3, 2026-07-20, 2026-08-20
     Executive Briefing PDF Generation :p3_4, 2026-08-15, 2026-09-10
 
     section Phase 4: Production & Evaluation
-    pgvector Migration & Scaling       :p4_1, 2026-09-15, 2026-10-15
-    Ragas Evaluation Framework Setup   :p4_2, 2026-10-01, 2026-10-30
-    Prompt Guard & Security Hardening  :p4_3, 2026-10-20, 2026-11-20
-    Docker Compose Multi-Container     :p4_4, 2026-11-10, 2026-12-10
+    pgvector Migration & Scaling :p4_1, 2026-09-15, 2026-10-15
+    Ragas Evaluation Framework Setup :p4_2, 2026-10-01, 2026-10-30
+    Prompt Guard & Security Hardening :p4_3, 2026-10-20, 2026-11-20
+    Docker Compose Multi-Container :p4_4, 2026-11-10, 2026-12-10
 
     section Phase 5: Enterprise Scaling
-    Celery + Redis Async Tasks         :p5_1, 2026-12-15, 2027-01-20
-    OAuth2 / JWT Multi-Tenant Auth    :p5_2, 2027-01-10, 2027-02-15
+    Celery + Redis Async Tasks :p5_1, 2026-12-15, 2027-01-20
+    OAuth2 / JWT Multi-Tenant Auth :p5_2, 2027-01-10, 2027-02-15
     Prometheus & Grafana Observability :p5_3, 2027-02-01, 2027-03-10
-    MinIO / S3 Object Storage Backend  :p5_4, 2027-03-01, 2027-04-05
+    MinIO / S3 Object Storage Backend :p5_4, 2027-03-01, 2027-04-05
 ```
 
 ---
 
 ## Phase 1: Core Foundation & RAG MVP
 
-**Status**: Completed (Baseline)  
+**Status**: Completed (Baseline) 
 **Primary Goal**: Establish an end-to-end operational pipeline capable of parsing PDF filings, embedding text chunks into a vector store, answering analytical queries with context citations, and rendering answers in a clean interface.
 
 ### Objectives
@@ -84,7 +84,7 @@ gantt
 
 ## Phase 2: Financial Analytics & Quantitative Extraction
 
-**Status**: Active / In Progress  
+**Status**: Active / In Progress 
 **Primary Goal**: Move beyond pure conversational NLP by extracting structured financial metrics, computing standardized financial ratios, deriving financial health scores, and persisting state in PostgreSQL.
 
 ### Objectives
@@ -128,7 +128,7 @@ gantt
 
 ## Phase 3: Advanced Intelligence, Visualization & Dashboards
 
-**Status**: Planned  
+**Status**: Planned 
 **Primary Goal**: Elevate user experience and analytical depth through interactive visualization dashboards, multi-period comparative analytics, automated executive summaries, and qualitative risk categorization.
 
 ### Objectives
@@ -166,7 +166,7 @@ gantt
 
 ## Phase 4: Production Engineering, Security & Evaluation
 
-**Status**: Planned  
+**Status**: Planned 
 **Primary Goal**: Harden the architecture for production resilience, replace in-memory indices with persistent vector databases, integrate automated RAG evaluation metrics, and implement defensive security controls.
 
 ### Objectives
@@ -206,7 +206,7 @@ gantt
 
 ## Phase 5: Enterprise Scaling & Infrastructure
 
-**Status**: Future Concept  
+**Status**: Future Concept 
 **Primary Goal**: Scale system capacity to handle enterprise document volumes, asynchronous background processing, strict access control, and complete cloud-native observability.
 
 ### Objectives
@@ -270,18 +270,18 @@ gantt
 ## Release Milestones & Versioning
 
 ```
-v0.1.0-alpha  (Phase 1 Completed)
+v0.1.0-alpha (Phase 1 Completed)
  └── Basic Streamlit RAG tool, FAISS vector search, PDF parsing, grounded answers.
 
-v0.5.0-beta   (Phase 2 In Progress)
+v0.5.0-beta (Phase 2 In Progress)
  └── FastAPI integration, PostgreSQL storage, 12 metrics, 8 ratios, 5D health score.
 
-v1.0.0-rc     (Phase 3 Target)
+v1.0.0-rc (Phase 3 Target)
  └── Multi-page dashboard, Plotly charts, period-over-period comparisons, executive summaries.
 
-v1.2.0-prod   (Phase 4 Target)
+v1.2.0-prod (Phase 4 Target)
  └── pgvector persistent search, Ragas evaluation harness, prompt guard, containerized Docker deployment.
 
-v2.0.0-ent    (Phase 5 Vision)
+v2.0.0-ent (Phase 5 Vision)
  └── Asynchronous task architecture, multi-tenant RBAC, enterprise object storage, telemetry.
 ```

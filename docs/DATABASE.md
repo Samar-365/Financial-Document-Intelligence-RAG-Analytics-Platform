@@ -304,11 +304,11 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 -- Table: users
 -- ============================================
 CREATE TABLE users (
-    user_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name            VARCHAR(255) NOT NULL,
-    email           VARCHAR(255) NOT NULL UNIQUE,
-    created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX ix_users_email ON users(email);
@@ -317,22 +317,22 @@ CREATE INDEX ix_users_email ON users(email);
 -- Table: documents
 -- ============================================
 CREATE TABLE documents (
-    document_id     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id         UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    filename        VARCHAR(500) NOT NULL,
-    file_hash       VARCHAR(64) UNIQUE,
-    company         VARCHAR(255),
-    financial_year  VARCHAR(20),
-    document_type   VARCHAR(50),
-    status          VARCHAR(20) NOT NULL DEFAULT 'UPLOADED'
+    document_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    filename VARCHAR(500) NOT NULL,
+    file_hash VARCHAR(64) UNIQUE,
+    company VARCHAR(255),
+    financial_year VARCHAR(20),
+    document_type VARCHAR(50),
+    status VARCHAR(20) NOT NULL DEFAULT 'UPLOADED'
                     CHECK (status IN ('UPLOADED', 'PROCESSING', 'PROCESSED', 'FAILED')),
-    page_count      INTEGER,
+    page_count INTEGER,
     file_size_bytes BIGINT NOT NULL,
-    storage_path    VARCHAR(1000) NOT NULL,
-    upload_date     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    processed_date  TIMESTAMP WITH TIME ZONE,
-    created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    storage_path VARCHAR(1000) NOT NULL,
+    upload_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    processed_date TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX ix_documents_user_id ON documents(user_id);
@@ -343,17 +343,17 @@ CREATE INDEX ix_documents_status ON documents(status);
 -- Table: document_chunks
 -- ============================================
 CREATE TABLE document_chunks (
-    chunk_id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    document_id     UUID NOT NULL REFERENCES documents(document_id) ON DELETE CASCADE,
-    chunk_index     INTEGER NOT NULL,
-    content         TEXT NOT NULL,
-    page_number     INTEGER NOT NULL,
-    section         VARCHAR(255),
-    char_start      INTEGER,
-    char_end        INTEGER,
-    token_count     INTEGER,
-    -- embedding    VECTOR(384),  -- Uncomment when using pgvector
-    created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    chunk_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id UUID NOT NULL REFERENCES documents(document_id) ON DELETE CASCADE,
+    chunk_index INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    page_number INTEGER NOT NULL,
+    section VARCHAR(255),
+    char_start INTEGER,
+    char_end INTEGER,
+    token_count INTEGER,
+    -- embedding VECTOR(384), -- Uncomment when using pgvector
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     
     UNIQUE(document_id, chunk_index)
 );
@@ -362,27 +362,27 @@ CREATE INDEX ix_chunks_document_id ON document_chunks(document_id);
 CREATE INDEX ix_chunks_page ON document_chunks(document_id, page_number);
 CREATE INDEX ix_chunks_section ON document_chunks(document_id, section);
 -- CREATE INDEX ix_chunks_embedding ON document_chunks 
---     USING hnsw (embedding vector_cosine_ops);  -- pgvector HNSW index
+-- USING hnsw (embedding vector_cosine_ops); -- pgvector HNSW index
 
 -- ============================================
 -- Table: financial_metrics
 -- ============================================
 CREATE TABLE financial_metrics (
-    metric_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    document_id     UUID NOT NULL REFERENCES documents(document_id) ON DELETE CASCADE,
-    metric_name     VARCHAR(100) NOT NULL
+    metric_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id UUID NOT NULL REFERENCES documents(document_id) ON DELETE CASCADE,
+    metric_name VARCHAR(100) NOT NULL
                     CHECK (metric_name IN (
                         'revenue', 'gross_profit', 'ebitda', 'operating_income',
                         'net_income', 'eps', 'total_assets', 'total_liabilities',
                         'total_debt', 'cash', 'operating_cash_flow', 'free_cash_flow'
                     )),
-    value           DECIMAL(20, 4) NOT NULL,
-    period          VARCHAR(20) NOT NULL,
-    unit            VARCHAR(50) NOT NULL DEFAULT 'INR Crore',
-    currency        VARCHAR(10) DEFAULT 'INR',
-    confidence      FLOAT NOT NULL DEFAULT 1.0 CHECK (confidence >= 0.0 AND confidence <= 1.0),
-    source_page     INTEGER,
-    created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    value DECIMAL(20, 4) NOT NULL,
+    period VARCHAR(20) NOT NULL,
+    unit VARCHAR(50) NOT NULL DEFAULT 'INR Crore',
+    currency VARCHAR(10) DEFAULT 'INR',
+    confidence FLOAT NOT NULL DEFAULT 1.0 CHECK (confidence >= 0.0 AND confidence <= 1.0),
+    source_page INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX ix_metrics_document_id ON financial_metrics(document_id);
@@ -392,15 +392,15 @@ CREATE INDEX ix_metrics_name_period ON financial_metrics(document_id, metric_nam
 -- Table: analysis_results
 -- ============================================
 CREATE TABLE analysis_results (
-    analysis_id     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    document_id     UUID NOT NULL UNIQUE REFERENCES documents(document_id) ON DELETE CASCADE,
-    health_score    DECIMAL(5, 2) CHECK (health_score >= 0 AND health_score <= 100),
+    analysis_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id UUID NOT NULL UNIQUE REFERENCES documents(document_id) ON DELETE CASCADE,
+    health_score DECIMAL(5, 2) CHECK (health_score >= 0 AND health_score <= 100),
     dimension_scores JSONB,
-    risk_summary    JSONB,
-    ai_insights     JSONB,
+    risk_summary JSONB,
+    ai_insights JSONB,
     comparison_data JSONB,
-    generated_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    generated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX ix_analysis_document_id ON analysis_results(document_id);

@@ -1,10 +1,10 @@
 # Comprehensive Engineering Project Report
 
-**Project Title**: Financial Document Intelligence & RAG Analytics Platform  
-**Author**: Samar  
-**Date**: September 2026  
-**Target Domain**: Financial Data Analytics, NLP, Retrieval-Augmented Generation, and Software Engineering  
-**Intended Role**: Technology & Analytics Intern, Decimal Point Analytics  
+**Project Title**: Financial Document Intelligence & RAG Analytics Platform 
+**Author**: Samar 
+**Date**: September 2026 
+**Target Domain**: Financial Data Analytics, NLP, Retrieval-Augmented Generation, and Software Engineering 
+**Intended Role**: Technology & Analytics Intern, Decimal Point Analytics 
 
 ---
 
