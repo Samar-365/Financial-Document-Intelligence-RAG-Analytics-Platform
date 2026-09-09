@@ -1,0 +1,14 @@
+DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
+=====================================
+
+[2026-09-10] Module 1.1: PDF File Validator & Boundary Checker
+- Added PDFValidator with magic-byte check (%PDF-1.x) and size/encryption limits (50MB).
+- Target files: app/document_processing/validator.py, tests/document_processing/test_validator.py
+- Tests: 7/7 unit tests passed.
+- Commit: c3bf816
+
+[2026-09-10] Module 1.2: Digital Text Extractor
+- Added TextExtractor for page-by-page narrative extraction and scanned PDF detection (PROC_002).
+- Target files: app/document_processing/text_extractor.py, tests/document_processing/test_text_extractor.py
+- Tests: 3/3 unit tests passed (10/10 total suite).
+

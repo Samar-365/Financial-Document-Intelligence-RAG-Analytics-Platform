@@ -60,4 +60,4 @@ data/vector_store/*
 
 # Logs
 *.log
-logs/
+/logs/
