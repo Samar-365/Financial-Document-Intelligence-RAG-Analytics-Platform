@@ -11,6 +11,7 @@ from app.document_processing.table_extractor import (
     ExtractedTableDTO,
 )
 from app.document_processing.cleaner import TextCleaner
+from app.document_processing.chunker import TextSplitter
 
 __all__ = [
     "PDFValidator",
@@ -21,4 +22,6 @@ __all__ = [
     "TableExtractor",
     "ExtractedTableDTO",
     "TextCleaner",
+    "TextSplitter",
 ]
+
