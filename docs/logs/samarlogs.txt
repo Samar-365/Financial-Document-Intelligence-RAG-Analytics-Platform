@@ -60,3 +60,15 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Target files: app/rag/retriever.py, tests/rag/test_retriever.py
 - Tests: 9/9 unit tests passed (80/80 total suite).
 - Commit: f72e9f6
+
+[2026-09-11] Module 4.1: Context Builder & Delimiter Sandboxing
+- Added PromptBuilder with XML delimiter isolation (<context>...</context>) and provenance tag formatting ([Doc: id, Page: n]).
+- Target files: app/rag/prompt_builder.py, tests/rag/test_prompt_builder.py
+- Tests: 5/5 unit tests passed (85/85 total suite).
+- Commit: 877adaf
+
+[2026-09-11] Module 4.2: Negative-Constraint System Prompt Formulation
+- Added FinancialSystemPrompts with strict negative constraints, zero extrapolation rules, standardized fallback string, and OpenAI chat message assembly.
+- Target files: app/rag/system_prompts.py, tests/rag/test_system_prompts.py
+- Tests: 5/5 unit tests passed (90/90 total suite).
+- Commit: 877adaf
