@@ -54,3 +54,9 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Target files: app/rag/faiss_store.py, tests/rag/test_faiss_store.py
 - Tests: 11/11 unit tests passed (71/71 total suite).
 - Commit: 60a49bb
+
+[2026-09-11] Module 3.3: Vector Similarity Retriever
+- Added VectorRetriever for Top-K candidate search, confidence threshold filtering (< 0.45 discarded), and sub-20ms latency.
+- Target files: app/rag/retriever.py, tests/rag/test_retriever.py
+- Tests: 9/9 unit tests passed (80/80 total suite).
+- Commit: f72e9f6
