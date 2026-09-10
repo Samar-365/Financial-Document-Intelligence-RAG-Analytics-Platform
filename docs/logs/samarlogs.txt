@@ -43,7 +43,8 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 8/8 unit tests passed (49/49 total suite).
 - Commit: b91b295
 
-
-
-
-
+[2026-09-11] Module 3.1: Dense Vector Embedding Generator
+- Added EmbeddingGenerator with all-MiniLM-L6-v2 for 384-dimensional dense vectors, batch inference (32 chunks), and L2 unit normalization.
+- Target files: app/rag/embeddings.py, tests/rag/test_embeddings.py
+- Tests: 11/11 unit tests passed (60/60 total suite).
+- Commit: 3bb0441
