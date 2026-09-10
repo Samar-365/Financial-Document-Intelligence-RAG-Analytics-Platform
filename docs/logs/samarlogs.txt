@@ -48,3 +48,9 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Target files: app/rag/embeddings.py, tests/rag/test_embeddings.py
 - Tests: 11/11 unit tests passed (60/60 total suite).
 - Commit: 3bb0441
+
+[2026-09-11] Module 3.2: In-Memory FAISS Vector Index
+- Added FAISSVectorStore with IndexFlatIP (384-dim), batch vector addition, and in-memory ID mapping dictionaries for chunk metadata lookup.
+- Target files: app/rag/faiss_store.py, tests/rag/test_faiss_store.py
+- Tests: 11/11 unit tests passed (71/71 total suite).
+- Commit: 60a49bb
