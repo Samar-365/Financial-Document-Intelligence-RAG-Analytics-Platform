@@ -31,6 +31,12 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 10/10 unit tests passed (31/31 total suite).
 - Commit: 1abceed
 
+[2026-09-10] Module 2.2: Contextual Overlap & Table Boundary Preserver
+- Added BoundaryManager for 150-character contextual backward overlap and Table Integrity Lock preventing mid-table / mid-cell row splits.
+- Target files: app/document_processing/chunk_boundary.py, tests/document_processing/test_chunk_boundary.py
+- Tests: 10/10 unit tests passed (41/41 total suite).
+- Commit: 21e2738
+
 
 
 
