@@ -37,6 +37,12 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 10/10 unit tests passed (41/41 total suite).
 - Commit: 21e2738
 
+[2026-09-10] Module 2.3: Chunk Metadata & Provenance Tagger
+- Added TextChunkDTO and MetadataTagger with UUIDv4 generation, document/page provenance, token estimation (4-char heuristic), and table chunk detection.
+- Target files: app/document_processing/metadata_tagger.py, tests/document_processing/test_metadata_tagger.py
+- Tests: 8/8 unit tests passed (49/49 total suite).
+- Commit: b91b295
+
 
 
 
