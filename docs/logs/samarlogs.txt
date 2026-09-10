@@ -25,6 +25,12 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 6/6 unit tests passed (21/21 total suite).
 - Commit: 5d77445
 
+[2026-09-10] Module 2.1: Recursive Character Splitter
+- Added TextSplitter for hierarchical recursive chunking (\n\n -> \n -> .  -> ;  -> ' ') targeting 800-character window and minimum 100-character merging.
+- Target files: app/document_processing/chunker.py, tests/document_processing/test_chunker.py
+- Tests: 10/10 unit tests passed (31/31 total suite).
+- Commit: 1abceed
+
 
 
 
