@@ -43,7 +43,20 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 8/8 unit tests passed (49/49 total suite).
 - Commit: b91b295
 
+[2026-09-11] Module 3.1: Dense Vector Embedding Generator
+- Added EmbeddingGenerator with all-MiniLM-L6-v2 for 384-dimensional dense vectors, batch inference (32 chunks), and L2 unit normalization.
+- Target files: app/rag/embeddings.py, tests/rag/test_embeddings.py
+- Tests: 11/11 unit tests passed (60/60 total suite).
+- Commit: 3bb0441
 
+[2026-09-11] Module 3.2: In-Memory FAISS Vector Index
+- Added FAISSVectorStore with IndexFlatIP (384-dim), batch vector addition, and in-memory ID mapping dictionaries for chunk metadata lookup.
+- Target files: app/rag/faiss_store.py, tests/rag/test_faiss_store.py
+- Tests: 11/11 unit tests passed (71/71 total suite).
+- Commit: 60a49bb
 
-
-
+[2026-09-11] Module 3.3: Vector Similarity Retriever
+- Added VectorRetriever for Top-K candidate search, confidence threshold filtering (< 0.45 discarded), and sub-20ms latency.
+- Target files: app/rag/retriever.py, tests/rag/test_retriever.py
+- Tests: 9/9 unit tests passed (80/80 total suite).
+- Commit: f72e9f6
