@@ -15,6 +15,10 @@ from app.rag.ollama_client import (
     OllamaServiceError,
     HybridLLMDispatcher,
 )
+from app.rag.citation_parser import (
+    RawCitationToken,
+    CitationParser,
+)
 
 __all__ = [
     "EmbeddingGenerator",
@@ -31,4 +35,7 @@ __all__ = [
     "OllamaClientWrapper",
     "OllamaServiceError",
     "HybridLLMDispatcher",
+    "RawCitationToken",
+    "CitationParser",
 ]
+
