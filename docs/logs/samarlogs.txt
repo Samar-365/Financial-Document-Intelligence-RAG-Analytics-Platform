@@ -115,6 +115,13 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 8/8 unit tests passed (146/146 total suite).
 - Commit: 773c199
 
+[2026-09-11] Module 6.4: Structured LLM JSON Fallback Extractor
+- Added LLMMetricExtractor with constrained JSON schema prompting, missing line-item fallback, audit metadata tracking (is_calculated, confidence, source), and ExtractedFinancialMetricsDTO.
+- Target files: app/analytics/llm_extractor.py, tests/analytics/test_llm_extractor.py
+- Tests: 8/8 unit tests passed (154/154 total suite).
+- Commit: 293b1fe
+
+
 
 
 
