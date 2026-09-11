@@ -84,3 +84,10 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Target files: app/rag/ollama_client.py, tests/rag/test_ollama_client.py
 - Tests: 6/6 unit tests passed (101/101 total suite).
 - Commit: 4c3e0fe
+
+[2026-09-11] Module 5.1: Inline Citation Regex Parser
+- Added CitationParser with bracketed regex extraction (r"\[Doc:\s*([^,]+),\s*Page:\s*(\d+)\]"), order-preserving first-occurrence deduplication, and RawCitationToken DTO.
+- Target files: app/rag/citation_parser.py, tests/rag/test_citation_parser.py
+- Tests: 10/10 unit tests passed (111/111 total suite).
+- Commit: 06de4f3
+
