@@ -138,3 +138,10 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Target files: app/analytics/ratios_leverage.py, tests/analytics/test_ratios_leverage.py
 - Tests: 13/13 unit tests passed (193/193 total suite).
 - Commit: 001beb3
+
+[2026-09-12] Module 8.1: Growth & Profitability Scoring Engine
+- Added DimensionScoreDTO and GrowthProfitScorer with piecewise linear mapping for YoY Revenue Growth (>10%) and PAT Growth (>15%), OPM (>15%) and NPM (>10%) scoring, margin contraction penalties, and explainable deductions.
+- Target files: app/analytics/health_growth_profit.py, tests/analytics/test_health_growth_profit.py
+- Tests: 19/19 unit tests passed (212/212 total suite).
+- Commit: ab0d122
+
