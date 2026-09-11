@@ -109,6 +109,13 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 8/8 unit tests passed (138/138 total suite).
 - Commit: 5c96e70
 
+[2026-09-11] Module 6.3: Regex Tabular Line-Item Extractor
+- Added RegexMetricExtractor with markdown table parsing, multi-year column alignment (FY24/FY25), table-level scaling unit detection, and deterministic extraction into Decimals.
+- Target files: app/analytics/regex_extractor.py, tests/analytics/test_regex_extractor.py
+- Tests: 8/8 unit tests passed (146/146 total suite).
+- Commit: 773c199
+
+
 
 
 
