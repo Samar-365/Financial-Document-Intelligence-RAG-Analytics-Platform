@@ -24,6 +24,9 @@ from app.analytics.health_growth_profit import (
     DimensionScoreDTO,
     GrowthProfitScorer,
 )
+from app.analytics.health_solvency_cash import (
+    SolvencyCashScorer,
+)
 
 __all__ = [
     "StatementDomain",
@@ -41,4 +44,6 @@ __all__ = [
     "LeverageCalculator",
     "DimensionScoreDTO",
     "GrowthProfitScorer",
+    "SolvencyCashScorer",
 ]
+
