@@ -19,6 +19,10 @@ from app.rag.citation_parser import (
     RawCitationToken,
     CitationParser,
 )
+from app.rag.citation_verifier import (
+    VerifiedCitationDTO,
+    CitationVerifier,
+)
 
 __all__ = [
     "EmbeddingGenerator",
@@ -37,5 +41,8 @@ __all__ = [
     "HybridLLMDispatcher",
     "RawCitationToken",
     "CitationParser",
+    "VerifiedCitationDTO",
+    "CitationVerifier",
 ]
+
 
