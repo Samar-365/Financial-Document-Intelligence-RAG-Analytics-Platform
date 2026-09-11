@@ -97,4 +97,11 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 9/9 unit tests passed (120/120 total suite).
 - Commit: 1a11f18
 
+[2026-09-11] Module 6.1: Accounting Synonym & Terminology Matcher
+- Added SynonymMatcher with 50+ Indian & Global accounting aliases, canonical metric key resolution (12+ metrics), and statement domain classification (P&L, Balance Sheet, Cash Flow).
+- Target files: app/analytics/synonym_matcher.py, tests/analytics/test_synonym_matcher.py
+- Tests: 10/10 unit tests passed (130/130 total suite).
+- Commit: 0a8b71c
+
+
 
