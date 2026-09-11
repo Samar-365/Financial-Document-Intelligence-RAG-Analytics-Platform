@@ -2,9 +2,11 @@
 
 from app.analytics.synonym_matcher import StatementDomain, SynonymMatcher
 from app.analytics.unit_normalizer import FinancialUnitNormalizer
+from app.analytics.regex_extractor import RegexMetricExtractor
 
 __all__ = [
     "StatementDomain",
     "SynonymMatcher",
     "FinancialUnitNormalizer",
+    "RegexMetricExtractor",
 ]
