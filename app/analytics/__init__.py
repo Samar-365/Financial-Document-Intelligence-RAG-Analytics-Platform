@@ -20,6 +20,17 @@ from app.analytics.ratios_leverage import (
     LeverageRatiosDTO,
     LeverageCalculator,
 )
+from app.analytics.health_growth_profit import (
+    DimensionScoreDTO,
+    GrowthProfitScorer,
+)
+from app.analytics.health_solvency_cash import (
+    SolvencyCashScorer,
+)
+from app.analytics.health_scorer import (
+    CorporateHealthReportDTO,
+    HealthScoreAggregator,
+)
 
 __all__ = [
     "StatementDomain",
@@ -35,4 +46,11 @@ __all__ = [
     "LiquidityCalculator",
     "LeverageRatiosDTO",
     "LeverageCalculator",
+    "DimensionScoreDTO",
+    "GrowthProfitScorer",
+    "SolvencyCashScorer",
+    "CorporateHealthReportDTO",
+    "HealthScoreAggregator",
 ]
+
+
