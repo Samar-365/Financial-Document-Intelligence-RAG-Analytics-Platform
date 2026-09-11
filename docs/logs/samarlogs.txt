@@ -97,4 +97,44 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 9/9 unit tests passed (120/120 total suite).
 - Commit: 1a11f18
 
+[2026-09-11] Module 6.1: Accounting Synonym & Terminology Matcher
+- Added SynonymMatcher with 50+ Indian & Global accounting aliases, canonical metric key resolution (12+ metrics), and statement domain classification (P&L, Balance Sheet, Cash Flow).
+- Target files: app/analytics/synonym_matcher.py, tests/analytics/test_synonym_matcher.py
+- Tests: 10/10 unit tests passed (130/130 total suite).
+- Commit: 0a8b71c
 
+[2026-09-11] Module 6.2: Financial Currency & Unit Normalizer
+- Added FinancialUnitNormalizer with Indian unit scaling (Cr/Lakh), Western scaling (M/B/K/T), accounting negative parentheses parsing, currency stripping, and Decimal quantization.
+- Target files: app/analytics/unit_normalizer.py, tests/analytics/test_unit_normalizer.py
+- Tests: 8/8 unit tests passed (138/138 total suite).
+- Commit: 5c96e70
+
+[2026-09-11] Module 6.3: Regex Tabular Line-Item Extractor
+- Added RegexMetricExtractor with markdown table parsing, multi-year column alignment (FY24/FY25), table-level scaling unit detection, and deterministic extraction into Decimals.
+- Target files: app/analytics/regex_extractor.py, tests/analytics/test_regex_extractor.py
+- Tests: 8/8 unit tests passed (146/146 total suite).
+- Commit: 773c199
+
+[2026-09-11] Module 6.4: Structured LLM JSON Fallback Extractor
+- Added LLMMetricExtractor with constrained JSON schema prompting, missing line-item fallback, audit metadata tracking (is_calculated, confidence, source), and ExtractedFinancialMetricsDTO.
+- Target files: app/analytics/llm_extractor.py, tests/analytics/test_llm_extractor.py
+- Tests: 8/8 unit tests passed (154/154 total suite).
+- Commit: 293b1fe
+
+[2026-09-11] Module 7.1: Profitability Ratios Calculator
+- Added ProfitabilityCalculator with OPM, NPM, ROE, ROCE formulas, zero-revenue/zero-equity/negative-capital-employed division guards, and ProfitabilityRatiosDTO.
+- Target files: app/analytics/ratios_profitability.py, tests/analytics/test_ratios_profitability.py
+- Tests: 15/15 unit tests passed (169/169 total suite).
+- Commit: 001beb3
+
+[2026-09-11] Module 7.2: Liquidity & Solvency Ratios Calculator
+- Added LiquidityCalculator with Current Ratio and Quick Ratio formulas, zero-liabilities guard, and inventory-absent fallback (Quick Ratio → Current Ratio).
+- Target files: app/analytics/ratios_liquidity.py, tests/analytics/test_ratios_liquidity.py
+- Tests: 11/11 unit tests passed (180/180 total suite).
+- Commit: 001beb3
+
+[2026-09-11] Module 7.3: Leverage & Coverage Ratios Calculator
+- Added LeverageCalculator with Debt-to-Equity and Interest Coverage Ratio formulas, negative-equity distress flag, zero-interest guard, and LeverageRatiosDTO.
+- Target files: app/analytics/ratios_leverage.py, tests/analytics/test_ratios_leverage.py
+- Tests: 13/13 unit tests passed (193/193 total suite).
+- Commit: 001beb3
