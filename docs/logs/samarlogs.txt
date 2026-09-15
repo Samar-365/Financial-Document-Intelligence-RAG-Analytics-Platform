@@ -168,3 +168,9 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Target files: app/analytics/risk_classifier.py, tests/analytics/test_risk_classifier.py
 - Tests: 11/11 unit tests passed (275/275 total suite).
 - Commit: 015074e
+
+[2026-09-15] Module 10.1: 50-Pair Golden Benchmark Dataset Formulator
+- Added BenchmarkQAPair and BenchmarkDatasetManager with 50 curated ground-truth pairs strictly distributed across 5 categories (20 Factual, 10 Analytical, 10 Risk, 5 Comparative, 5 Negative tests), expected answer keywords, source page numbers, and JSON schema serialization.
+- Target files: evaluation/eval_dataset.py, evaluation/benchmark_dataset.json, tests/evaluation/test_eval_dataset.py
+- Tests: 11/11 unit tests passed (286/286 total suite).
+- Commit: pending
