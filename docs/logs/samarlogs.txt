@@ -157,5 +157,9 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 13/13 unit tests passed (249/249 total suite).
 - Commit: de15526
 
-
+[2026-09-15] Module 9.1: Risk Factor Disclosure Parser
+- Added RiskDisclosureParser with Item 1A / Risk Disclosures section locator, sequential cursor tracking, exit header detection (Item 1B/2/7/8), Table of Contents (TOC) dot-leader filtering, and generic regulatory safe-harbor boilerplate noise elimination.
+- Target files: app/analytics/risk_parser.py, tests/analytics/test_risk_parser.py
+- Tests: 16/16 unit tests passed (264/264 total suite).
+- Commit: 95f9776
 

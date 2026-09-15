@@ -8,10 +8,10 @@ Responsible for:
 
 import re
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field #Pydantic's BaseModel makes sure the data follows the expected structure
 
 
-class RawCitationToken(BaseModel):
+class RawCitationToken(BaseModel): #defines the format of one citation
     """Data Transfer Object representing a raw inline document citation."""
 
     document_name: str = Field(
@@ -20,9 +20,9 @@ class RawCitationToken(BaseModel):
     )
     page_number: int = Field(
         ...,
-        ge=1,
+        ge=1, #means page numbers must be 1 or greater
         description="Originating PDF page number (1-based integer).",
-    )
+    ) #Pydantic's BaseModel makes sure the data follows the expected structure
 
 
 class CitationParser:
@@ -36,10 +36,10 @@ class CitationParser:
     CITATION_PATTERN: re.Pattern = re.compile(
         r"\[Doc:\s*([^,]+?)\s*,\s*Page:\s*(\d+)\s*\]",
         re.IGNORECASE,
-    )
+    ) #Find text that looks like [Doc: something, Page: number]
 
     @staticmethod
-    def parse_citations(text: str) -> List[RawCitationToken]:
+    def parse_citations(text: str) -> List[RawCitationToken]: #Create a method called parse_citations that takes a string containing the LLM's response and returns a list of structured citation objects
         """Extracts unique [Doc: X, Page: Y] tokens from generated text.
 
         Preserves first-occurrence order of duplicate citations.
@@ -53,14 +53,14 @@ class CitationParser:
         Raises:
             TypeError: If text is not a string.
         """
-        if not isinstance(text, str):
+        if not isinstance(text, str): #it validates the input
             raise TypeError("text must be a string.")
 
-        if not text.strip():
+        if not text.strip(): #Returns empty list if the input is empty or just whitespace
             return []
 
         tokens: List[RawCitationToken] = []
-        seen = set()
+        seen = set() #keeps track of citations that have already appeared
 
         for match in CitationParser.CITATION_PATTERN.finditer(text):
             doc_name = match.group(1).strip()
@@ -72,14 +72,14 @@ class CitationParser:
                 continue
 
             dedup_key = (doc_name, page_number)
-            if dedup_key not in seen:
+            if dedup_key not in seen: #Have I already encountered this exact document + page combination?
                 seen.add(dedup_key)
                 tokens.append(
                     RawCitationToken(
                         document_name=doc_name,
                         page_number=page_number,
                     )
-                )
+                ) #adds it to the output
 
         return tokens
 
@@ -100,6 +100,6 @@ class CitationParser:
             raise TypeError("text must be a string.")
 
         cleaned = CitationParser.CITATION_PATTERN.sub("", text)
-        cleaned = re.sub(r"[ \t]+", " ", cleaned)
-        cleaned = re.sub(r"\s+([.,;:!?])", r"\1", cleaned)
+        cleaned = re.sub(r"[ \t]+", " ", cleaned) #Removes excessive spaces
+        cleaned = re.sub(r"\s+([.,;:!?])", r"\1", cleaned) #fixes spaces before punctuation
         return cleaned.strip()

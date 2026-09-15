@@ -15,10 +15,10 @@ from app.rag.citation_parser import CitationParser, RawCitationToken
 from app.rag.retriever import RetrievedChunkDTO
 
 
-class VerifiedCitationDTO(BaseModel):
+class VerifiedCitationDTO(BaseModel): #This defines the output format of the verifier _______RawCitationToken-->Verification-->VerifiedCitationDTO
     """Data Transfer Object representing a verified document citation with evidence snippet."""
 
-    citation_id: str = Field(
+    citation_id: str = Field( #Unique identifier for the citation.
         ...,
         description="Unique identifier for this citation instance.",
     )
@@ -41,7 +41,7 @@ class VerifiedCitationDTO(BaseModel):
     )
 
 
-class CitationVerifier:
+class CitationVerifier: #actual verification component
     """Validates citations against retrieved chunks and extracts text evidence snippets.
 
     Technical Tasks:
@@ -65,63 +65,63 @@ class CitationVerifier:
         Returns:
             str: Cleaned sentence or excerpt representing verifiable evidence.
         """
-        if not chunks:
+        if not chunks: #If there is no source chunk
             return ""
 
         # Gather candidate sentences/rows across all matching chunks
-        candidates: List[str] = []
-        for chunk in chunks:
-            content = chunk.content.strip()
-            if not content:
+        candidates: List[str] = [] #List of sentences that might contain the evidence
+        for chunk in chunks: #Looping through each chunk
+            content = chunk.content.strip() #gets the raw text
+            if not content: #If there is no content
                 continue
 
             # If the chunk is primarily a markdown table, extract relevant table rows
             if "|" in content and content.count("\n") > 0:
                 rows = [
                     row.strip()
-                    for row in content.splitlines()
-                    if row.strip().startswith("|") and not re.match(r"^\|[\s\-:|]+\|$", row.strip())
+                    for row in content.splitlines() #Break the table into individual lines
+                    if row.strip().startswith("|") and not re.match(r"^\|[\s\-:|]+\|$", row.strip()) #Checks if the line starts with | and is not a header separator row and Removes:|------|---------|because that's not actual financial information
                 ]
                 # Filter out header separator row and add table rows
-                candidates.extend(rows)
+                candidates.extend(rows) #Add table rows to the list of candidates
 
             # Split narrative content into sentences
-            sentences = re.split(r"(?<=[.!?])\s+", content)
+            sentences = re.split(r"(?<=[.!?])\s+", content) #Find one or more spaces/whitespace characters that come immediately after ., !, or ?
             for sent in sentences:
                 cleaned = sent.strip()
-                if len(cleaned) >= 15:  # Ignore trivial fragments
+                if len(cleaned) >= 15:  # Ignore trivial fragments(If a fragment is extremely short, ignore it)
                     candidates.append(cleaned)
 
-        if not candidates:
+        if not candidates: #If there are no candidates
             # Fallback to trimmed chunk content
-            return chunks[0].content.strip()[:200]
+            return chunks[0].content.strip()[:200] #Returns the first 200 characters of the first chunk
 
         # If claim_context is provided, rank candidates by token overlap
-        if claim_context and claim_context.strip():
+        if claim_context and claim_context.strip(): #If an LLM claim was supplied, the code tries to find the most relevant sentence
             claim_tokens: Set[str] = set(
                 re.findall(r"[A-Za-z0-9]+", claim_context.lower())
-            )
+            ) #Turns the claim into words
             # Remove common stopwords to focus on factual terms
             stopwords = {"the", "a", "an", "is", "in", "and", "of", "to", "for", "with", "that", "this", "it", "was"}
-            claim_keywords = claim_tokens - stopwords
+            claim_keywords = claim_tokens - stopwords # Removes common stopwords to focus on factual terms
 
-            best_candidate = candidates[0]
-            max_overlap = -1
+            best_candidate = candidates[0] #Set the best candidate to the first candidate
+            max_overlap = -1 #Set the max overlap to -1
 
-            for candidate in candidates:
-                cand_tokens = set(re.findall(r"[A-Za-z0-9]+", candidate.lower()))
-                overlap = len(cand_tokens & claim_keywords)
-                if overlap > max_overlap:
-                    max_overlap = overlap
-                    best_candidate = candidate
+            for candidate in candidates: #Loop through the candidates (The code now examines every possible evidence sentence)
+                cand_tokens = set(re.findall(r"[A-Za-z0-9]+", candidate.lower())) #Turns each candidate into a list of words
+                overlap = len(cand_tokens & claim_keywords) #Counts how many words overlap between the candidate and the claim (How many important words does the source sentence share with the LLM's claim?)
+                if overlap > max_overlap: #If the current candidate has more overlapping words than the best one so far
+                    max_overlap = overlap #Update the max overlap
+                    best_candidate = candidate #Update the best candidate
 
-            if max_overlap > 0:
+            if max_overlap > 0: #If there is at least one overlapping word
                 return best_candidate
 
         # Default to first complete candidate sentence
         return candidates[0]
 
-    def verify_citations(
+    def verify_citations( #main verification function
         self,
         tokens: List[RawCitationToken],
         retrieved_chunks: List[RetrievedChunkDTO],
@@ -140,47 +140,47 @@ class CitationVerifier:
         Raises:
             TypeError: If tokens or retrieved_chunks are not lists of expected DTOs.
         """
-        if not isinstance(tokens, list):
+        if not isinstance(tokens, list): #Checks that citations are actually passed as a list
             raise TypeError("tokens must be a list of RawCitationToken objects.")
 
-        if not isinstance(retrieved_chunks, list):
+        if not isinstance(retrieved_chunks, list): #Checks that the retrieved chunks are also passed as a list
             raise TypeError("retrieved_chunks must be a list of RetrievedChunkDTO objects.")
 
-        for i, token in enumerate(tokens):
-            if not isinstance(token, RawCitationToken):
+        for i, token in enumerate(tokens): #Check each token
+            if not isinstance(token, RawCitationToken): #Check if it's a RawCitationToken object
                 raise TypeError(
                     f"Element at tokens[{i}] is {type(token).__name__}, expected RawCitationToken."
                 )
 
-        for i, chunk in enumerate(retrieved_chunks):
-            if not isinstance(chunk, RetrievedChunkDTO):
+        for i, chunk in enumerate(retrieved_chunks): #Check each chunk
+            if not isinstance(chunk, RetrievedChunkDTO): #Check if it's a RetrievedChunkDTO object
                 raise TypeError(
                     f"Element at retrieved_chunks[{i}] is {type(chunk).__name__}, expected RetrievedChunkDTO."
                 )
 
-        if not tokens:
+        if not tokens: #If the LLM didn't provide citations, there's nothing to verify
             return []
 
         # Build index mapping (document_name_lower, page_number) -> list of chunks
-        chunk_index: Dict[Tuple[str, int], List[RetrievedChunkDTO]] = {}
-        for chunk in retrieved_chunks:
-            key = (chunk.document_id.strip().lower(), chunk.page_number)
-            chunk_index.setdefault(key, []).append(chunk)
+        chunk_index: Dict[Tuple[str, int], List[RetrievedChunkDTO]] = {} #This is like creating a dictionary that maps:(document, page)-->matching chunks
+        for chunk in retrieved_chunks: #Iterate through the chunks that were retrieved from the vector database
+            key = (chunk.document_id.strip().lower(), chunk.page_number) #Take a chunk, get its document ID and page number, and use them as a key
+            chunk_index.setdefault(key, []).append(chunk) #Add this chunk to the dictionary under its specific key
 
-        verified_results: List[VerifiedCitationDTO] = []
+        verified_results: List[VerifiedCitationDTO] = [] #Create an empty list to store the verification results
 
-        for token in tokens:
-            lookup_key = (token.document_name.strip().lower(), token.page_number)
-            matching_chunks = chunk_index.get(lookup_key, [])
+        for token in tokens: #Iterate through each citation token we extracted earlier(take each citation extracted from the LLM)
+            lookup_key = (token.document_name.strip().lower(), token.page_number) #Creates the same key format used for the retrieved chunks
+            matching_chunks = chunk_index.get(lookup_key, []) #Look for matching evidence
 
-            cid = f"cite-{uuid.uuid4().hex[:8]}"
+            cid = f"cite-{uuid.uuid4().hex[:8]}" #Generate unique citation ID
 
-            if matching_chunks:
+            if matching_chunks: #The cited document + page exists in the retrieved chunks
                 # Task 2: Extract verifiable evidence snippet from source chunk
                 snippet = self._extract_evidence_snippet(
                     matching_chunks,
                     claim_context=claim_context,
-                )
+                ) #finds the best supporting evidence
                 verified_results.append(
                     VerifiedCitationDTO(
                         citation_id=cid,
@@ -219,11 +219,12 @@ class CitationVerifier:
             List[VerifiedCitationDTO]: Verified and flagged citation records.
         """
         if not isinstance(generated_text, str):
-            raise TypeError("generated_text must be a string.")
+            raise TypeError("generated_text must be a string.") #Makes sure the LLM answer is actually text
 
-        tokens = CitationParser.parse_citations(generated_text)
+        tokens = CitationParser.parse_citations(generated_text) #Extract citation markers
         return self.verify_citations(
             tokens=tokens,
             retrieved_chunks=retrieved_chunks,
             claim_context=generated_text,
-        )
+        ) #Performs the verification
+        #the verifier checks those citations against the retrieved chunks

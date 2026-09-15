@@ -10,15 +10,15 @@ import re
 from typing import Dict, List, Optional
 
 
-class StatementDomain:
+class StatementDomain: #Standardized financial statement classification domains
     """Standardized financial statement classification domains."""
 
-    P_AND_L: str = "P&L"
-    BALANCE_SHEET: str = "Balance Sheet"
-    CASH_FLOW: str = "Cash Flow"
+    P_AND_L: str = "P&L" #Income Statement / Profit and Loss
+    BALANCE_SHEET: str = "Balance Sheet" #Balance sheet showing financial position
+    CASH_FLOW: str = "Cash Flow" #Cash flow statement tracking inflows and outflows
 
 
-class SynonymMatcher:
+class SynonymMatcher: #Maps raw line-item descriptions from reports to standardized metric names and statement types
     """Matches raw accounting line items and labels to canonical metrics and statement domains.
 
     Technical Tasks:
@@ -28,8 +28,8 @@ class SynonymMatcher:
     """
 
     # Task 1: Comprehensive dictionary mapping canonical metric keys to Indian & Global aliases
-    SYNONYM_REGISTRY: Dict[str, List[str]] = {
-        "revenue": [
+    SYNONYM_REGISTRY: Dict[str, List[str]] = { #Master dictionary of accounting synonyms across Indian GAAP/Ind AS and US GAAP/IFRS
+        "revenue": [ #Synonyms for top-line revenue
             "revenue",
             "revenues",
             "revenue from operations",
@@ -48,14 +48,14 @@ class SynonymMatcher:
             "sales revenue",
             "total income",
         ],
-        "gross_profit": [
+        "gross_profit": [ #Synonyms for gross profit
             "gross profit",
             "gross income",
             "gross margin",
             "gross profit (loss)",
             "gross profit loss",
         ],
-        "operating_income": [
+        "operating_income": [ #Synonyms for operating earnings (EBIT)
             "operating income",
             "operating profit",
             "operating profit (loss)",
@@ -70,7 +70,7 @@ class SynonymMatcher:
             "operating result",
             "operating profit before working capital changes",
         ],
-        "ebitda": [
+        "ebitda": [ #Synonyms for operational cash generation before interest, tax, depreciation & amortization
             "ebitda",
             "earnings before interest, tax, depreciation and amortization",
             "earnings before interest, taxes, depreciation and amortization",
@@ -81,7 +81,7 @@ class SynonymMatcher:
             "profit before depreciation, interest and tax",
             "profit before depreciation",
         ],
-        "net_income": [
+        "net_income": [ #Synonyms for bottom-line profit (PAT)
             "net income",
             "net profit",
             "net profit after tax",
@@ -98,7 +98,7 @@ class SynonymMatcher:
             "consolidated profit for the year",
             "bottom line",
         ],
-        "eps": [
+        "eps": [ #Synonyms for earnings per equity share
             "eps",
             "earnings per share",
             "diluted eps",
@@ -109,21 +109,21 @@ class SynonymMatcher:
             "diluted earnings per equity share",
             "basic and diluted eps",
         ],
-        "total_assets": [
+        "total_assets": [ #Synonyms for sum of current and non-current assets
             "total assets",
             "assets total",
             "total non-current and current assets",
             "total non-current assets and current assets",
             "total asset",
         ],
-        "total_liabilities": [
+        "total_liabilities": [ #Synonyms for sum of current and non-current obligations
             "total liabilities",
             "liabilities total",
             "total non-current and current liabilities",
             "total equity and liabilities",
             "total liability",
         ],
-        "shareholder_equity": [
+        "shareholder_equity": [ #Synonyms for book value, net worth, and equity capital
             "shareholders' equity",
             "shareholders equity",
             "shareholder equity",
@@ -137,7 +137,7 @@ class SynonymMatcher:
             "owners equity",
             "book value",
         ],
-        "total_debt": [
+        "total_debt": [ #Synonyms for interest-bearing borrowings and liabilities
             "total debt",
             "total borrowings",
             "borrowings",
@@ -149,7 +149,7 @@ class SynonymMatcher:
             "aggregate debt",
             "total borrowings and debt",
         ],
-        "cash": [
+        "cash": [ #Synonyms for cash and bank balances
             "cash",
             "cash and cash equivalents",
             "cash & cash equivalents",
@@ -159,7 +159,7 @@ class SynonymMatcher:
             "cash and balances with banks",
             "cash and cash balances",
         ],
-        "operating_cash_flow": [
+        "operating_cash_flow": [ #Synonyms for cash generated from operations (CFO)
             "operating cash flow",
             "cash flow from operating activities",
             "cash flows from operating activities",
@@ -169,24 +169,24 @@ class SynonymMatcher:
             "cfo",
             "cash from operations",
         ],
-        "free_cash_flow": [
+        "free_cash_flow": [ #Synonyms for discretionary cash flow (Operating cash minus CapEx)
             "free cash flow",
             "fcf",
             "free cash flow to firm",
             "free cashflow",
         ],
-        "current_assets": [
+        "current_assets": [ #Short-term liquid assets
             "current assets",
             "total current assets",
         ],
-        "current_liabilities": [
+        "current_liabilities": [ #Short-term operational obligations
             "current liabilities",
             "total current liabilities",
         ],
     }
 
     # Task 2: Domain classification rules
-    METRIC_DOMAINS: Dict[str, str] = {
+    METRIC_DOMAINS: Dict[str, str] = { #Maps each canonical metric key to its financial statement origin
         "revenue": StatementDomain.P_AND_L,
         "gross_profit": StatementDomain.P_AND_L,
         "operating_income": StatementDomain.P_AND_L,
@@ -205,23 +205,23 @@ class SynonymMatcher:
     }
 
     # Pre-compiled inverted lookup table for fast O(1) resolution
-    _INVERTED_LOOKUP: Dict[str, str] = {}
+    _INVERTED_LOOKUP: Dict[str, str] = {} #Lookup table mapping (normalized alias -> canonical metric)
 
     @classmethod
-    def _init_lookup(cls) -> None:
+    def _init_lookup(cls) -> None: #Populates the inverted alias lookup index for instant lookup
         """Populates the inverted alias lookup index with normalized variations."""
-        if cls._INVERTED_LOOKUP:
+        if cls._INVERTED_LOOKUP: #Avoid recomputing if already initialized
             return
 
-        for canonical_key, aliases in cls.SYNONYM_REGISTRY.items():
-            cls._INVERTED_LOOKUP[canonical_key.lower()] = canonical_key
-            for alias in aliases:
+        for canonical_key, aliases in cls.SYNONYM_REGISTRY.items(): #Loop through all canonical metrics
+            cls._INVERTED_LOOKUP[canonical_key.lower()] = canonical_key #Map the canonical key to itself
+            for alias in aliases: #Map every synonym alias to the canonical key
                 normalized = cls.normalize_label(alias)
                 if normalized:
                     cls._INVERTED_LOOKUP[normalized] = canonical_key
 
     @staticmethod
-    def normalize_label(line_label: str) -> str:
+    def normalize_label(line_label: str) -> str: #Cleans raw label text by removing numbering, footnote marks, and punctuation
         """Normalizes a raw text line label by stripping numbering, punctuation, and extra whitespace.
 
         Args:
@@ -230,25 +230,25 @@ class SynonymMatcher:
         Returns:
             str: Normalized lowercase line label.
         """
-        if not isinstance(line_label, str):
+        if not isinstance(line_label, str): #Validates input string
             raise TypeError("line_label must be a string.")
 
-        text = line_label.lower().strip()
+        text = line_label.lower().strip() #Convert to lowercase
         # Remove leading list enumeration e.g. "1.", "1.1", "a)", "(i)", "•", "-"
-        text = re.sub(r"^(\d+(\.\d+)*|[a-z]\)|\([a-z0-9]+\)|[•\-\*])\s*", "", text)
+        text = re.sub(r"^(\d+(\.\d+)*|[a-z]\)|\([a-z0-9]+\)|[•\-\*])\s*", "", text) #Strips leading numbering/bullet points
         # Remove footnote markers like "(note 12)" or "[1]" or "*"
-        text = re.sub(r"\((note\s*\d+|\d+)\)", "", text)
-        text = re.sub(r"\[\d+\]", "", text)
+        text = re.sub(r"\((note\s*\d+|\d+)\)", "", text) #Removes note references e.g. (Note 14)
+        text = re.sub(r"\[\d+\]", "", text) #Removes bracketed footnote indices e.g. [1]
         # Replace & with and
-        text = text.replace("&", " and ")
+        text = text.replace("&", " and ") #Standardizes ampersand symbol
         # Remove punctuation except letters, numbers, and spaces
-        text = re.sub(r"[^\w\s]", " ", text)
+        text = re.sub(r"[^\w\s]", " ", text) #Strips punctuation marks
         # Collapse whitespace
-        text = re.sub(r"\s+", " ", text).strip()
+        text = re.sub(r"\s+", " ", text).strip() #Replaces multiple spaces with a single space
         return text
 
     @classmethod
-    def resolve_metric_name(cls, line_label: str) -> Optional[str]:
+    def resolve_metric_name(cls, line_label: str) -> Optional[str]: #Matches raw accounting line label to canonical metric key
         """Matches raw text label against canonical financial metric keys.
 
         Args:
@@ -260,33 +260,33 @@ class SynonymMatcher:
         Raises:
             TypeError: If line_label is not a string.
         """
-        if not isinstance(line_label, str):
+        if not isinstance(line_label, str): #Validates input type
             raise TypeError("line_label must be a string.")
 
-        cls._init_lookup()
+        cls._init_lookup() #Ensure lookup cache is populated
 
-        normalized = cls.normalize_label(line_label)
-        if not normalized:
+        normalized = cls.normalize_label(line_label) #Clean the raw line label
+        if not normalized: #If empty after cleaning, return None
             return None
 
         # 1. Exact match against normalized inverted lookup
-        if normalized in cls._INVERTED_LOOKUP:
+        if normalized in cls._INVERTED_LOOKUP: #Direct O(1) dictionary match
             return cls._INVERTED_LOOKUP[normalized]
 
         # 2. Match against raw lowercase label
-        raw_lower = line_label.lower().strip()
+        raw_lower = line_label.lower().strip() #Check if raw lowercase text matches
         if raw_lower in cls._INVERTED_LOOKUP:
             return cls._INVERTED_LOOKUP[raw_lower]
 
         # 3. Handle specific compound variations (e.g. "revenue from operations (net)")
-        for alias, canonical_key in cls._INVERTED_LOOKUP.items():
+        for alias, canonical_key in cls._INVERTED_LOOKUP.items(): #Check for prefix or suffix matches
             if normalized == alias or normalized.startswith(f"{alias} ") or normalized.endswith(f" {alias}"):
                 return canonical_key
 
-        return None
+        return None #No matching metric found
 
     @classmethod
-    def get_statement_domain(cls, metric_or_label: str) -> Optional[str]:
+    def get_statement_domain(cls, metric_or_label: str) -> Optional[str]: #Determines if item belongs to P&L, Balance Sheet, or Cash Flow
         """Returns the financial statement domain (P&L, Balance Sheet, Cash Flow) for a metric or label.
 
         Args:
@@ -298,23 +298,23 @@ class SynonymMatcher:
         Raises:
             TypeError: If metric_or_label is not a string.
         """
-        if not isinstance(metric_or_label, str):
+        if not isinstance(metric_or_label, str): #Validates input type
             raise TypeError("metric_or_label must be a string.")
 
         # Check if already a canonical key
         canonical = metric_or_label.lower().strip()
-        if canonical in cls.METRIC_DOMAINS:
+        if canonical in cls.METRIC_DOMAINS: #Already a recognized canonical metric
             return cls.METRIC_DOMAINS[canonical]
 
         # Try to resolve raw label to canonical key
-        resolved = cls.resolve_metric_name(metric_or_label)
+        resolved = cls.resolve_metric_name(metric_or_label) #Resolve alias first, then find its domain
         if resolved and resolved in cls.METRIC_DOMAINS:
             return cls.METRIC_DOMAINS[resolved]
 
-        return None
+        return None #Unrecognized domain
 
     @classmethod
-    def get_all_aliases(cls, metric_name: str) -> List[str]:
+    def get_all_aliases(cls, metric_name: str) -> List[str]: #Helper method returning all known aliases for a metric
         """Returns list of registered aliases for a canonical metric key.
 
         Args:
@@ -324,4 +324,4 @@ class SynonymMatcher:
             List[str]: List of known accounting aliases.
         """
         canonical = metric_name.lower().strip()
-        return cls.SYNONYM_REGISTRY.get(canonical, [])
+        return cls.SYNONYM_REGISTRY.get(canonical, []) #Returns list of aliases or empty list
