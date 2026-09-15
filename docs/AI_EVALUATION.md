@@ -4,6 +4,11 @@
 
 ---
 
+> [!NOTE]
+> Automated offline Ragas CI evaluation (Phase 10) has been deferred in favor of core production services (Phase 11: PostgreSQL pgvector persistence and REST API endpoints). This document serves as the theoretical reference framework for evaluation metrics.
+
+---
+
 ## Table of Contents
 
 - [1. Evaluation Objectives](#1-evaluation-objectives)
