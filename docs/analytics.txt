@@ -64,3 +64,32 @@ Severity Ranking (High, Medium, Low)
 Verbatim Supporting Quote + Page Provenance
         ↓
 List[RiskItemDTO]
+        ↓
+Production PGVector Migration (Phase 10)
+        ↓
+SQLAlchemy Database Engine & Session Pooling
+        ├── Engine Factory (create_engine with pool_size=10, max_overflow=20)
+        └── SessionLocal & FastAPI get_db Dependency
+        ↓
+DocumentChunk ORM Model (document_chunks Table)
+        ├── Primary Key UUID & document_id Isolation Index
+        ├── TextChunkDTO Metadata (chunk_id, chunk_index, page_number)
+        ├── Content & Heuristics (token_estimate, is_table_chunk)
+        └── Dense Vector Column: Vector(384)
+        ↓
+HNSW Vector Indexing
+        ├── Index: ix_document_chunks_embedding_hnsw
+        ├── PostgreSQL Operator: vector_cosine_ops
+        └── Parameters: m=16, ef_construction=64
+        ↓
+PGVectorStore
+        ├── Bulk Persistence: store_embeddings(session, document_id, chunks, embeddings)
+        ├── Re-ingestion Cleanup: delete_document(session, document_id)
+        └── Real-time Sizing: get_chunk_count(session, document_id)
+        ↓
+Sub-50ms Nearest-Neighbor Cosine Search
+        ├── Cosine Distance Operator: embedding <=> query_vec
+        ├── Similarity Score Conversion: 1.0 - (embedding <=> query_vec)
+        └── Document-Scoped or Global Top-K Candidate Filtering
+        ↓
+List[RetrievedChunkDTO]

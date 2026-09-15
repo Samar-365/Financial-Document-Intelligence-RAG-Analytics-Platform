@@ -74,8 +74,8 @@ The complete intelligence engine is divided into **11 sequential phases** contai
                                            |
                                            v
 +---------------------------------------------------------------------------------------+
-| PHASE 11: PRODUCTION PGVECTOR MIGRATION                                               |
-|  Module 11.1: PostgreSQL pgvector Storage & HNSW Index (pgvector_store.py)            |
+| PHASE 10: PRODUCTION PGVECTOR MIGRATION                                               |
+|  Module 10.1: PostgreSQL pgvector Storage & HNSW Index (pgvector_store.py)            |
 +---------------------------------------------------------------------------------------+
 ```
 
@@ -813,9 +813,9 @@ class RiskClassifier:
 
 ---
 
-### Phase 11: Production Vector Store Migration
+### Phase 10: Production Vector Store Migration
 
-#### Module 11.1: PostgreSQL pgvector Storage & HNSW Index
+#### Module 10.1: PostgreSQL pgvector Storage & HNSW Index
 * **Target File**: `app/rag/pgvector_store.py`
 * **Dependencies**: `sqlalchemy`, `pgvector`
 * **Sprint**: Sprint 4 (Day 16-17)
@@ -850,7 +850,7 @@ class PGVectorStore:
 | **Sprint 2** | Day 8 | Modules 5.1, 5.2 | Citation parser and source snippet evidence mapper |
 | **Sprint 2** | Days 9-10 | Modules 6.1, 6.2, 6.3, 6.4, 8.1, 8.2, 8.3 | 12 metrics extractor + 5D health scoring engine |
 | **Sprint 3** | Days 11-12 | Modules 9.1, 9.2 | 7-domain qualitative risk classifier |
-| **Sprint 4** | Days 13-18 | Module 11.1 | pgvector migration, latency profiling, final report |
+| **Sprint 4** | Days 13-18 | Module 10.1 | pgvector migration, latency profiling, final report |
 
 ---
 
