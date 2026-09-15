@@ -43,6 +43,11 @@ from app.analytics.health_scorer import (
 )
 # Module 9.1: Risk factor disclosure parser and boilerplate noise filtering
 from app.analytics.risk_parser import RiskDisclosureParser
+# Module 9.2: 7-domain qualitative risk classifier and severity ranker
+from app.analytics.risk_classifier import (
+    RiskItemDTO,
+    RiskClassifier,
+)
 
 __all__ = [
     "StatementDomain",
@@ -64,6 +69,8 @@ __all__ = [
     "CorporateHealthReportDTO",
     "HealthScoreAggregator",
     "RiskDisclosureParser",
+    "RiskItemDTO",
+    "RiskClassifier",
 ]
 
 

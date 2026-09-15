@@ -163,3 +163,8 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Tests: 16/16 unit tests passed (264/264 total suite).
 - Commit: 95f9776
 
+[2026-09-15] Module 9.2: 7-Domain Risk Classifier & Severity Ranker
+- Added RiskItemDTO and RiskClassifier with constrained LLM JSON schema for 7 canonical domains (Credit, Market, Liquidity, Operational, Regulatory, Strategic, Macroeconomic), High/Medium/Low severity ranking, and direct verbatim supporting quote and page provenance extraction.
+- Target files: app/analytics/risk_classifier.py, tests/analytics/test_risk_classifier.py
+- Tests: 11/11 unit tests passed (275/275 total suite).
+- Commit: 015074e

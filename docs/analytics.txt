@@ -47,3 +47,20 @@ TOC & Boilerplate Noise Filtering
    └── Discards Generic PSLRA 1995 Safe-Harbor Disclaimers
         ↓
 Substantive Risk Chunks (List[TextChunkDTO])
+        ↓
+RiskClassifier
+        ↓
+7-Domain Qualitative Classification
+   ├── Credit
+   ├── Market
+   ├── Liquidity
+   ├── Operational
+   ├── Regulatory
+   ├── Strategic
+   └── Macroeconomic
+        ↓
+Severity Ranking (High, Medium, Low)
+        ↓
+Verbatim Supporting Quote + Page Provenance
+        ↓
+List[RiskItemDTO]
