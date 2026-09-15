@@ -74,16 +74,8 @@ The complete intelligence engine is divided into **11 sequential phases** contai
                                            |
                                            v
 +---------------------------------------------------------------------------------------+
-| PHASE 10: RAGAS QUALITY EVALUATION & ADVERSARIAL BENCHMARKING                         |
-|  Module 10.1: 50-Pair Golden Benchmark Dataset       (eval_dataset.py)                |
-|  Module 10.2: Ragas Automated Evaluation Harness     (run_eval.py)                    |
-|  Module 10.3: Prompt Injection Adversarial Harness   (test_injection.py)              |
-+---------------------------------------------------------------------------------------+
-                                           |
-                                           v
-+---------------------------------------------------------------------------------------+
-| PHASE 11: PRODUCTION PGVECTOR MIGRATION                                               |
-|  Module 11.1: PostgreSQL pgvector Storage & HNSW Index (pgvector_store.py)            |
+| PHASE 10: PRODUCTION PGVECTOR MIGRATION                                               |
+|  Module 10.1: PostgreSQL pgvector Storage & HNSW Index (pgvector_store.py)            |
 +---------------------------------------------------------------------------------------+
 ```
 
@@ -821,86 +813,9 @@ class RiskClassifier:
 
 ---
 
-### Phase 10: Ragas AI Quality Evaluation & Benchmarking
+### Phase 10: Production Vector Store Migration
 
-#### Module 10.1: 50-Pair Golden Benchmark Dataset Formulator
-* **Target File**: `evaluation/eval_dataset.py`
-* **Dependencies**: `json`, `pydantic`
-* **Sprint**: Sprint 3 (Day 12)
-
-##### Technical Tasks (Max 2)
-1. **Task 1 (Curate 50 Benchmark Q&A Pairs)**: Formulate 50 ground-truth pairs: 20 Factual, 10 Analytical, 10 Risk, 5 Comparative, and 5 Negative tests.
-2. **Task 2 (JSON Schema Serialization)**: Validate and export dataset to `evaluation/benchmark_dataset.json` with questions, expected facts, and source pages.
-
-##### Signatures & Contracts
-```python
-class BenchmarkQAPair(BaseModel):
-    id: str
-    category: str  # factual, analytical, risk, comparative, negative
-    question: str
-    expected_answer_keywords: List[str]
-    expected_page_numbers: List[int]
-    should_answer: bool
-
-class BenchmarkDatasetManager:
-    @staticmethod
-    def load_dataset(path: str) -> List[BenchmarkQAPair]:
-        """Loads and validates golden benchmark dataset."""
-        pass
-```
-* **DoD**: Dataset passes JSON schema validation; contains all 5 required test categories.
-
----
-
-#### Module 10.2: Ragas Automated Metric Harness & Reporter
-* **Target File**: `evaluation/run_eval.py`
-* **Dependencies**: `ragas`, `pytest`, `pandas`
-* **Sprint**: Sprint 3 (Day 13)
-
-##### Technical Tasks (Max 2)
-1. **Task 1 (Ragas Pipeline Execution)**: Run batch evaluation computing Faithfulness, Answer Relevance, and Context Precision across the benchmark dataset.
-2. **Task 2 (Benchmark Target Assertion)**: Output statistical scorecard and assert targets: Faithfulness >= 0.90, Answer Relevance >= 0.85, Context Precision >= 0.85.
-
-##### Signatures & Contracts
-```python
-class EvaluationScorecardDTO(BaseModel):
-    faithfulness: float
-    answer_relevance: float
-    context_precision: float
-    context_recall: float
-    all_targets_met: bool
-
-class RagasEvaluator:
-    def evaluate_pipeline(self, dataset: List[BenchmarkQAPair]) -> EvaluationScorecardDTO:
-        """Executes automated Ragas evaluation suite and returns scorecard."""
-        pass
-```
-* **DoD**: Outputs formatted evaluation summary; pipeline fails CI if Faithfulness < 0.90.
-
----
-
-#### Module 10.3: Prompt Injection Adversarial Test Suite
-* **Target File**: `tests/evaluation/test_injection.py`
-* **Dependencies**: `pytest`
-* **Sprint**: Sprint 3 (Day 14)
-
-##### Technical Tasks (Max 2)
-1. **Task 1 (Adversarial Payload Generation)**: Formulate test suite of 10 indirect prompt injection payloads embedded in synthetic document chunks.
-2. **Task 2 (Boundary Neutralization Assertion)**: Verify that XML delimiter sandboxing prevents the LLM from executing override instructions (100% defense rate).
-
-##### Signatures & Contracts
-```python
-def test_prompt_injection_neutralized():
-    """Asserts that malicious system override instructions in chunks are ignored."""
-    pass
-```
-* **DoD**: 100% of injected instructions are treated strictly as passive context data and ignored.
-
----
-
-### Phase 11: Production Vector Store Migration
-
-#### Module 11.1: PostgreSQL pgvector Storage & HNSW Index
+#### Module 10.1: PostgreSQL pgvector Storage & HNSW Index
 * **Target File**: `app/rag/pgvector_store.py`
 * **Dependencies**: `sqlalchemy`, `pgvector`
 * **Sprint**: Sprint 4 (Day 16-17)
@@ -934,9 +849,8 @@ class PGVectorStore:
 | **Sprint 2** | Days 6-7 | Modules 4.1, 4.2, 4.3, 4.4 | Grounded RAG engine with GPT-4o-mini & Ollama |
 | **Sprint 2** | Day 8 | Modules 5.1, 5.2 | Citation parser and source snippet evidence mapper |
 | **Sprint 2** | Days 9-10 | Modules 6.1, 6.2, 6.3, 6.4, 8.1, 8.2, 8.3 | 12 metrics extractor + 5D health scoring engine |
-| **Sprint 3** | Day 11 | Modules 9.1, 9.2 | 7-domain qualitative risk classifier |
-| **Sprint 3** | Days 12-14 | Modules 10.1, 10.2, 10.3 | 50-pair golden dataset, Ragas harness, prompt security |
-| **Sprint 4** | Days 15-18 | Module 11.1 | pgvector migration, latency profiling, final report |
+| **Sprint 3** | Days 11-12 | Modules 9.1, 9.2 | 7-domain qualitative risk classifier |
+| **Sprint 4** | Days 13-18 | Module 10.1 | pgvector migration, latency profiling, final report |
 
 ---
 
@@ -946,7 +860,7 @@ To start right now:
 
 1. Create directory layout:
    ```bash
-   mkdir -p app/document_processing app/rag app/analytics evaluation tests/evaluation
+   mkdir -p app/document_processing app/rag app/analytics
    ```
 2. Build **Module 7.1, 7.2, 7.3 (`ratios_profitability.py`, `ratios_liquidity.py`, `ratios_leverage.py`)**:
    - Zero external dependencies.

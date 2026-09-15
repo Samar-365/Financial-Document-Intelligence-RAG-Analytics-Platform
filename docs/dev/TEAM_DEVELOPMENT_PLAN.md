@@ -30,7 +30,7 @@ This 4-developer structure maximizes velocity by establishing clear boundaries a
 |  * 12 Financial Metrics Extractor (Regex + LLM Extraction)                            |
 |  * 8 Financial Ratios Engine (OPM, NPM, ROE, ROCE, Current, Quick, D/E, ICR)         |
 |  * 5D Corporate Health Scoring (Growth, Profit, Liquidity, Leverage, Cash Flow)      |
-|  * 7-Domain Qualitative Risk Classifier & Ragas AI Evaluation                        |
+|  * 7-Domain Qualitative Risk Classifier & Severity Ranker                             |
 +---------------------------------------------------------------------------------------+
                      |                                              |
                      | Core Services & Calculators                  | Context & Citations
@@ -73,7 +73,6 @@ graph TD
         D1_6["8 Financial Ratios Engine"]
         D1_7["5D Corporate Health Scoring (0-100)"]
         D1_8["7-Domain Qualitative Risk Classifier"]
-        D1_9["Ragas AI & Financial Evaluation"]
     end
 
     subgraph Dev2["Developer 2: Backend, Database & API Architect"]
@@ -131,12 +130,11 @@ graph TD
   - `app/services/ratio_calculator.py` (8 core ratios: OPM, NPM, ROE, ROCE, Current, Quick, D/E, ICR with zero-division protections).
   - `app/services/health_scorer.py` (5-dimension weighted corporate health scoring: Growth 20%, Profitability 25%, Liquidity 20%, Leverage 20%, Cash Flow 15%).
   - `app/services/risk_analyzer.py` (7-category risk tagging: Credit, Market, Liquidity, Operational, Regulatory, Strategic, Macroeconomic).
-  - `evaluation/` (50-pair golden benchmark dataset, Ragas continuous evaluation harness).
 * **Key Deliverables**:
   - Sub-50ms similarity search index.
   - Zero-hallucination RAG query engine with verifiable page-level citations.
   - High-precision deterministic financial calculation library tested against audited figures.
-  - Ragas evaluation score: Faithfulness >= 0.90, Answer Relevance >= 0.85.
+  - Qualitative 7-domain risk matrix with severity ranking and evidence quotes.
 
 ---
 
@@ -290,12 +288,12 @@ sequenceDiagram
 
 | Developer | Sprint 3 Goals & Deliverables |
 | :--- | :--- |
-| **Dev 1 (AI & Analytics)** | 1. Implement `risk_analyzer.py` classifying disclosures into 7 domain risk categories.<br>2. Build 50-pair golden benchmark dataset (`benchmark_dataset.json`).<br>3. Build automated Ragas evaluation harness (Faithfulness >= 0.90, Relevance >= 0.85).<br>4. Implement prompt injection defenses and `<context>` boundary isolation. |
+| **Dev 1 (AI & Analytics)** | 1. Implement `risk_parser.py` (Item 1A risk disclosure parser).<br>2. Implement `risk_classifier.py` classifying disclosures into 7 domain risk categories with severity ranking.<br>3. Implement prompt injection defenses and `<context>` boundary isolation. |
 | **Dev 2 (Backend & DB)** | 1. Implement `/financial-ratios/{id}` and `/compare` multi-document endpoints.<br>2. Build comparative analytics calculation engine (YoY/QoQ deltas, percentage change).<br>3. Add database indexes on composite keys `(document_id, fiscal_year, fiscal_period)`.<br>4. Write unit and integration tests for all financial endpoints achieving >= 85% coverage. |
 | **Dev 3 (Frontend & Visuals)** | 1. Build **Financial Analysis View** (`2_Financial_Analysis.py`) with Plotly interactive trend charts.<br>2. Build **Comparative Analytics View** (`4_Comparative_Analytics.py`) with side-by-side delta tables.<br>3. Implement `report_generator.py` generating one-click downloadable executive PDF reports.<br>4. Build **Audit Logs & Telemetry View** (`5_Audit_Logs.py`) displaying system activity. |
 | **Dev 4 (DevOps & Security)** | 1. Implement API rate limiting using token-bucket algorithm (`slowapi`).<br>2. Configure Prometheus metrics instrumentation (`prometheus-fastapi-instrumentator`).<br>3. Create production `docker-compose.prod.yml` with restart policies, volume mounts, and network isolation.<br>4. Scaffold Celery + Redis worker configuration for async document processing. |
 
-**Sprint 3 Milestone**: Multi-document comparison active; 7-domain risk matrix displayed; executive PDF download operational; Ragas evaluation benchmark passed; rate limiting active.
+**Sprint 3 Milestone**: Multi-document comparison active; 7-domain risk matrix displayed; executive PDF download operational; rate limiting active.
 
 ---
 
@@ -324,7 +322,6 @@ sequenceDiagram
 | **8 Financial Ratios Calculator** | **Accountable / Responsible** | Consulted | Informed | Informed |
 | **5D Financial Health Scoring** | **Accountable / Responsible** | Consulted | Consulted | Informed |
 | **7-Domain Qualitative Risk Tagging**| **Accountable / Responsible** | Consulted | Informed | Informed |
-| **Ragas AI Evaluation Harness** | **Accountable / Responsible** | Informed | Informed | Consulted |
 | **PostgreSQL 3NF Schemas & Alembic** | Consulted | **Accountable / Responsible** | Informed | Consulted |
 | **FastAPI REST Endpoints (9 routes)**| Consulted | **Accountable / Responsible** | Consulted | Consulted |
 | **Comparative Delta Engine** | Consulted | **Accountable / Responsible** | Consulted | Informed |
@@ -344,7 +341,7 @@ sequenceDiagram
 
 ## 6. Summary of Benefits of the 4-Developer Model
 
-1. **Protects Developer 1's Focus**: Developer 1 is 100% dedicated to high-value domain intelligence (financial formula accuracy, RAG retrieval quality, hallucination prevention, and Ragas evaluation).
+1. **Protects Developer 1's Focus**: Developer 1 is 100% dedicated to high-value domain intelligence (financial formula accuracy, RAG retrieval quality, hallucination prevention, and qualitative risk classification).
 2. **Dedicated Backend & Data Integrity**: Developer 2 focuses exclusively on high-performance REST APIs, database queries, transactions, and data modeling without frontend or deployment distractions.
 3. **World-Class User Experience**: Developer 3 focuses exclusively on delivering a polished, interactive Streamlit application with responsive Plotly charts, citation cards, and executive PDF exports.
 4. **Enterprise Operations & Security**: Developer 4 ensures enterprise-readiness with automated CI/CD checks, containerization, prompt injection defense, rate limiting, and Prometheus/Grafana observability.

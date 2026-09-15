@@ -32,6 +32,11 @@ from app.rag.citation_verifier import (
     VerifiedCitationDTO,
     CitationVerifier,
 )
+# Module 10.1: PostgreSQL pgvector persistent vector storage with HNSW cosine index
+from app.rag.pgvector_store import (
+    PGVectorStore,
+    PGVectorStorageError,
+)
 
 __all__ = [
     "EmbeddingGenerator",
@@ -52,6 +57,8 @@ __all__ = [
     "CitationParser",
     "VerifiedCitationDTO",
     "CitationVerifier",
+    "PGVectorStore",
+    "PGVectorStorageError",
 ]
 
 

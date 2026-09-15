@@ -5,8 +5,9 @@ VectorRetriever
 EmbeddingGenerator
    (all-MiniLM-L6-v2 dense 384-d embedding + L2 normalization)
         ↓
-FAISSVectorStore
-   (IndexFlatIP cosine search with document ID isolation)
+FAISSVectorStore / PGVectorStore
+   ├── In-Memory MVP → FAISSVectorStore (IndexFlatIP cosine search with doc isolation)
+   └── Production Migration → PGVectorStore (PostgreSQL pgvector with HNSW index)
         ↓
 Similarity Threshold Filter (≥ 0.45)
         ↓
