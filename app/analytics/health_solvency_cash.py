@@ -14,7 +14,7 @@ from typing import List, Optional, Tuple
 from app.analytics.health_growth_profit import DimensionScoreDTO, _determine_grade
 
 
-class SolvencyCashScorer:
+class SolvencyCashScorer: #Evaluates corporate solvency, liquidity, and cash flow conversion dimensions using deterministic benchmarks
     """Evaluates corporate solvency, liquidity, and cash flow conversion dimensions using deterministic benchmarks.
 
     Technical Tasks:
@@ -25,14 +25,14 @@ class SolvencyCashScorer:
        - CFO / PAT ratio (>= 1.0 -> 100 pts), penalizing paper earnings not backed by operational cash.
     """
 
-    # Benchmarks
-    CR_LOWER_OPTIMAL: float = 1.50
-    CR_UPPER_OPTIMAL: float = 2.50
-    DE_CONSERVATIVE_BENCHMARK: float = 1.00
-    DE_CRITICAL_THRESHOLD: float = 2.00
-    CFO_PAT_BENCHMARK: float = 1.00
+    # Benchmark thresholds
+    CR_LOWER_OPTIMAL: float = 1.50 #Optimal lower bound for current ratio (1.5x)
+    CR_UPPER_OPTIMAL: float = 2.50 #Optimal upper bound for current ratio (2.5x)
+    DE_CONSERVATIVE_BENCHMARK: float = 1.00 #Conservative debt ceiling (D/E <= 1.0x)
+    DE_CRITICAL_THRESHOLD: float = 2.00 #High debt risk threshold (D/E > 2.0x)
+    CFO_PAT_BENCHMARK: float = 1.00 #Cash conversion standard: CFO should equal or exceed reported PAT
 
-    def score_liquidity_leverage(
+    def score_liquidity_leverage( #Helper method scoring both Liquidity (20%) and Leverage (20%) dimensions together
         self, current_ratio: Optional[float], debt_to_equity: Optional[float]
     ) -> Tuple[DimensionScoreDTO, DimensionScoreDTO]:
         """Scores Liquidity (20%) and Leverage (20%) dimensions.
@@ -44,11 +44,11 @@ class SolvencyCashScorer:
         Returns:
             Tuple[DimensionScoreDTO, DimensionScoreDTO]: (liquidity_score_dto, leverage_score_dto)
         """
-        liquidity_dto = self._score_liquidity(current_ratio)
-        leverage_dto = self._score_leverage(debt_to_equity)
+        liquidity_dto = self._score_liquidity(current_ratio) #Score Liquidity dimension
+        leverage_dto = self._score_leverage(debt_to_equity) #Score Leverage dimension
         return liquidity_dto, leverage_dto
 
-    def _score_liquidity(self, current_ratio: Optional[float]) -> DimensionScoreDTO:
+    def _score_liquidity(self, current_ratio: Optional[float]) -> DimensionScoreDTO: #Evaluates short-term liquidity buffer based on Current Ratio
         """Evaluates Liquidity dimension based on Current Ratio.
 
         Piecewise linear mapping:
@@ -66,33 +66,33 @@ class SolvencyCashScorer:
         Returns:
             DimensionScoreDTO containing final score (0-100), grade, and deductions.
         """
-        deductions: List[str] = []
+        deductions: List[str] = [] #Collector for audit explanations
 
-        if current_ratio is None:
+        if current_ratio is None: #Metric missing
             score = 0.0
             deductions.append("Current Ratio metric unavailable (0.0 / 100.0 pts assigned).")
-        elif current_ratio < 0.0:
+        elif current_ratio < 0.0: #Negative ratio is an invalid balance sheet state
             score = 0.0
             deductions.append(
                 f"Negative current ratio of {current_ratio:.2f} indicates severe capital distortion or distressed balance sheet (-100.00 pts)."
             )
-        elif self.CR_LOWER_OPTIMAL <= current_ratio <= self.CR_UPPER_OPTIMAL:
+        elif self.CR_LOWER_OPTIMAL <= current_ratio <= self.CR_UPPER_OPTIMAL: #Sweet spot [1.5, 2.5] receives full 100 points
             score = 100.0
-        elif 1.0 <= current_ratio < self.CR_LOWER_OPTIMAL:
+        elif 1.0 <= current_ratio < self.CR_LOWER_OPTIMAL: #Buffer is tight [1.0, 1.5), scale score from 50 to 100
             # Linear between 50.0 and 100.0
             score = 50.0 + ((current_ratio - 1.0) / (self.CR_LOWER_OPTIMAL - 1.0)) * 50.0
             lost = 100.0 - score
             deductions.append(
                 f"Current ratio of {current_ratio:.2f} is below optimal {self.CR_LOWER_OPTIMAL:.2f} benchmark (-{lost:.2f} pts), indicating potential short-term working capital pressure."
             )
-        elif 0.0 <= current_ratio < 1.0:
+        elif 0.0 <= current_ratio < 1.0: #Current liabilities exceed current assets (negative working capital)
             # Linear between 0.0 and 50.0
-            score = max(0.0, (current_ratio / 1.0) * 50.0)
+            score = max(0.0, (current_ratio / 1.0) * 50.0) #Scale score from 0 to 50
             lost = 100.0 - score
             deductions.append(
                 f"Current ratio of {current_ratio:.2f} is below 1.00 (-{lost:.2f} pts); current liabilities exceed current assets (negative working capital)."
             )
-        elif self.CR_UPPER_OPTIMAL < current_ratio <= 4.0:
+        elif self.CR_UPPER_OPTIMAL < current_ratio <= 4.0: #Mild deduction for holding excess cash or inventory
             # Linear between 90.0 and 100.0
             score = 100.0 - ((current_ratio - self.CR_UPPER_OPTIMAL) / (4.0 - self.CR_UPPER_OPTIMAL)) * 10.0
             lost = 100.0 - score
@@ -101,22 +101,22 @@ class SolvencyCashScorer:
             )
         else:
             # Excessive liquidity > 4.0: linear down from 90.0 to 75.0
-            score = max(75.0, 90.0 - ((current_ratio - 4.0) / 4.0) * 15.0)
+            score = max(75.0, 90.0 - ((current_ratio - 4.0) / 4.0) * 15.0) #Floored at 75.0 pts
             lost = 100.0 - score
             deductions.append(
                 f"Excessive current ratio of {current_ratio:.2f} significantly exceeds {self.CR_UPPER_OPTIMAL:.2f} (-{lost:.2f} pts), indicating substantial idle liquidity or asset underutilization."
             )
 
-        score = round(max(0.0, min(100.0, score)), 2)
-        grade = _determine_grade(score)
+        score = round(max(0.0, min(100.0, score)), 2) #Round and clamp score between 0 and 100
+        grade = _determine_grade(score) #Assign grade category
 
-        return DimensionScoreDTO(
+        return DimensionScoreDTO( #Return structured score DTO
             score=score,
             grade=grade,
             deductions=deductions,
         )
 
-    def _score_leverage(self, debt_to_equity: Optional[float]) -> DimensionScoreDTO:
+    def _score_leverage(self, debt_to_equity: Optional[float]) -> DimensionScoreDTO: #Evaluates solvency risk based on Debt-to-Equity ratio
         """Evaluates Leverage dimension based on Debt-to-Equity ratio.
 
         Piecewise linear mapping:
@@ -134,55 +134,55 @@ class SolvencyCashScorer:
         Returns:
             DimensionScoreDTO containing final score (0-100), grade, and deductions.
         """
-        deductions: List[str] = []
+        deductions: List[str] = [] #Collector for audit explanations
 
-        if debt_to_equity is None:
+        if debt_to_equity is None: #Metric missing
             score = 0.0
             deductions.append("Debt-to-Equity (D/E) ratio unavailable (0.0 / 100.0 pts assigned).")
-        elif debt_to_equity < 0.0:
+        elif debt_to_equity < 0.0: #Negative shareholder equity indicates accumulated losses exceeding all capital
             score = 0.0
             deductions.append(
                 f"Negative shareholder equity (D/E = {debt_to_equity:.2f}x) indicates balance sheet distress and complete net worth erosion (-100.00 pts)."
             )
-        elif 0.0 <= debt_to_equity <= 0.50:
+        elif 0.0 <= debt_to_equity <= 0.50: #Pristine debt-free or low-debt balance sheet yields full 100 points
             score = 100.0
-        elif 0.50 < debt_to_equity <= self.DE_CONSERVATIVE_BENCHMARK:
+        elif 0.50 < debt_to_equity <= self.DE_CONSERVATIVE_BENCHMARK: #Conservative leverage (D/E <= 1.0x) scales 90 to 100
             # Linear between 90.0 and 100.0
             score = 100.0 - ((debt_to_equity - 0.50) / 0.50) * 10.0
             lost = 100.0 - score
             deductions.append(
                 f"Debt-to-Equity ratio of {debt_to_equity:.2f}x reflects moderate leverage (-{lost:.2f} pts)."
             )
-        elif self.DE_CONSERVATIVE_BENCHMARK < debt_to_equity <= self.DE_CRITICAL_THRESHOLD:
+        elif self.DE_CONSERVATIVE_BENCHMARK < debt_to_equity <= self.DE_CRITICAL_THRESHOLD: #Elevated debt (1.0x to 2.0x) scales 50 to 90
             # Linear between 50.0 and 90.0
             score = 90.0 - ((debt_to_equity - self.DE_CONSERVATIVE_BENCHMARK) / (self.DE_CRITICAL_THRESHOLD - self.DE_CONSERVATIVE_BENCHMARK)) * 40.0
             lost = 100.0 - score
             deductions.append(
                 f"Debt-to-Equity ratio of {debt_to_equity:.2f}x exceeds conservative {self.DE_CONSERVATIVE_BENCHMARK:.2f}x benchmark (-{lost:.2f} pts)."
             )
-        elif self.DE_CRITICAL_THRESHOLD < debt_to_equity <= 4.00:
+        elif self.DE_CRITICAL_THRESHOLD < debt_to_equity <= 4.00: #Heavy debt burden (2.0x to 4.0x) scales 10 to 50
             # Linear between 10.0 and 50.0
             score = 50.0 - ((debt_to_equity - self.DE_CRITICAL_THRESHOLD) / (4.00 - self.DE_CRITICAL_THRESHOLD)) * 40.0
             lost = 100.0 - score
             deductions.append(
                 f"High leverage alert: Debt-to-Equity ratio of {debt_to_equity:.2f}x exceeds critical {self.DE_CRITICAL_THRESHOLD:.2f}x threshold (-{lost:.2f} pts), posing elevated solvency risk."
             )
-        else:
+        else: #Extreme overleveraging > 4.0x
             score = 0.0
             deductions.append(
                 f"Severe overleveraging: Debt-to-Equity ratio of {debt_to_equity:.2f}x exceeds 4.00x (-100.00 pts), indicating high bankruptcy or refinancing vulnerability."
             )
 
-        score = round(max(0.0, min(100.0, score)), 2)
-        grade = _determine_grade(score)
+        score = round(max(0.0, min(100.0, score)), 2) #Round and clamp score
+        grade = _determine_grade(score) #Assign grade
 
-        return DimensionScoreDTO(
+        return DimensionScoreDTO( #Return structured score DTO
             score=score,
             grade=grade,
             deductions=deductions,
         )
 
-    def score_cash_flow(self, cfo: Optional[Decimal], pat: Optional[Decimal]) -> DimensionScoreDTO:
+    def score_cash_flow(self, cfo: Optional[Decimal], pat: Optional[Decimal]) -> DimensionScoreDTO: #Scores Cash Flow Quality (15% weight) by verifying cash supports net profit
         """Scores Cash Flow Quality (15% weight) dimension based on CFO to Net Income (PAT) ratio.
 
         Benchmark:
@@ -210,55 +210,55 @@ class SolvencyCashScorer:
         Returns:
             DimensionScoreDTO containing final score (0-100), grade, and deductions.
         """
-        deductions: List[str] = []
+        deductions: List[str] = [] #Collector for audit explanations
 
-        if cfo is None or pat is None:
+        if cfo is None or pat is None: #If either cash flow or profit is missing
             score = 0.0
             deductions.append(
                 "Operating Cash Flow (CFO) or Net Income (PAT) metric unavailable (0.0 / 100.0 pts assigned)."
             )
             return DimensionScoreDTO(score=0.0, grade="Poor", deductions=deductions)
 
-        cfo_val = float(cfo)
+        cfo_val = float(cfo) #Convert Decimal to float
         pat_val = float(pat)
 
-        if pat_val > 0.0:
-            ratio = cfo_val / pat_val
-            if ratio >= self.CFO_PAT_BENCHMARK:
+        if pat_val > 0.0: #When business reports positive net income
+            ratio = cfo_val / pat_val #Cash conversion ratio
+            if ratio >= self.CFO_PAT_BENCHMARK: #CFO >= PAT: Real cash generation matches or beats accounting profits (100 pts)
                 score = 100.0
-            elif 0.50 <= ratio < self.CFO_PAT_BENCHMARK:
+            elif 0.50 <= ratio < self.CFO_PAT_BENCHMARK: #CFO covers 50-100% of PAT
                 # Linear between 60.0 and 100.0
                 score = 60.0 + ((ratio - 0.50) / (self.CFO_PAT_BENCHMARK - 0.50)) * 40.0
                 lost = 100.0 - score
                 deductions.append(
                     f"Cash flow conversion of {ratio:.2f}x is below the {self.CFO_PAT_BENCHMARK:.2f}x benchmark (-{lost:.2f} pts); operational cash lags reported net income."
                 )
-            elif 0.0 <= ratio < 0.50:
+            elif 0.0 <= ratio < 0.50: #Weak cash conversion (under 50% of PAT)
                 # Linear between 20.0 and 60.0
                 score = 20.0 + (ratio / 0.50) * 40.0
                 lost = 100.0 - score
                 deductions.append(
                     f"Poor cash flow quality: CFO/PAT ratio of {ratio:.2f}x indicates weak operational cash generation relative to reported profits (-{lost:.2f} pts)."
                 )
-            else:
+            else: #CRITICAL RED FLAG: Positive net profit on paper, but negative operating cash flow in reality
                 # CFO is negative while PAT is positive
                 score = 0.0
                 deductions.append(
                     f"Severe earnings quality red flag: Positive net profit of {pat_val:.2f} accompanied by negative operating cash flow (CFO = {cfo_val:.2f}) (-100.00 pts)."
                 )
-        elif pat_val < 0.0:
-            if cfo_val > 0.0:
+        elif pat_val < 0.0: #When business reports accounting net loss
+            if cfo_val > 0.0: #Operational cash flow is positive despite net loss (e.g., due to non-cash depreciation)
                 score = 65.0
                 deductions.append(
                     f"Operating cash flow is positive ({cfo_val:.2f}) despite accounting net loss ({pat_val:.2f}), reflecting operational cash resilience (-35.00 pts)."
                 )
-            else:
+            else: #Both accounting and operational cash flows are negative (severe double burn)
                 score = 0.0
                 deductions.append(
                     f"Operational cash burn: Both operating cash flow ({cfo_val:.2f}) and net profit ({pat_val:.2f}) are negative (-100.00 pts)."
                 )
         else:
-            # pat_val == 0.0
+            # pat_val == 0.0 (Break-even net income)
             if cfo_val > 0.0:
                 score = 75.0
                 deductions.append(
@@ -270,10 +270,10 @@ class SolvencyCashScorer:
                     "Break-even net income with non-positive operating cash flow (-100.00 pts)."
                 )
 
-        score = round(max(0.0, min(100.0, score)), 2)
-        grade = _determine_grade(score)
+        score = round(max(0.0, min(100.0, score)), 2) #Round and clamp score between 0 and 100
+        grade = _determine_grade(score) #Assign grade
 
-        return DimensionScoreDTO(
+        return DimensionScoreDTO( #Return structured score DTO
             score=score,
             grade=grade,
             deductions=deductions,

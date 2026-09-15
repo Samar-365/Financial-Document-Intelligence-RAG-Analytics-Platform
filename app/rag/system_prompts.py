@@ -11,14 +11,14 @@ Responsible for:
 from typing import Dict, List
 
 
-class FinancialSystemPrompts:
+class FinancialSystemPrompts: #Central definition for financial system instructions and exact fallback responses
     """System prompts and message formatters enforcing strict factual compliance in financial Q&A."""
 
-    FALLBACK_RESPONSE: str = (
+    FALLBACK_RESPONSE: str = ( #Verbatim deterministic phrase the LLM must output if information is missing
         "The provided document does not contain sufficient information to answer this query."
     )
 
-    RAG_SYSTEM_PROMPT: str = (
+    RAG_SYSTEM_PROMPT: str = ( #Strict system instructions: zero speculation, mandatory citations, fallback enforcement
         "You are an expert Financial Document Intelligence Assistant designed to provide rigorous, "
         "factually grounded analysis of financial disclosures, annual reports, and SEC filings.\n\n"
         "STRICT GROUNDING & NEGATIVE CONSTRAINTS:\n"
@@ -36,7 +36,7 @@ class FinancialSystemPrompts:
     )
 
     @classmethod
-    def get_grounded_prompt(
+    def get_grounded_prompt( #Assembles OpenAI chat messages: system instructions + context block + question
         cls,
         user_query: str,
         context_block: str,
@@ -54,25 +54,25 @@ class FinancialSystemPrompts:
             ValueError: If user_query is empty or whitespace.
             TypeError: If user_query or context_block are not strings.
         """
-        if not isinstance(user_query, str):
+        if not isinstance(user_query, str): #Validates that user_query is a string
             raise TypeError("user_query must be a string.")
 
-        if not isinstance(context_block, str):
+        if not isinstance(context_block, str): #Validates that context_block is a string
             raise TypeError("context_block must be a string.")
 
-        cleaned_query = user_query.strip()
-        if not cleaned_query:
+        cleaned_query = user_query.strip() #Strip leading/trailing whitespace
+        if not cleaned_query: #Ensure query is not empty
             raise ValueError("user_query cannot be empty or whitespace.")
 
-        user_content = f"{context_block.strip()}\n\nQuestion: {cleaned_query}"
+        user_content = f"{context_block.strip()}\n\nQuestion: {cleaned_query}" #Combines sandboxed context XML with the user question
 
-        return [
+        return [ #Formats the chat messages payload into role and content pairs
             {
                 "role": "system",
-                "content": cls.RAG_SYSTEM_PROMPT,
+                "content": cls.RAG_SYSTEM_PROMPT, #Sets system behavior and negative grounding constraints
             },
             {
                 "role": "user",
-                "content": user_content,
+                "content": user_content, #Delivers context data and prompt question
             },
         ]

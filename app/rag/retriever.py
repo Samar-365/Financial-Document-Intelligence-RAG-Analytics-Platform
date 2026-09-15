@@ -13,32 +13,32 @@ from pydantic import BaseModel, Field
 from app.rag.faiss_store import FAISSVectorStore, VectorStorageError
 
 
-class RetrievedChunkDTO(BaseModel):
+class RetrievedChunkDTO(BaseModel): #Data Transfer Object representing a retrieved document chunk with similarity ranking
     """Data Transfer Object representing a retrieved document chunk with similarity ranking."""
 
-    chunk_id: str = Field(
+    chunk_id: str = Field( #Unique UUID identifying the text chunk
         ...,
         description="Unique UUID identifying the retrieved text chunk.",
     )
-    document_id: str = Field(
+    document_id: str = Field( #Identifier of originating document
         ...,
         description="Identifier of the originating document.",
     )
-    chunk_index: int = Field(
+    chunk_index: int = Field( #Sequential chunk index within document (0-based)
         ...,
         ge=0,
         description="0-based sequential chunk index within the document.",
     )
-    page_number: int = Field(
+    page_number: int = Field( #Originating PDF page number (must be >= 1)
         ...,
         ge=1,
         description="Originating PDF page number.",
     )
-    content: str = Field(
+    content: str = Field( #Actual text content of the retrieved chunk
         ...,
         description="Text content of the retrieved chunk.",
     )
-    similarity_score: float = Field(
+    similarity_score: float = Field( #Cosine similarity score between query and chunk (-1.0 to 1.0)
         ...,
         ge=-1.0,
         le=1.0,
@@ -46,7 +46,7 @@ class RetrievedChunkDTO(BaseModel):
     )
 
 
-class VectorRetriever:
+class VectorRetriever: #Component that queries FAISS and filters results by confidence threshold
     """Retrieves top-scoring contextual chunks from FAISSVectorStore with threshold filtering.
 
     Technical Tasks:
@@ -56,7 +56,7 @@ class VectorRetriever:
        below min_similarity_threshold (< 0.45 by default).
     """
 
-    def __init__(
+    def __init__( #Initializes retriever with the vector database and minimum similarity cutoff
         self,
         vector_store: FAISSVectorStore,
         min_similarity_threshold: float = 0.45,
@@ -71,16 +71,16 @@ class VectorRetriever:
             TypeError: If vector_store is not an instance of FAISSVectorStore.
             ValueError: If min_similarity_threshold is not between -1.0 and 1.0.
         """
-        if not isinstance(vector_store, FAISSVectorStore):
+        if not isinstance(vector_store, FAISSVectorStore): #Checks that a valid FAISSVectorStore instance is provided
             raise TypeError("vector_store must be an instance of FAISSVectorStore.")
 
-        if not (-1.0 <= min_similarity_threshold <= 1.0):
+        if not (-1.0 <= min_similarity_threshold <= 1.0): #Validates threshold is within cosine range [-1.0, 1.0]
             raise ValueError("min_similarity_threshold must be between -1.0 and 1.0.")
 
         self.vector_store = vector_store
-        self.min_similarity_threshold = min_similarity_threshold
+        self.min_similarity_threshold = min_similarity_threshold #Chunks below this similarity score will be discarded
 
-    def retrieve(
+    def retrieve( #Main retrieval method: searches FAISS, filters by threshold and doc ID, returns top chunks
         self,
         document_id: Optional[str],
         query_vector: np.ndarray,
@@ -101,58 +101,58 @@ class VectorRetriever:
             ValueError: If top_k <= 0 or query_vector dimension mismatches store.
             TypeError: If query_vector is not a numpy ndarray.
         """
-        if top_k <= 0:
+        if top_k <= 0: #top_k must be at least 1
             raise ValueError("top_k must be a positive integer.")
 
-        if not isinstance(query_vector, np.ndarray):
+        if not isinstance(query_vector, np.ndarray): #Validates query vector is a NumPy array
             raise TypeError("query_vector must be a numpy ndarray.")
 
-        if query_vector.ndim == 1:
+        if query_vector.ndim == 1: #If 1D vector (384,), reshape to 2D (1, 384)
             query_vector = query_vector.reshape(1, -1)
 
-        if query_vector.shape[1] != self.vector_store.dimension:
+        if query_vector.shape[1] != self.vector_store.dimension: #Query dimension must match vector store (384)
             raise ValueError(
                 f"Query vector dimension {query_vector.shape[1]} does not match "
                 f"index dimension {self.vector_store.dimension}."
             )
 
-        if self.vector_store.total_vectors == 0:
+        if self.vector_store.total_vectors == 0: #If vector store is completely empty, nothing can be retrieved
             return []
 
         # Candidate search pool: search for enough candidates to satisfy top_k after filtering
-        search_k = min(self.vector_store.total_vectors, max(top_k * 4, 20))
-        scores, indices = self.vector_store.search(query_vector, top_k=search_k)
+        search_k = min(self.vector_store.total_vectors, max(top_k * 4, 20)) #Fetch extra candidates in case some are filtered out
+        scores, indices = self.vector_store.search(query_vector, top_k=search_k) #Execute vector search in FAISS
 
-        if scores.size == 0 or indices.size == 0:
+        if scores.size == 0 or indices.size == 0: #If no matches returned
             return []
 
-        query_scores = scores[0]
-        query_indices = indices[0]
+        query_scores = scores[0] #Extract similarity scores for the query
+        query_indices = indices[0] #Extract FAISS indices for the query
 
-        filtered_results: List[RetrievedChunkDTO] = []
-        filter_doc = bool(document_id and document_id != "*")
+        filtered_results: List[RetrievedChunkDTO] = [] #List to hold chunks that pass all filters
+        filter_doc = bool(document_id and document_id != "*") #Check if user requested a specific document or all documents ("*")
 
-        for score, idx in zip(query_scores, query_indices):
-            if idx < 0:
+        for score, idx in zip(query_scores, query_indices): #Iterate through each candidate neighbor
+            if idx < 0: #Skip invalid FAISS index markers (-1 means no neighbor found)
                 continue
 
-            raw_score = float(score)
+            raw_score = float(score) #Convert score to float
             # Task 2: Confidence Threshold Filtering (< min_similarity_threshold discarded)
-            if raw_score < self.min_similarity_threshold:
+            if raw_score < self.min_similarity_threshold: #Discard chunk if similarity is too low (< 0.45)
                 continue
 
-            chunk = self.vector_store.get_chunk_by_index(int(idx))
-            if chunk is None:
+            chunk = self.vector_store.get_chunk_by_index(int(idx)) #Fetch chunk metadata using its FAISS index
+            if chunk is None: #If metadata was not found
                 continue
 
             # Optional document_id isolation
-            if filter_doc and chunk.document_id != document_id:
+            if filter_doc and chunk.document_id != document_id: #If filtering by document, skip chunks from other documents
                 continue
 
             # Clamp score defensively to [-1.0, 1.0]
-            clamped_score = min(max(raw_score, -1.0), 1.0)
+            clamped_score = min(max(raw_score, -1.0), 1.0) #Ensure score stays cleanly within [-1.0, 1.0]
 
-            dto = RetrievedChunkDTO(
+            dto = RetrievedChunkDTO( #Package the matching chunk and its score into a DTO
                 chunk_id=chunk.chunk_id,
                 document_id=chunk.document_id,
                 chunk_index=chunk.chunk_index,
@@ -160,9 +160,9 @@ class VectorRetriever:
                 content=chunk.content,
                 similarity_score=round(clamped_score, 6),
             )
-            filtered_results.append(dto)
+            filtered_results.append(dto) #Add to qualified results
 
-            if len(filtered_results) >= top_k:
+            if len(filtered_results) >= top_k: #Stop once we have reached the desired top_k count
                 break
 
-        return filtered_results
+        return filtered_results #Return the top-K relevant chunks sorted by similarity

@@ -1,0 +1,49 @@
+Financial Document Tables & Text
+        ↓
+RegexMetricExtractor
+        ↓
+SynonymMatcher + FinancialUnitNormalizer
+        ↓
+Missing Metrics?
+   ├── Yes → LLMMetricExtractor
+   └── No
+        ↓
+ExtractedFinancialMetricsDTO
+        ↓
+Deterministic Ratio Calculations
+        ├── Profitability → OPM, NPM, ROE, ROCE
+        ├── Liquidity → Current Ratio, Quick Ratio
+        └── Leverage → D/E, Interest Coverage
+        ↓
+5D Health Scoring
+        ├── Growth
+        ├── Profitability
+        ├── Liquidity
+        ├── Leverage
+        └── Cash Flow Quality
+        ↓
+HealthScoreAggregator
+        ↓
+Weighted 0–100 Health Score
+        ↓
+CorporateHealthReportDTO
+        ↓
+Overall Score + Grade
+        ↓
+Strengths + Vulnerabilities
+        ↓
+Audit Deductions + Disclaimer
+        ↓
+Qualitative Risk Factor Analysis
+        ↓
+RiskDisclosureParser
+        ↓
+Item 1A / Principal Risks Section Locator
+   ├── Sequential Item 1A Tracking (Exit on Item 1B/2/7/8)
+   └── Standalone Risk Header Matching
+        ↓
+TOC & Boilerplate Noise Filtering
+   ├── Discards Table of Contents (. . . 14)
+   └── Discards Generic PSLRA 1995 Safe-Harbor Disclaimers
+        ↓
+Substantive Risk Chunks (List[TextChunkDTO])
