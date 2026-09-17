@@ -1,33 +1,61 @@
-# Core Web & API Framework
-fastapi>=0.110.0
-uvicorn[standard]>=0.28.0
-pydantic>=2.6.0
-python-dotenv>=1.0.0
-httpx>=0.27.0
+# ─────────────────────────────────────────────────────────────
+# CORE WEB & API FRAMEWORK
+# ─────────────────────────────────────────────────────────────
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+gunicorn==23.0.0
+pydantic==2.9.2
+pydantic-settings==2.5.2
+python-dotenv==1.0.1
+python-multipart==0.0.12
+httpx==0.27.2
 
-# Relational Database & ORM
-sqlalchemy>=2.0.28
-psycopg2-binary>=2.9.9
-alembic>=1.13.1
+# ─────────────────────────────────────────────────────────────
+# RELATIONAL DATABASE & ORM  (Developer 2)
+# ─────────────────────────────────────────────────────────────
+sqlalchemy==2.0.35
+psycopg2-binary==2.9.9
+alembic==1.13.3
+greenlet==3.1.1
 
-# Document Ingestion & Extraction
-pdfplumber>=0.10.3
-pypdf>=4.0.0
-PyPDF2>=3.0.1
-reportlab>=4.1.0
+# ─────────────────────────────────────────────────────────────
+# SECURITY & AUTH  (Developer 4)
+# ─────────────────────────────────────────────────────────────
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+slowapi==0.1.9
 
-# Vector Embeddings & RAG
-sentence-transformers>=2.5.1
-faiss-cpu>=1.8.0
-numpy>=1.26.4
-torch>=2.2.0
-openai>=1.14.0
+# ─────────────────────────────────────────────────────────────
+# OBSERVABILITY  (Developer 4)
+# ─────────────────────────────────────────────────────────────
+prometheus-fastapi-instrumentator==7.0.0
+structlog==24.4.0
 
-# Frontend & Visual Analytics
-streamlit>=1.32.0
-plotly>=5.20.0
-pandas>=2.2.0
+# ─────────────────────────────────────────────────────────────
+# ASYNC QUEUE  (Developer 4 — Sprint 3+)
+# ─────────────────────────────────────────────────────────────
+celery==5.4.0
+redis==5.1.1
 
-# Testing & Quality Assurance
-pytest>=8.1.0
-pytest-asyncio>=0.23.5
+# ─────────────────────────────────────────────────────────────
+# DOCUMENT INGESTION  (Developer 1)
+# ─────────────────────────────────────────────────────────────
+pdfplumber==0.11.4
+pypdf==5.0.1
+PyPDF2==3.0.1
+reportlab==4.2.5
+
+# ─────────────────────────────────────────────────────────────
+# RAG & EMBEDDINGS  (Developer 1 — heavy; split into requirements-ai.txt if desired)
+# ─────────────────────────────────────────────────────────────
+sentence-transformers==3.2.1
+faiss-cpu==1.8.0.post1
+numpy==1.26.4
+openai==1.52.0
+
+# ─────────────────────────────────────────────────────────────
+# FRONTEND  (Developer 3)
+# ─────────────────────────────────────────────────────────────
+streamlit==1.39.0
+plotly==5.24.1
+pandas==2.2.3
