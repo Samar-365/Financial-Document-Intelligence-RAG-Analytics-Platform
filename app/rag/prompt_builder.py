@@ -10,7 +10,7 @@ from typing import List
 from app.rag.retriever import RetrievedChunkDTO
 
 
-class PromptBuilder:
+class PromptBuilder: #Formats retrieved document chunks into delimited XML context blocks with citation markers
     """Formats retrieved document chunks into delimited XML context blocks with citation markers.
 
     Technical Tasks:
@@ -20,7 +20,7 @@ class PromptBuilder:
     """
 
     @staticmethod
-    def build_context_block(chunks: List[RetrievedChunkDTO]) -> str:
+    def build_context_block(chunks: List[RetrievedChunkDTO]) -> str: #Takes retrieved chunks and wraps them in delimited XML tags with citation provenance
         """Formats retrieved chunks into delimited XML context blocks with citation markers.
 
         Args:
@@ -32,25 +32,25 @@ class PromptBuilder:
         Raises:
             TypeError: If chunks is not a list or contains non-RetrievedChunkDTO objects.
         """
-        if not isinstance(chunks, list):
+        if not isinstance(chunks, list): #Validates that chunks input is provided as a list
             raise TypeError("chunks must be a list of RetrievedChunkDTO objects.")
 
-        if not chunks:
+        if not chunks: #If no chunks were retrieved, return empty fallback context block
             return "<context>\nNo relevant context retrieved.\n</context>"
 
-        formatted_chunks = []
-        for i, chunk in enumerate(chunks):
-            if not isinstance(chunk, RetrievedChunkDTO):
+        formatted_chunks = [] #List to hold each individually formatted chunk
+        for i, chunk in enumerate(chunks): #Iterate through each retrieved chunk
+            if not isinstance(chunk, RetrievedChunkDTO): #Check that each item is a valid RetrievedChunkDTO
                 raise TypeError(
                     f"Element at index {i} is {type(chunk).__name__}, expected RetrievedChunkDTO."
                 )
 
             # Task 2: Provenance Tag Formatting
-            header = f"[Doc: {chunk.document_id}, Page: {chunk.page_number}]"
+            header = f"[Doc: {chunk.document_id}, Page: {chunk.page_number}]" #Build citation tag: [Doc: name, Page: n]
             # Sanitize content to avoid escaping context tags
-            cleaned_content = chunk.content.strip()
-            formatted_chunks.append(f"{header}\n{cleaned_content}")
+            cleaned_content = chunk.content.strip() #Strip unnecessary leading and trailing whitespace
+            formatted_chunks.append(f"{header}\n{cleaned_content}") #Combine provenance tag with the chunk content
 
         # Task 1: XML Delimiter Isolation
-        inner_content = "\n\n".join(formatted_chunks)
-        return f"<context>\n{inner_content}\n</context>"
+        inner_content = "\n\n".join(formatted_chunks) #Separate multiple chunks with double newlines
+        return f"<context>\n{inner_content}\n</context>" #Wrap the content inside <context> tags to sandbox against prompt injection

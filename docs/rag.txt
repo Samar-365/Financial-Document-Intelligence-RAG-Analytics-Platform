@@ -1,0 +1,42 @@
+User Financial Query + Document ID
+        ↓
+VectorRetriever
+        ↓
+EmbeddingGenerator
+   (all-MiniLM-L6-v2 dense 384-d embedding + L2 normalization)
+        ↓
+FAISSVectorStore / PGVectorStore
+   ├── In-Memory MVP → FAISSVectorStore (IndexFlatIP cosine search with doc isolation)
+   └── Production Migration → PGVectorStore (PostgreSQL pgvector with HNSW index)
+        ↓
+Similarity Threshold Filter (≥ 0.45)
+        ↓
+Relevant Chunks Found?
+   ├── No  → Immediate Fallback ("I cannot find sufficient evidence...")
+   └── Yes
+        ↓
+PromptBuilder
+   (Doc & Page headers + <context> XML sandboxing)
+        ↓
+FinancialSystemPrompts
+   (Zero-extrapolation & strict provenance guardrails)
+        ↓
+HybridLLMDispatcher
+   ├── Cloud (Default) → OpenAIClientWrapper (GPT-4o-mini)
+   └── Air-Gapped / Failover → OllamaClientWrapper (Local Llama 3)
+        ↓
+Raw Generated LLM Answer
+        ↓
+CitationParser
+   (Regex extraction of [Doc: X, Page: Y] + deduplication)
+        ↓
+CitationVerifier
+   ├── Page Existence Verification against retrieved chunks
+   ├── Phantom Citation Flagging (is_verified = False)
+   └── Sentence Evidence Snippet Extraction (Keyword Overlap)
+        ↓
+VerifiedAnswerDTO
+   ├── Verified Answer Text
+   ├── Citation Verification Report
+   ├── Evidence Snippets
+   └── Hallucination / Groundedness Metrics

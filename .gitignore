@@ -1,4 +1,4 @@
-# Python
+# Python Byte-code & Builds
 __pycache__/
 *.py[cod]
 *$py.class
@@ -24,15 +24,34 @@ wheels/
 venv/
 env/
 ENV/
-.env
-.venv
+.venv/
 env.bak/
 venv.bak/
 
-# Environment Variables
+# Environment Variables & Secrets
 .env
 .env.local
 .env.*.local
+.env.*
+!.env.example
+
+# Local Databases & Vector Stores
+*.db
+*.sqlite
+*.sqlite3
+data/vector_store/*
+!data/vector_store/.gitkeep
+data/faiss_index/
+data/chroma/
+
+# Runtime Data & File Uploads
+data/uploads/*
+!data/uploads/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Streamlit Configuration
+.streamlit/secrets.toml
 
 # IDE & Editors
 .vscode/
@@ -42,22 +61,12 @@ venv.bak/
 *~
 .DS_Store
 
-# Testing & Coverage
+# Testing, Coverage & Logs
 .pytest_cache/
 .coverage
 htmlcov/
 .tox/
 coverage.xml
 *.cover
-
-# Data & Document Uploads (local runtime files)
-data/uploads/*
-!data/uploads/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-data/vector_store/*
-!data/vector_store/.gitkeep
-
-# Logs
 *.log
 /logs/
