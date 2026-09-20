@@ -1,0 +1,139 @@
+Folder PATH listing for volume OS
+Volume serial number is 000000BD 2CAC:066E
+C:.
+|   .env.example
+|   .gitignore
+|   LICENSE
+|   README.md
+|   requirements.txt
+|   srs.txt
+|   structure.txt
+|   
++---.github
+|   \---workflows
+|           .gitkeep
+|           
++---app
+|   |   main.py
+|   |   __init__.py
+|   |   
+|   +---analytics
+|   |       __init__.py
+|   |       
+|   +---api
+|   |   |   __init__.py
+|   |   |   
+|   |   \---v1
+|   |           __init__.py
+|   |           
+|   +---core
+|   |       __init__.py
+|   |       
+|   +---document_processing
+|   |       chunker.py
+|   |       chunk_boundary.py
+|   |       cleaner.py
+|   |       metadata_tagger.py
+|   |       table_extractor.py
+|   |       text_extractor.py
+|   |       validator.py
+|   |       __init__.py
+|   |       
+|   +---models
+|   |       __init__.py
+|   |       
+|   +---rag
+|   |       embeddings.py
+|   |       faiss_store.py
+|   |       llm_client.py
+|   |       ollama_client.py
+|   |       prompt_builder.py
+|   |       retriever.py
+|   |       system_prompts.py
+|   |       __init__.py
+|   |       
+|   +---schemas
+|   |       __init__.py
+|   |       
+|   +---services
+|   |       __init__.py
+|   |       
+|   \---utils
+|           __init__.py
+|           
++---backend
++---docker
+|       .gitkeep
+|       
++---docs
+|   |   AI_EVALUATION.md
+|   |   API.md
+|   |   CODE_QUALITY.md
+|   |   DATABASE.md
+|   |   DATA_DICTIONARY.md
+|   |   DECISIONS.md
+|   |   DEPLOYMENT.md
+|   |   DEVOPS.md
+|   |   DOCUMENTATION_STATUS.md
+|   |   ERROR_HANDLING.md
+|   |   FUTURE_ENHANCEMENTS.md
+|   |   GLOSSARY.md
+|   |   LIMITATIONS.md
+|   |   MODULE_DESIGN.md
+|   |   MONITORING.md
+|   |   PRESENTATION_OUTLINE.md
+|   |   PROJECT_REPORT.md
+|   |   PROJECT_STRUCTURE.md
+|   |   ROADMAP.md
+|   |   SECURITY.md
+|   |   SEQUENCE_DIAGRAMS.md
+|   |   SRS.md
+|   |   SYSTEM_DESIGN.md
+|   |   TESTING.md
+|   |   UI_SPECIFICATION.md
+|   |   USE_CASES.md
+|   |   
+|   +---dev
+|   |       dakshit.md
+|   |       samar.md
+|   |       TEAM_DEVELOPMENT_PLAN.md
+|   |       
+|   \---logs
+|           samarlogs.txt
+|           
++---frontend
+|   |   app.py
+|   |   __init__.py
+|   |   
+|   +---components
+|   |       __init__.py
+|   |       
+|   +---pages
+|   |       .gitkeep
+|   |       
+|   \---utils
+|           __init__.py
+|           
+\---tests
+    |   __init__.py
+    |   
+    +---document_processing
+    |       test_chunker.py
+    |       test_chunk_boundary.py
+    |       test_cleaner.py
+    |       test_metadata_tagger.py
+    |       test_table_extractor.py
+    |       test_text_extractor.py
+    |       test_validator.py
+    |       __init__.py
+    |       
+    \---rag
+            test_embeddings.py
+            test_faiss_store.py
+            test_llm_client.py
+            test_ollama_client.py
+            test_prompt_builder.py
+            test_retriever.py
+            test_system_prompts.py
+            __init__.py
+            
