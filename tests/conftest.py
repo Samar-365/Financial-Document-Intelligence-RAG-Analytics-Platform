@@ -24,11 +24,17 @@ DEMO_USER_ID = "00000000-0000-0000-0000-000000000001"
 @pytest.fixture(scope="session")
 def test_engine():
     if TEST_DB_URL.startswith("sqlite"):
+        from sqlalchemy import event
         engine = create_engine(
             TEST_DB_URL,
             connect_args={"check_same_thread": False},
             poolclass=NullPool,
         )
+        @event.listens_for(engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
     else:
         engine = create_engine(TEST_DB_URL, poolclass=NullPool)
     Base.metadata.create_all(engine)
@@ -39,15 +45,31 @@ def test_engine():
 
 @pytest.fixture(scope="function")
 def db_session(test_engine) -> Generator[Session, None, None]:
+    from uuid import UUID
+    from app.models.user import User
+
     connection = test_engine.connect()
-    transaction = connection.begin()
     SessionLocal = sessionmaker(bind=connection)
     session = SessionLocal()
     try:
+        # Clear all tables between tests for clean test isolation
+        for table in reversed(Base.metadata.sorted_tables):
+            session.execute(table.delete())
+        session.commit()
+
+        # Seed the authenticated demo user
+        demo_user = User(
+            id=UUID(DEMO_USER_ID),
+            email="test@finintel.ai",
+            full_name="Test User",
+            is_active=True,
+        )
+        session.add(demo_user)
+        session.commit()
+
         yield session
     finally:
         session.close()
-        transaction.rollback()
         connection.close()
 
 
