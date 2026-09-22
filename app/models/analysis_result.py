@@ -2,8 +2,8 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, String
-from sqlalchemy.dialects.postgresql import ARRAY, UUID
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, JSON, String, Uuid
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -12,9 +12,9 @@ from app.db.base import Base
 class AnalysisResult(Base):
     __tablename__ = "analysis_results"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     document_id = Column(
-        UUID(as_uuid=True),
+        Uuid(as_uuid=True),
         ForeignKey("documents.id", ondelete="CASCADE"),
         nullable=False,
         unique=True,
@@ -39,7 +39,7 @@ class AnalysisResult(Base):
     cash_flow_score = Column(Float, nullable=True)
 
     # ── 7-domain risk flags ─────────────────────────────────
-    risk_flags = Column(ARRAY(String), default=list, nullable=False)
+    risk_flags = Column(JSON().with_variant(ARRAY(String), "postgresql"), default=list, nullable=False)
 
     computed_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
