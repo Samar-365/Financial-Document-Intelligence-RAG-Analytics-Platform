@@ -1,0 +1,28 @@
+# Multi-stage build for PostgreSQL 16 on Alpine with pgvector extension
+FROM postgres:16-alpine AS builder
+
+RUN apk add --no-cache \
+    git \
+    build-base \
+    clang \
+    llvm-dev
+
+# Fix clang version mismatch (PostgreSQL 16 was built expecting clang-21)
+RUN ln -sf $(which clang) /usr/bin/clang-21 || true
+
+WORKDIR /tmp
+RUN git clone --depth 1 --branch v0.8.0 https://github.com/pgvector/pgvector.git && \
+    cd pgvector && \
+    make || make with_llvm=no && \
+    make install || make with_llvm=no install
+
+# Final Alpine PostgreSQL runtime
+FROM postgres:16-alpine
+
+# Copy compiled extension artifacts from builder
+COPY --from=builder /usr/local/lib/postgresql/vector.so /usr/local/lib/postgresql/
+COPY --from=builder /usr/local/share/postgresql/extension/vector* /usr/local/share/postgresql/extension/
+
+# Auto-enable vector extension on startup
+RUN mkdir -p /docker-entrypoint-initdb.d && \
+    echo "CREATE EXTENSION IF NOT EXISTS vector;" > /docker-entrypoint-initdb.d/01_init_pgvector.sql
