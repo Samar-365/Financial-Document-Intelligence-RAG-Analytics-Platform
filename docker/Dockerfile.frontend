@@ -1,0 +1,41 @@
+# Stage 1: Builder
+FROM python:3.11-slim AS builder
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install streamlit==1.39.0 plotly==5.24.1 pandas==2.2.3 requests==2.32.3 httpx==0.27.2 reportlab==4.2.5
+
+# Stage 2: Runtime
+FROM python:3.11-slim AS runtime
+
+WORKDIR /app
+
+# Copy python packages
+COPY --from=builder /install /usr/local
+
+# Create non-root application user
+RUN useradd -m -u 1002 frontenduser && \
+    mkdir -p /home/frontenduser/.streamlit && \
+    chown -R frontenduser:frontenduser /app /home/frontenduser
+
+# Copy frontend source code and app module for report generation
+COPY --chown=frontenduser:frontenduser frontend/ ./frontend/
+COPY --chown=frontenduser:frontenduser app/ ./app/
+
+USER frontenduser
+
+
+# Configure Streamlit defaults
+RUN printf "[server]\nport = 8501\nenableCORS = false\nenableXsrfProtection = false\nheadless = true\naddress = \"0.0.0.0\"\n" > /home/frontenduser/.streamlit/config.toml
+
+EXPOSE 8501
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health')" || exit 1
+
+CMD ["streamlit", "run", "frontend/app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.enableCORS=false", "--server.enableXsrfProtection=false"]
