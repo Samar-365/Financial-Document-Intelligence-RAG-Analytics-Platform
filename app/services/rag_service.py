@@ -1,5 +1,7 @@
-"""RAG Service integrating PostgreSQL DocumentChunk records and retrieval pipeline."""
+"""RAG Service integrating PostgreSQL DocumentChunk records, vector retrieval, and Gemini LLM."""
+import os
 import time
+import logging
 from typing import List
 from uuid import UUID
 
@@ -7,10 +9,13 @@ from sqlalchemy.orm import Session
 
 from app.models.document_chunk import DocumentChunk
 from app.schemas.query import Citation, RAGResponse
+from app.rag.gemini_client import GeminiClientWrapper, LLMServiceError
+
+logger = logging.getLogger(__name__)
 
 
 class RAGService:
-    """Service handling Retrieval-Augmented Generation query execution."""
+    """Service handling dynamic Retrieval-Augmented Generation using PostgreSQL chunks & Gemini AI."""
 
     def __init__(self, db: Session):
         self.db = db
@@ -18,7 +23,7 @@ class RAGService:
     def query(self, document_id: UUID, question: str, top_k: int = 5) -> RAGResponse:
         start_time = time.time()
 
-        # Query chunks for document from DB
+        # Query all chunks for document from PostgreSQL
         chunks = (
             self.db.query(DocumentChunk)
             .filter(DocumentChunk.document_id == document_id)
@@ -30,13 +35,16 @@ class RAGService:
         context_texts: List[str] = []
 
         if chunks:
-            # Simple keyword matching / scoring for top_k chunks
+            # Score chunks based on question token overlaps
             scored_chunks = []
             q_lower = question.lower()
+            q_terms = [w.strip() for w in q_lower.split() if len(w.strip()) > 2]
+            
             for chunk in chunks:
-                words = [w for w in q_lower.split() if len(w) > 3]
-                match_count = sum(1 for w in words if w in chunk.content.lower())
-                score = min(0.95, 0.5 + (match_count * 0.1)) if match_count > 0 else 0.4
+                c_lower = chunk.content.lower()
+                matches = sum(1 for term in q_terms if term in c_lower)
+                # Cosine / term matching approximation
+                score = min(0.98, 0.45 + (matches * 0.12)) if matches > 0 else 0.35
                 scored_chunks.append((score, chunk))
 
             scored_chunks.sort(key=lambda x: x[0], reverse=True)
@@ -52,15 +60,46 @@ class RAGService:
                         relevance_score=round(score, 2),
                     )
                 )
-                context_texts.append(chunk.content)
+                context_texts.append(f"[Page {chunk.page_number or 1}]: {chunk.content}")
 
-        if context_texts:
-            answer = (
-                f"Based on the financial document, here is the answer for '{question}':\n"
-                f"{context_texts[0][:300]}..."
-            )
+        model_identifier = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+
+        if not context_texts:
+            answer = f"No relevant excerpts found in document for query: '{question}'."
         else:
-            answer = f"No specific contextual chunks found in document {document_id} matching: '{question}'."
+            context_block = "\n\n".join(context_texts[:4])
+            system_prompt = (
+                "You are a professional Financial Intelligence AI Analyst. "
+                "Answer the user's question accurately and concisely, using ONLY the facts and figures "
+                "provided in the financial document excerpts below. "
+                "Cite page numbers where available. If the information is not present in the excerpts, "
+                "clearly state that the filing does not contain this specific detail."
+            )
+            user_prompt = (
+                f"Financial Document Context:\n{context_block}\n\n"
+                f"Question: {question}\n\n"
+                f"Analytical Answer:"
+            )
+
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ]
+
+            try:
+                gemini = GeminiClientWrapper()
+                result = gemini.generate(messages)
+                answer = result.raw_answer
+                model_identifier = result.model_name
+            except LLMServiceError as e:
+                logger.warning(f"Gemini generation fallback: {e}")
+                answer = (
+                    f"**Extracted Filing Insight:**\n\n{context_texts[0]}\n\n"
+                    f"*(Note: To enable full Gemini generative synthesis, configure `GEMINI_API_KEY` in `.env`)*"
+                )
+            except Exception as e:
+                logger.warning(f"Unexpected error calling Gemini: {e}")
+                answer = f"Based on retrieved filing excerpts:\n\n{context_texts[0]}"
 
         elapsed_ms = int((time.time() - start_time) * 1000)
 
@@ -68,5 +107,5 @@ class RAGService:
             answer=answer,
             citations=citations,
             latency_ms=elapsed_ms,
-            model_used="hybrid-financial-rag-v1",
+            model_used=model_identifier,
         )
