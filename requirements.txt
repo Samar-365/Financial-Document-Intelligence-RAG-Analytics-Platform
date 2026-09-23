@@ -50,6 +50,8 @@ sentence-transformers==3.2.1
 faiss-cpu==1.8.0.post1
 numpy==1.26.4
 openai==1.52.0
+google-genai>=0.1.1
+google-generativeai>=0.8.3
 
 # ─────────────────────────────────────────────────────────────
 # FRONTEND  (Developer 3)
