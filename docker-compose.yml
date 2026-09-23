@@ -1,0 +1,87 @@
+services:
+  # 1. PostgreSQL 16 Alpine with native pgvector extension
+  db:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.postgres
+    image: fdi-postgres:alpine
+    container_name: fdi-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-financial_intelligence}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-financial_intelligence}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fdi-network
+
+  # 2. FastAPI Intelligence & REST API Backend
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: fdi-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-financial_intelligence}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-all-MiniLM-L6-v2}
+      VECTOR_STORE_TYPE: ${VECTOR_STORE_TYPE:-pgvector}
+      APP_ENV: ${APP_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-60}
+    ports:
+      - "8000:8000"
+    volumes:
+      - upload_data:/app/data/uploads
+      - faiss_data:/app/data/faiss_index
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - fdi-network
+
+  # 3. Streamlit Analytical Dashboard Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: fdi-frontend
+    restart: unless-stopped
+    environment:
+      API_BASE_URL: http://backend:8000/api/v1
+    ports:
+      - "8501:8501"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - fdi-network
+
+volumes:
+  postgres_data:
+    driver: local
+  upload_data:
+    driver: local
+  faiss_data:
+    driver: local
+
+networks:
+  fdi-network:
+    driver: bridge
