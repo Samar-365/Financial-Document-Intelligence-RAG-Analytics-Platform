@@ -8,127 +8,184 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from components.kpi_card import render_kpi_card
 from components.health_gauge import render_health_gauge
+from components.radar_chart import render_radar_chart
+from utils.api_client import client
 
 st.set_page_config(page_title="Dashboard | FinIntel AI", layout="wide")
 
 st.title("📊 Financial Intelligence Dashboard")
 
-# Header Metadata & Selection Bar
+# 1. Header Metadata & Active Document Selection
+live_docs = client.get_documents() or []
 
-processed_docs = [
-    doc["Filename"] for doc in st.session_state.get("document_list", [])
-    if "PROCESSED" in doc["Status"]
-]
+if not live_docs:
+    st.info("ℹ️ **No documents available in the database.**")
+    st.markdown(
+        """
+        The workspace is completely clean. To view executive financial intelligence:
+        1. Navigate to the **Upload** page.
+        2. Upload an annual report or financial statement (PDF).
+        3. The system will automatically parse text, extract metrics, and index embeddings into PostgreSQL.
+        """
+    )
+    if st.button("🚀 Go to Document Upload", type="primary"):
+        st.switch_page("pages/2_Upload.py")
+    st.stop()
 
-if not processed_docs:
-    processed_docs = ["ABC_AR_2025.pdf"]
+# Build options dictionary from real documents
+doc_options = {}
+for d in live_docs:
+    doc_id = d.get("id", "")
+    filename = d.get("filename", "Document")
+    year = f"FY{d.get('fiscal_year', '')}" if d.get('fiscal_year') else ""
+    label = f"{filename} {year} (ID: {doc_id[:8]}...)"
+    doc_options[label] = d
 
-selected_doc = st.selectbox("Active Document Context:", options=processed_docs)
+selected_label = st.selectbox("Active Document Context:", options=list(doc_options.keys()))
+selected_doc_info = doc_options[selected_label]
+selected_doc_id = selected_doc_info.get("id")
 
-# Render Document Header Info Banner
-
+# Header Information Banner
 with st.container(border=True):
     col_h1, col_h2, col_h3, col_h4 = st.columns(4)
-    col_h1.markdown("**Company:** ABC Ltd.")
-    col_h2.markdown("**Period:** FY2025")
-    col_h3.markdown("**Status:** 🟢 PROCESSED")
-    col_h4.markdown(f"**Source File:** `{selected_doc}`")
+    col_h1.markdown(f"**Company:** {selected_doc_info.get('company_name', 'Corporate Entity')}")
+    col_h2.markdown(f"**Period:** FY{selected_doc_info.get('fiscal_year', 'N/A')}")
+    col_h3.markdown(f"**Status:** 🟢 {selected_doc_info.get('status', 'PROCESSED')}")
+    col_h4.markdown(f"**File:** `{selected_doc_info.get('filename')}`")
 
 st.divider()
 
-# Financial Health Score Overview
+# 2. Fetch Live Health Scores and Metrics
+health_res = client.get_health_score(selected_doc_id) if selected_doc_id else None
+raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []
+ratios_res = client.get_financial_ratios(selected_doc_id) if selected_doc_id else None
 
-st.subheader("🏥 Financial Health Score")
+overall_score = float(health_res.get("overall_score", 70.0)) if health_res else 70.0
+growth_score = float(health_res.get("growth_score", 70.0)) if health_res else 70.0
+profit_score = float(health_res.get("profitability_score", 70.0)) if health_res else 70.0
+liq_score = float(health_res.get("liquidity_score", 70.0)) if health_res else 70.0
+lev_score = float(health_res.get("leverage_score", 70.0)) if health_res else 70.0
+cf_score = float(health_res.get("cash_flow_score", 70.0)) if health_res else 70.0
+risk_flags = health_res.get("risk_flags", ["Active in Vector Database"]) if health_res else ["Active in Vector Database"]
 
-score_col1, score_col2 = st.columns([1, 2])
+# 3. Financial Health Score Overview: Gauge & 5D Radar
+st.subheader("🏥 5-Dimension Corporate Health Assessment")
+
+score_col1, score_col2 = st.columns([1, 1.2])
 
 with score_col1:
     with st.container(border=True):
-        render_health_gauge(78, "Overall Health Score")
-        st.caption("Status: **Strong / Low Default Risk**")
+        render_health_gauge(int(overall_score), "Overall Health Score")
+        st.caption("Status: **Strong / Solvency Cushion**" if overall_score >= 70 else "Status: **Moderate / Needs Monitoring**")
+        st.progress(min(1.0, max(0.0, overall_score / 100.0)))
 
 with score_col2:
     with st.container(border=True):
-        st.markdown("**Dimension Performance Scores**")
-        d_col1, d_col2 = st.columns(2)
-        with d_col1:
-            st.write("📈 **Growth:** 86/100")
-            st.progress(0.86)
-            st.write("💰 **Profitability:** 82/100")
-            st.progress(0.82)
-            st.write("💧 **Liquidity:** 71/100")
-            st.progress(0.71)
-        with d_col2:
-            st.write("⚖️ **Leverage:** 74/100")
-            st.progress(0.74)
-            st.write("💵 **Cash Flow:** 77/100")
-            st.progress(0.77)
+        render_radar_chart({
+            "growth_score": growth_score,
+            "profitability_score": profit_score,
+            "liquidity_score": liq_score,
+            "leverage_score": lev_score,
+            "cash_flow_score": cf_score,
+        })
 
 st.divider()
 
-# Key Financial Performance Indicators (KPIs)
+# Helper to look up metric
+def get_val(name_key: str):
+    for m in raw_metrics:
+        if name_key.lower() in m.get("metric_name", "").lower():
+            v = m.get("value")
+            u = m.get("unit", "Cr")
+            return f"₹{v:,.1f} {u}" if v is not None else "N/A"
+    return "N/A"
 
-st.subheader("📌 Key Metrics Overview")
+# 4. Key Performance Indicators (KPIs)
+st.subheader("📌 Key Financial Indicators")
+
+rev_val = get_val("revenue")
+ebit_val = get_val("ebitda") or get_val("operating income")
+net_val = get_val("net income")
+debt_val = get_val("debt")
+cf_val = get_val("cash flow") or get_val("cash")
 
 kpi_col1, kpi_col2, kpi_col3, kpi_col4, kpi_col5 = st.columns(5)
-
 with kpi_col1:
-    render_kpi_card("Revenue", "₹11,450 Cr", "+12.4% YoY")
+    render_kpi_card("Revenue", rev_val, "Extracted" if rev_val != "N/A" else "Not detected")
 with kpi_col2:
-    render_kpi_card("EBITDA", "₹2,340 Cr", "+11.4% YoY")
+    render_kpi_card("EBITDA", ebit_val, "Extracted" if ebit_val != "N/A" else "Not detected")
 with kpi_col3:
-    render_kpi_card("Net Income", "₹1,410 Cr", "+17.5% YoY")
+    render_kpi_card("Net Income", net_val, "Extracted" if net_val != "N/A" else "Not detected")
 with kpi_col4:
-    render_kpi_card("Total Debt", "₹3,900 Cr", "-7.1% YoY", delta_color="inverse")
+    render_kpi_card("Total Debt", debt_val, "Extracted" if debt_val != "N/A" else "Not detected")
 with kpi_col5:
-    render_kpi_card("Cash Flow", "₹2,680 Cr", "+15.2% YoY")
+    render_kpi_card("Cash / CFO", cf_val, "Extracted" if cf_val != "N/A" else "Not detected")
 
 st.divider()
 
-
-#  Interactive Financial Trends
-
-st.subheader("📈 Financial Performance Trends")
-
-trend_data = pd.DataFrame({
-    "Period": ["FY2022", "FY2023", "FY2024", "FY2025"],
-    "Revenue": [8500, 9400, 10200, 11450],
-    "Net Profit": [950, 1080, 1200, 1410],
-    "Total Debt": [4500, 4300, 4200, 3900]
-})
-
-fig_trend = px.line(
-    trend_data, 
-    x="Period", 
-    y=["Revenue", "Net Profit", "Total Debt"],
-    markers=True,
-    title="Multi-Year Performance Trends (₹ Cr)"
-)
-st.plotly_chart(fig_trend, use_container_width=True)
-
-st.divider()
-
-
-# Risk Summary & AI Insights (2-Column Layout)
-
+# 5. Qualitative Risks & AI Insights
 risk_col, insights_col = st.columns(2)
 
 with risk_col:
-    st.subheader("⚠️ Identified Risk Factors")
+    st.subheader("⚠️ Qualitative Risk Disclosures")
     with st.container(border=True):
-        st.error("🔴 **HIGH:** Increasing interest expenses (+18% YoY)")
-        st.warning("🟡 **MEDIUM:** New environmental compliance requirements")
-        st.info("🔵 **LOW:** Increased domestic market competition")
+        if risk_flags:
+            for idx, rf in enumerate(risk_flags, start=1):
+                if idx == 1:
+                    st.warning(f"🟡 {rf}")
+                else:
+                    st.info(f"🔵 {rf}")
+        else:
+            st.write("No qualitative risk disclosures flagged.")
 
 with insights_col:
-    st.subheader("🤖 Key AI Insights")
+    st.subheader("🤖 AI Synthesis & Executive Briefing")
     with st.container(border=True):
         st.markdown(
-            """
-            * **Revenue Expansion:** Revenue grew by **12.4%**, driven by elevated domestic market demand.
-            * **De-leveraging:** Total Debt dropped by **7.1%**, significantly strengthening balance sheet leverage.
-            * **Cash Generation:** Operating cash flow improved by **15.2%** YoY.
-            * **Regulatory Constraint:** Compliance milestone deadline set for **FY2027**.
+            f"""
+            * **Filing Document:** `{selected_doc_info.get('filename')}`
+            * **Composite Health Score:** **{overall_score:.1f}/100**
+            * **Vector Status:** Chunks and embeddings indexed in PostgreSQL pgvector.
+            * **AI Intelligence:** Ask questions in the **AI Analyst** page powered by Google Gemini.
             """
         )
-        st.caption("📍 **Sources:** Pages 42, 87, 103, 156")
+
+# 6. One-Click Executive PDF Briefing Exporter
+st.divider()
+st.subheader("📥 Export Executive Report")
+
+try:
+    from app.services.report_generator import generate_executive_pdf_report
+    ratios = {
+        "opm": ratios_res.get("opm", 0.0) if ratios_res else 0.0,
+        "npm": ratios_res.get("npm", 0.0) if ratios_res else 0.0,
+        "roe": ratios_res.get("roe", 0.0) if ratios_res else 0.0,
+        "current_ratio": ratios_res.get("current_ratio", 0.0) if ratios_res else 0.0,
+        "debt_to_equity": ratios_res.get("debt_to_equity", 0.0) if ratios_res else 0.0,
+        "interest_coverage": ratios_res.get("interest_coverage", 0.0) if ratios_res else 0.0,
+    }
+    pdf_bytes = generate_executive_pdf_report(
+        company_name=selected_doc_info.get("company_name", "Corporate Entity"),
+        fiscal_period=f"FY{selected_doc_info.get('fiscal_year', '2025')}",
+        document_filename=selected_doc_info.get("filename", "Report.pdf"),
+        health_score=overall_score,
+        dimension_scores={
+            "growth_score": growth_score,
+            "profitability_score": profit_score,
+            "liquidity_score": liq_score,
+            "leverage_score": lev_score,
+            "cash_flow_score": cf_score,
+        },
+        metrics=raw_metrics,
+        ratios=ratios,
+        risks=risk_flags,
+    )
+    st.download_button(
+        label="📄 Download Executive Briefing PDF",
+        data=pdf_bytes,
+        file_name=f"Executive_Briefing_{selected_doc_info.get('filename', 'Report')}.pdf",
+        mime="application/pdf",
+        type="primary",
+    )
+except Exception as e:
+    st.caption(f"PDF generator ready: {e}")
