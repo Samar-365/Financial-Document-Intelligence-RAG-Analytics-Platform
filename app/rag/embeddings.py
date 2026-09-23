@@ -130,3 +130,12 @@ class EmbeddingGenerator: #Main class responsible for converting text chunks int
             if isinstance(e, TypeError):
                 raise
             raise EmbeddingError(f"PROC_003: Embedding generation failed: {e}") from e
+
+    def generate(self, texts: List[str]) -> np.ndarray:
+        """Alias for generate_embeddings for cross-module compatibility."""
+        return self.generate_embeddings(texts)
+
+
+# Backward-compatible alias
+DenseEmbeddingGenerator = EmbeddingGenerator
+
