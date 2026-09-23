@@ -22,7 +22,21 @@ from app.utils.hashing import sha256_bytes
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Query, UploadFile, status
+
 PDF_MAGIC = b"%PDF"
+
+
+def _run_pipeline_task(doc_id: UUID, content: bytes):
+    from app.db.session import SessionLocal
+    from app.services.document_service import process_document_pipeline
+    bg_db = SessionLocal()
+    try:
+        process_document_pipeline(bg_db, doc_id, file_bytes=content)
+    except Exception:
+        pass
+    finally:
+        bg_db.close()
 
 
 @router.post(
@@ -31,7 +45,11 @@ PDF_MAGIC = b"%PDF"
     status_code=status.HTTP_201_CREATED,
 )
 async def upload_document(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
+    company_name: Optional[str] = Form(None),
+    fiscal_year: Optional[int] = Form(None),
+    fiscal_period: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     user_id: UUID = Depends(get_current_user_id),
 ) -> DocumentUploadResponse:
@@ -47,18 +65,28 @@ async def upload_document(
     file_hash = sha256_bytes(content)
     existing = db.query(Document).filter(Document.file_hash == file_hash).first()
     if existing:
-        raise DuplicateDocumentException(file_hash)
+        if existing.status == "FAILED":
+            db.delete(existing)
+            db.commit()
+        else:
+            raise DuplicateDocumentException(file_hash)
 
     doc = Document(
         user_id=user_id,
         filename=file.filename or "unnamed.pdf",
         file_hash=file_hash,
         file_size_bytes=len(content),
+        company_name=company_name,
+        fiscal_year=fiscal_year,
+        fiscal_period=fiscal_period,
         status="UPLOADED",
     )
     db.add(doc)
     db.commit()
     db.refresh(doc)
+
+    # Queue ingestion pipeline in background
+    background_tasks.add_task(_run_pipeline_task, doc.id, content)
 
     return DocumentUploadResponse(
         document_id=doc.id,
