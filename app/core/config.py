@@ -54,7 +54,9 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
 
-    # ── AI (consumed from Dev 1) ─────────────────────────────
+    # ── AI Intelligence (Google Gemini & Local Fallbacks) ────────
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.5-flash"
     OPENAI_API_KEY: str = ""
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
