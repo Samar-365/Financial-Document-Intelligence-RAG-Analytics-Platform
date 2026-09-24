@@ -30,35 +30,39 @@ def render_radar_chart(health_data: Dict[str, float], title: str = "5-Dimension 
         r=scores_closed,
         theta=categories_closed,
         fill="toself",
-        fillcolor="rgba(31, 119, 180, 0.35)",
-        line=dict(color="#1f77b4", width=2.5),
-        marker=dict(size=6, color="#0d47a1"),
-        name="Performance Score",
+        fillcolor="rgba(196, 30, 58, 0.32)",
+        line=dict(color="#E63946", width=2.5),
+        marker=dict(size=7, color="#FFFFFF", line=dict(color="#E63946", width=2)),
+        name="Health Score",
     ))
 
     fig.update_layout(
         polar=dict(
+            bgcolor="#121118",
             radialaxis=dict(
                 visible=True,
                 range=[0, 100],
-                tickfont=dict(size=10),
-                color="#666",
+                tickfont=dict(size=10, color="#94A3B8"),
+                gridcolor="rgba(184, 29, 36, 0.2)",
+                linecolor="rgba(184, 29, 36, 0.3)",
             ),
             angularaxis=dict(
-                tickfont=dict(size=12, weight="bold"),
+                tickfont=dict(size=12, color="#F1F5F9"),
+                gridcolor="rgba(184, 29, 36, 0.2)",
+                linecolor="rgba(184, 29, 36, 0.3)",
             )
         ),
         showlegend=False,
         title=dict(
-            text=title,
-            font=dict(size=16),
+            text=f"<b>{title}</b>",
+            font=dict(size=15, color="#FFFFFF"),
             x=0.5,
             xanchor="center",
         ),
-        margin=dict(l=40, r=40, t=50, b=30),
+        margin=dict(l=35, r=35, t=45, b=25),
         height=320,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="#08080A",
+        plot_bgcolor="#121118",
     )
 
     st.plotly_chart(fig, use_container_width=True)
