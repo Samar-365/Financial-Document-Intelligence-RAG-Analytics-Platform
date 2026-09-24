@@ -49,8 +49,8 @@ class APIClient:
         fiscal_year: Optional[int] = None,
         fiscal_period: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
-        """Uploads a PDF file to the backend for ingestion and indexing."""
-        files = {"file": (filename, file_bytes, "application/pdf")}
+        """Uploads a PDF, CSV, or Excel file to the backend for ingestion and indexing."""
+        files = {"file": (filename, file_bytes, "application/octet-stream")}
         data = {}
         if company_name and company_name.strip():
             data["company_name"] = company_name.strip()
