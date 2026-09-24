@@ -5,12 +5,17 @@ import time
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from components.chat_interface import render_chat_message
+from components.theme import apply_theme, render_page_header, get_icon, render_html
 from utils.api_client import client
 
 st.set_page_config(page_title="AI Analyst | FinIntel AI", layout="wide")
+apply_theme()
 
-st.title("🤖 AI Financial Analyst")
-st.caption("Ask questions about your uploaded financial documents with verifiable citations powered by **Google Gemini**.")
+render_page_header(
+    title="AI Financial Analyst",
+    subtitle="Ask questions about your uploaded financial documents with verifiable citations powered by Google Gemini.",
+    icon_name="bot"
+)
 
 if "chat_messages" not in st.session_state:
     st.session_state["chat_messages"] = []
@@ -19,9 +24,9 @@ if "chat_messages" not in st.session_state:
 live_docs = client.get_documents() or []
 
 if not live_docs:
-    st.info("ℹ️ **No documents available to query.**")
-    st.write("Please upload a financial statement or annual report in the **Upload** page before asking questions.")
-    if st.button("🚀 Go to Upload Page", type="primary"):
+    st.warning("No documents available to query.")
+    st.write("Please upload a financial statement, spreadsheet, or annual report in the **Upload** page before asking questions.")
+    if st.button("Go to Upload Page", type="primary"):
         st.switch_page("pages/2_Upload.py")
     st.stop()
 
@@ -40,7 +45,13 @@ selected_doc_filename = selected_doc_info.get("filename", "Document")
 
 st.divider()
 
-st.subheader("💡 Suggested Questions")
+sparkles_svg = get_icon("sparkles", color="#E63946", size=18)
+render_html(f"""
+<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+    {sparkles_svg}
+    <span style="font-size: 1.05rem; font-weight: 600; color: #F1F5F9;">Suggested Financial Queries</span>
+</div>
+""")
 
 suggestions = [
     "What was the total revenue from operations?",
@@ -57,7 +68,13 @@ for idx, question in enumerate(suggestions):
 
 st.divider()
 
-st.subheader("💬 Conversation History")
+msg_svg = get_icon("message-square", color="#E63946", size=18)
+render_html(f"""
+<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+    {msg_svg}
+    <span style="font-size: 1.05rem; font-weight: 600; color: #F1F5F9;">Conversation History</span>
+</div>
+""")
 
 chat_container = st.container()
 
