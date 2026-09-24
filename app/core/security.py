@@ -10,7 +10,9 @@ from fastapi import HTTPException, status
 
 # Security constants
 PDF_MAGIC_BYTES = b"%PDF"
-ALLOWED_EXTENSIONS = {".pdf"}
+XLSX_MAGIC_BYTES = b"PK\x03\x04"
+XLS_MAGIC_BYTES = b"\xd0\xcf\x11\xe0"
+ALLOWED_EXTENSIONS = {".pdf", ".csv", ".xlsx", ".xls"}
 MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB
 
 # Heuristics for adversarial prompt injection patterns
@@ -31,12 +33,7 @@ COMPILED_INJECTION_REGEX = [
 
 
 def validate_pdf_upload(file_bytes: bytes, filename: str, max_size_bytes: int = MAX_FILE_SIZE_BYTES) -> None:
-    """Validates uploaded file against security constraints:
-
-    - Extension check (.pdf)
-    - Magic byte header check (%PDF)
-    - File size limit check
-    """
+    """Validates uploaded file against security constraints (.pdf, .csv, .xlsx, .xls)."""
     if not filename:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -45,7 +42,8 @@ def validate_pdf_upload(file_bytes: bytes, filename: str, max_size_bytes: int = 
 
     # 1. Extension validation
     lower_name = filename.lower()
-    if not any(lower_name.endswith(ext) for ext in ALLOWED_EXTENSIONS):
+    ext = next((e for e in ALLOWED_EXTENSIONS if lower_name.endswith(e)), None)
+    if not ext:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid file extension. Only {ALLOWED_EXTENSIONS} files are accepted.",
@@ -60,11 +58,38 @@ def validate_pdf_upload(file_bytes: bytes, filename: str, max_size_bytes: int = 
         )
 
     # 3. Magic byte signature validation
-    if not file_bytes.startswith(PDF_MAGIC_BYTES):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid file signature. File header does not match a valid PDF.",
-        )
+    if ext == ".pdf":
+        if not file_bytes.startswith(PDF_MAGIC_BYTES):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid file signature. File header does not match a valid PDF.",
+            )
+    elif ext == ".xlsx":
+        if not file_bytes.startswith(XLSX_MAGIC_BYTES):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid file signature. File header does not match a valid XLSX document.",
+            )
+    elif ext == ".xls":
+        if not file_bytes.startswith(XLS_MAGIC_BYTES):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid file signature. File header does not match a valid XLS document.",
+            )
+    elif ext == ".csv":
+        try:
+            # Verify file can be decoded as text
+            _ = file_bytes[:4096].decode("utf-8", errors="replace")
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid CSV file. Content must be readable text.",
+            )
+
+
+# Backward-compatible alias
+validate_document_upload = validate_pdf_upload
+
 
 
 def sanitize_query_input(query: str) -> str:
