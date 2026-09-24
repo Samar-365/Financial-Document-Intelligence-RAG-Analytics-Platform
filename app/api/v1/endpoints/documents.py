@@ -55,12 +55,11 @@ async def upload_document(
 ) -> DocumentUploadResponse:
     content = await file.read()
 
-    if len(content) > settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024:
-        raise InvalidFileException(
-            f"File exceeds {settings.MAX_UPLOAD_SIZE_MB} MB limit"
-        )
-    if not content.startswith(PDF_MAGIC):
-        raise InvalidFileException("Uploaded file is not a valid PDF")
+    from app.core.security import validate_document_upload
+    try:
+        validate_document_upload(content, file.filename or "file.pdf")
+    except Exception as e:
+        raise InvalidFileException(str(e))
 
     file_hash = sha256_bytes(content)
     existing = db.query(Document).filter(Document.file_hash == file_hash).first()

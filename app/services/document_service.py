@@ -50,36 +50,77 @@ def process_document_pipeline(
         extracted_text = ""
         page_count = doc.page_count or 1
 
+        fn_lower = (doc.filename or "").lower()
+
         if file_bytes:
-            pdf_stream = io.BytesIO(file_bytes)
-            try:
-                import pdfplumber
-                with pdfplumber.open(pdf_stream) as pdf:
-                    page_count = len(pdf.pages)
+            if fn_lower.endswith(".csv"):
+                # 1A. CSV Spreadsheet Processing
+                import pandas as pd
+                try:
+                    df = pd.read_csv(io.BytesIO(file_bytes))
+                    page_count = 1
+                    doc.page_count = 1
+                    extracted_text = f"Financial Dataset (CSV): {doc.filename}\n\n"
+                    # Render table to markdown format
+                    extracted_text += df.to_markdown(index=False) + "\n\n"
+                    # Also include column-value key pairs for robust regex matching
+                    for _, row in df.iterrows():
+                        line_parts = [f"{col}: {val}" for col, val in row.items() if pd.notna(val)]
+                        extracted_text += " | ".join(line_parts) + "\n"
+                except Exception as csv_err:
+                    logger.warning(f"CSV parsing error: {csv_err}")
+                    extracted_text = file_bytes.decode("utf-8", errors="replace")
+
+            elif fn_lower.endswith((".xlsx", ".xls")):
+                # 1B. Excel Spreadsheet Processing
+                import pandas as pd
+                try:
+                    excel_file = pd.ExcelFile(io.BytesIO(file_bytes))
+                    page_count = len(excel_file.sheet_names)
                     doc.page_count = page_count
-                    for p_num, page in enumerate(pdf.pages, start=1):
-                        p_text = page.extract_text() or ""
-                        extracted_text += f"\n--- Page {p_num} ---\n" + p_text
-                        extracted_tables = page.extract_tables()
-                        if extracted_tables:
-                            for tbl in extracted_tables:
-                                if not tbl or len(tbl) < 2:
-                                    continue
-                                header = [str(c or "").replace("\n", " ").strip() for c in tbl[0]]
-                                if not any(header):
-                                    continue
-                                md_lines = [
-                                    "| " + " | ".join(header) + " |",
-                                    "| " + " | ".join(["---"] * len(header)) + " |"
-                                ]
-                                for row in tbl[1:]:
-                                    cells = [str(c or "").replace("\n", " ").strip() for c in row]
-                                    if any(cells):
-                                        md_lines.append("| " + " | ".join(cells) + " |")
-                                extracted_text += "\n\n" + "\n".join(md_lines) + "\n\n"
-            except Exception as e:
-                logger.warning(f"pdfplumber extraction failed, falling back: {e}")
-                extracted_text = file_bytes.decode("utf-8", errors="ignore")
+                    extracted_text = f"Financial Workbook (Excel): {doc.filename}\n\n"
+                    for sheet_name in excel_file.sheet_names:
+                        df_sheet = pd.read_excel(excel_file, sheet_name=sheet_name)
+                        extracted_text += f"\n--- Sheet: {sheet_name} ---\n"
+                        extracted_text += df_sheet.to_markdown(index=False) + "\n\n"
+                        for _, row in df_sheet.iterrows():
+                            line_parts = [f"{col}: {val}" for col, val in row.items() if pd.notna(val)]
+                            extracted_text += " | ".join(line_parts) + "\n"
+                except Exception as xl_err:
+                    logger.warning(f"Excel parsing error: {xl_err}")
+                    extracted_text = file_bytes.decode("utf-8", errors="ignore")
+
+            else:
+                # 1C. PDF Processing via pdfplumber
+                pdf_stream = io.BytesIO(file_bytes)
+                try:
+                    import pdfplumber
+                    with pdfplumber.open(pdf_stream) as pdf:
+                        page_count = len(pdf.pages)
+                        doc.page_count = page_count
+                        for p_num, page in enumerate(pdf.pages, start=1):
+                            p_text = page.extract_text() or ""
+                            extracted_text += f"\n--- Page {p_num} ---\n" + p_text
+                            extracted_tables = page.extract_tables()
+                            if extracted_tables:
+                                for tbl in extracted_tables:
+                                    if not tbl or len(tbl) < 2:
+                                        continue
+                                    header = [str(c or "").replace("\n", " ").strip() for c in tbl[0]]
+                                    if not any(header):
+                                        continue
+                                    md_lines = [
+                                        "| " + " | ".join(header) + " |",
+                                        "| " + " | ".join(["---"] * len(header)) + " |"
+                                    ]
+                                    for row in tbl[1:]:
+                                        cells = [str(c or "").replace("\n", " ").strip() for c in row]
+                                        if any(cells):
+                                            md_lines.append("| " + " | ".join(cells) + " |")
+                                    extracted_text += "\n\n" + "\n".join(md_lines) + "\n\n"
+                except Exception as e:
+                    logger.warning(f"pdfplumber extraction failed, falling back: {e}")
+                    extracted_text = file_bytes.decode("utf-8", errors="ignore")
 
         elif file_path:
             with open(file_path, "rb") as f:
@@ -163,35 +204,35 @@ def process_document_pipeline(
         # Secondary direct text pattern scan for financial line items
         text_patterns = {
             "Revenue": [
-                r"(?:total\s+net\s+sales|net\s+sales|total\s+revenue|revenue\s+from\s+operations)[\s:\$]*\(?[0-9]*\)?[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)",
-                r"(?:revenue|sales)[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+net\s+sales|net\s+sales|total\s+revenue|revenue\s+from\s+operations)[\s:\$,\|]*\(?[0-9]*\)?[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)",
+                r"\b(?:revenue|sales)\b[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
             ],
             "Gross Profit": [
-                r"(?:gross\s+margin|gross\s+profit)[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:gross\s+margin|gross\s+profit)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
             ],
             "Operating Income": [
-                r"(?:operating\s+income|operating\s+profit)[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:operating\s+income|operating\s+profit)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
             ],
             "Net Income": [
-                r"(?:net\s+income|net\s+profit|profit\s+after\s+tax)[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:net\s+income|net\s+profit|profit\s+after\s+tax)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
             ],
             "Cash & Equivalents": [
-                r"(?:cash\s+and\s+cash\s+equivalents)[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:cash\s+and\s+cash\s+equivalents|cash\s*&\s*equivalents)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
             ],
             "Total Assets": [
-                r"(?:total\s+assets)[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+assets)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
             ],
             "Total Liabilities": [
-                r"(?:total\s+liabilities)[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+liabilities)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
             ],
             "Total Debt": [
-                r"(?:term\s+debt)[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+debt|term\s+debt|borrowings)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
             ],
             "Operating Cash Flow": [
-                r"(?:cash\s+generated\s+by\s+operating\s+activities|operating\s+cash\s+flow)[\s:\$]+([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:cash\s+generated\s+by\s+operating\s+activities|operating\s+cash\s+flow)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
             ],
             "EPS": [
-                r"(?:diluted|basic)?\s*earnings\s+per\s+share[\s:\$]+([0-9]+\.[0-9]{2})"
+                r"(?:diluted|basic)?\s*earnings\s+per\s+share[\s:\$,\|]+([0-9]+\.[0-9]{2})"
             ]
         }
 
