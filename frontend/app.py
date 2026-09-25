@@ -236,7 +236,7 @@ with cta_btn_col:
 # ─────────────────────────────────────────────────────────────
 render_html("<div style='height: 24px;'></div>")
 
-footer_c1, footer_c2, footer_c3 = st.columns([4, 4, 3])
+footer_c1, footer_c2 = st.columns([6, 5])
 
 icon_brand_small = get_icon("activity", color="#E63946", size=18)
 with footer_c1:
@@ -256,16 +256,12 @@ with footer_c1:
 
 with footer_c2:
     render_html("""
-    <div style="display: flex; gap: 24px; font-size: 0.82rem; padding-top: 6px;">
+    <div style="display: flex; justify-content: flex-end; gap: 28px; font-size: 0.85rem; padding-top: 10px;">
         <a href="#capabilities" style="color: #94A3B8; text-decoration: none;">Capabilities</a>
         <a href="#workflow" style="color: #94A3B8; text-decoration: none;">Workflow</a>
         <a href="#faq" style="color: #94A3B8; text-decoration: none;">FAQ</a>
     </div>
     """)
-
-with footer_c3:
-    if st.button("Enter Workspace", key="btn_footer_nav", type="secondary", use_container_width=True):
-        st.switch_page("pages/1_Dashboard.py")
 
 render_html("""
 <div style="border-top: 1px solid rgba(255,255,255,0.06); margin-top: 20px; padding-top: 16px; display: flex; justify-content: space-between; color: #64748B; font-size: 0.75rem;">
