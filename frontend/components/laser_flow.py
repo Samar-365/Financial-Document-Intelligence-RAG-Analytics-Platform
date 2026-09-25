@@ -646,9 +646,9 @@ def render_hero_section(
     </ul>
 
     <div>
-      <button class="nav-btn" onclick="goToWorkspace()">
+      <a href="/Dashboard" target="_top" class="nav-btn" onclick="goToWorkspace();">
         Enter Workspace →
-      </button>
+      </a>
     </div>
   </nav>
 
@@ -669,14 +669,14 @@ def render_hero_section(
     </p>
 
     <div style="margin-top: 8px;">
-      <button class="primary-cta-btn" onclick="goToWorkspace()">
+      <a href="/Dashboard" target="_top" class="primary-cta-btn" onclick="goToWorkspace();">
         Enter Workspace →
-      </button>
+      </a>
     </div>
   </div>
 
   <!-- 3. Partially Visible Workspace Preview -->
-  <div class="workspace-peek-container" onclick="goToWorkspace()" style="cursor: pointer;">
+  <a href="/Dashboard" target="_top" class="workspace-peek-container" onclick="goToWorkspace();" style="text-decoration: none; display: block; cursor: pointer;">
     <div class="workspace-peek-card">
       <div class="window-header">
         <div class="window-dots">
@@ -729,18 +729,24 @@ def render_hero_section(
       </div>
     </div>
   </div>
-</div>
+</a>
 
 <script>
 function goToWorkspace() {{
   try {{
-    if (window.parent && window.parent.location) {{
-      window.parent.location.assign('/Dashboard');
+    if (window.top && window.top.location) {{
+      window.top.location.href = '/Dashboard';
+    }} else if (window.parent && window.parent.location) {{
+      window.parent.location.href = '/Dashboard';
     }} else {{
-      window.location.assign('/Dashboard');
+      window.location.href = '/Dashboard';
     }}
   }} catch (e) {{
-    window.location.assign('/Dashboard');
+    try {{
+      window.parent.location.href = '/Dashboard';
+    }} catch (err) {{
+      window.location.href = '/Dashboard';
+    }}
   }}
 }}
 

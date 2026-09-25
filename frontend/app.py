@@ -230,8 +230,34 @@ render_html("""
 
 cta_sp1, cta_btn_col, cta_sp2 = st.columns([4.2, 3.6, 4.2])
 with cta_btn_col:
-    if st.button("Enter Workspace →", key="btn_cta_footer", type="primary", use_container_width=True):
-        st.switch_page("pages/1_Dashboard.py")
+    render_html("""
+    <div style="text-align: center;">
+        <a href="/Dashboard" target="_top" style="
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background: linear-gradient(180deg, #E62538 0%, #B81424 45%, #850B17 100%);
+            color: #FFFFFF !important;
+            border: 1px solid rgba(255, 175, 190, 0.75);
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: -0.01em;
+            padding: 11px 24px;
+            text-decoration: none;
+            box-shadow: 
+                inset 0 1px 2px rgba(255, 255, 255, 0.75),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.55),
+                0 0 32px rgba(255, 35, 60, 0.5),
+                0 8px 24px rgba(0, 0, 0, 0.7);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        ">
+            Enter Workspace →
+        </a>
+    </div>
+    """)
 
 # ─────────────────────────────────────────────────────────────
 # 7. MINIMAL ENTERPRISE FOOTER
@@ -273,3 +299,6 @@ render_html("""
 """)
 
 render_html('</div>')
+
+# Explicitly terminate execution: the landing page strictly ends here.
+st.stop()
