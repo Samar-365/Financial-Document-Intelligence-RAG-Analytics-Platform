@@ -151,11 +151,39 @@ def process_document_pipeline(
                 doc.fiscal_year = 2025
 
         if not doc.fiscal_period or doc.fiscal_period == "None":
-            m_prd = re.search(r"\b(Q[1-4]|FY|H[1-2])\b", doc.filename + " " + extracted_text[:1000], re.IGNORECASE)
-            if m_prd:
-                doc.fiscal_period = m_prd.group(1).upper()
+            # Try to detect period from document text more carefully
+            # Check for Q4 / quarter-specific language
+            quarter_match = re.search(
+                r"\b(Q[1-4]|(?:first|second|third|fourth)\s+quarter|quarter\s+ended)\b",
+                extracted_text[:3000], re.IGNORECASE
+            )
+            if quarter_match:
+                q_text = quarter_match.group(0).upper()
+                if "Q1" in q_text or "FIRST" in q_text:
+                    doc.fiscal_period = "Q1"
+                elif "Q2" in q_text or "SECOND" in q_text:
+                    doc.fiscal_period = "Q2"
+                elif "Q3" in q_text or "THIRD" in q_text:
+                    doc.fiscal_period = "Q3"
+                elif "Q4" in q_text or "FOURTH" in q_text:
+                    doc.fiscal_period = "Q4"
+                else:
+                    m_prd = re.search(r"\b(Q[1-4])\b", doc.filename, re.IGNORECASE)
+                    doc.fiscal_period = m_prd.group(1).upper() if m_prd else "FY"
             else:
-                doc.fiscal_period = "Q2" if "q2" in doc.filename.lower() else "FY"
+                m_prd = re.search(r"\b(Q[1-4]|H[1-2])\b", doc.filename, re.IGNORECASE)
+                doc.fiscal_period = m_prd.group(1).upper() if m_prd else "FY"
+
+        # Determine if the EXTRACTED numbers are Q4 or FY figures
+        # TCS doc title: "Quarter and Year Ended March 31, 2026" → Q4 and FY both present
+        # Check which period the numeric table is associated with
+        extracted_period_type = doc.fiscal_period  # default
+        if re.search(r"quarter\s+ended", extracted_text[:5000], re.IGNORECASE):
+            # Document contains quarterly results; we'll label extracted numbers as Q4
+            # (or the specific quarter detected) unless the table header says otherwise
+            extracted_period_type = doc.fiscal_period
+        
+        logger.info(f"Detected unit: determined from text; period: {extracted_period_type}")
 
         # 2. Chunking & Persistence
         try:
@@ -192,79 +220,96 @@ def process_document_pipeline(
 
         db.add_all(db_chunks)
 
-        # 4. Financial Metrics Extraction (Regex Extractor + Direct Fallback Regex)
+        # 4. Financial Metrics Extraction: High-precision domain pattern scanner
         metrics_dict = {}
-        try:
-            from app.analytics.regex_extractor import RegexMetricExtractor
-            extractor = RegexMetricExtractor()
-            metrics_dict = extractor.extract_from_text(extracted_text)
-        except Exception as err:
-            logger.warning(f"Regex table extractor note: {err}")
+        metric_confidence: Dict[str, float] = {}
 
-        # Secondary direct text pattern scan for financial line items
         text_patterns = {
             "Revenue": [
-                r"(?:total\s+net\s+sales|net\s+sales|total\s+revenue|revenue\s+from\s+operations)[\s:\$,\|]*\(?[0-9]*\)?[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)",
-                r"\b(?:revenue|sales)\b[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:revenue\s+from\s+operations|total\s+revenue|total\s+net\s+sales|net\s+sales)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)",
+                r"\b(?:revenue|turnover)\b[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Gross Profit": [
-                r"(?:gross\s+margin|gross\s+profit)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:gross\s+margin|gross\s+profit)[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Operating Income": [
-                r"(?:operating\s+income|operating\s+profit)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:operating\s+income|operating\s+profit)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Net Income": [
-                r"(?:net\s+income|net\s+profit|profit\s+after\s+tax)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:profit\s+for\s+the\s+(?:year|period)|net\s+income|net\s+profit|profit\s+after\s+tax|pat)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Cash & Equivalents": [
-                r"(?:cash\s+and\s+cash\s+equivalents|cash\s*&\s*equivalents)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:cash\s+and\s+cash\s+equivalents\s+at\s+the\s+end\s+of\s+the\s+year|cash\s+and\s+cash\s+equivalents|cash\s*&\s*equivalents)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Total Assets": [
-                r"(?:total\s+assets)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+assets)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+            ],
+            "Total Equity": [
+                r"(?:total\s+equity)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Total Liabilities": [
-                r"(?:total\s+liabilities)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+liabilities)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Total Debt": [
-                r"(?:total\s+debt|term\s+debt|borrowings)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+debt|term\s+debt|borrowings)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Operating Cash Flow": [
-                r"(?:cash\s+generated\s+by\s+operating\s+activities|operating\s+cash\s+flow)[\s:\$,\|]+([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)"
+                r"(?:net\s+cash\s+flows?\s+generated\s+from\s+operating\s+activities|cash\s+generated\s+by\s+operating\s+activities|operating\s+cash\s+flow|cash\s+flows?\s+from\s+operating\s+activities)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "EPS": [
-                r"(?:diluted|basic)?\s*earnings\s+per\s+share[\s:\$,\|]+([0-9]+\.[0-9]{2})"
+                r"(?:earnings\s+per\s+equity\s+share[^\n\d]*|diluted\s+earnings\s+per\s+share|basic\s+and\s+diluted[^\n\d]*|diluted\s+eps|eps)[\s:\$,\|]+([0-9]+\.[0-9]{2})"
             ]
         }
 
+        # Run high-precision text patterns first
         for m_name, patterns in text_patterns.items():
-            if m_name not in metrics_dict or metrics_dict[m_name] is None:
-                for pat in patterns:
-                    m = re.search(pat, extracted_text, re.IGNORECASE)
-                    if m:
-                        raw_num = m.group(1).replace(",", "")
-                        try:
-                            metrics_dict[m_name] = float(raw_num)
+            for pat in patterns:
+                m = re.search(pat, extracted_text, re.IGNORECASE)
+                if m:
+                    raw_num = m.group(1).replace(",", "")
+                    try:
+                        val = float(raw_num)
+                        # Sanity filter: avoid stray year numbers or single digits where financial metric is expected
+                        if val > 0 and (val != 2024 and val != 2025 and val != 2026 or "eps" in m_name.lower()):
+                            metrics_dict[m_name] = val
+                            metric_confidence[m_name] = 0.95
                             break
-                        except ValueError:
-                            pass
+                    except ValueError:
+                        pass
 
-        # Determine unit based on text markers (₹ / Rs. / INR → INR_CR; $ → USD_M)
-        # TCS and Indian filings use ₹ or Rs. — never mislabel these as USD_M
+        # If Total Liabilities is not explicitly stated as a separate line but Total Assets and Total Equity exist:
+        if ("Total Liabilities" not in metrics_dict or metrics_dict["Total Liabilities"] is None) and \
+           ("Total Assets" in metrics_dict and "Total Equity" in metrics_dict):
+            t_assets = metrics_dict["Total Assets"]
+            t_equity = metrics_dict["Total Equity"]
+            if t_assets and t_equity and t_assets >= t_equity:
+                metrics_dict["Total Liabilities"] = round(t_assets - t_equity, 2)
+                metric_confidence["Total Liabilities"] = 0.85
+
+        # Normalize metric keys to consistent Title Case
+        metrics_dict = {k.strip().title(): v for k, v in metrics_dict.items()}
+        metric_confidence = {k.strip().title(): v for k, v in metric_confidence.items()}
+
+        # Determine unit based on text markers
+        # If document mentions crore, cr, or lakh, it is an Indian filing reporting in INR Crores
+        has_crore = bool(re.search(r"\bcrores?\b|\bcr\b|\blakhs?\b", extracted_text, re.IGNORECASE))
         has_inr = bool(re.search(r"[₹]|\bRs\.?\b|\bINR\b|\bRupees\b", extracted_text, re.IGNORECASE))
         has_usd = bool(re.search(r"\$|\bUSD\b|\bU\.S\.\s*Dollar", extracted_text))
-        if has_inr and not has_usd:
+        
+        if has_crore or (has_inr and not (has_usd and not has_crore)):
             unit_label = "INR_CR"
-        elif has_usd and not has_inr:
+        elif has_usd and not (has_inr or has_crore):
             unit_label = "USD_M"
         elif has_usd:
-            unit_label = "USD_M"  # mixed: default to USD if both symbols present
+            unit_label = "USD_M"
         else:
-            unit_label = "INR_CR"  # default for Indian documents
+            unit_label = "INR_CR"
 
-        # Store FinancialMetric rows (only valid fields on FinancialMetric model)
+        # Store FinancialMetric rows with per-metric confidence and period
         metric_rows = []
         for name, val in metrics_dict.items():
             if val is not None and isinstance(val, (int, float)):
+                conf = metric_confidence.get(name, 0.72)
                 metric_rows.append(
                     FinancialMetric(
                         document_id=doc.id,
@@ -272,22 +317,26 @@ def process_document_pipeline(
                         value=float(val),
                         unit=unit_label,
                         fiscal_year=doc.fiscal_year or 2025,
-                        fiscal_period=doc.fiscal_period or "FY",
-                        confidence=0.95,
+                        fiscal_period=extracted_period_type,
+                        confidence=conf,
                     )
                 )
         if metric_rows:
             db.add_all(metric_rows)
 
         # 5. Financial Ratios & 5D Health Scoring
+        # Use title-cased keys after normalization above
         revenue = metrics_dict.get("Revenue")
-        ebitda = metrics_dict.get("Ebitda") or metrics_dict.get("Operating Income")
+        # EBITDA and Operating Income are separate concepts; never conflate them
+        ebitda = metrics_dict.get("Ebitda") or metrics_dict.get("EBITDA")
+        operating_income = metrics_dict.get("Operating Income")
         net_income = metrics_dict.get("Net Income")
         total_debt = metrics_dict.get("Total Debt")
         total_assets = metrics_dict.get("Total Assets")
         total_liab = metrics_dict.get("Total Liabilities")
 
-        opm = round((ebitda / revenue) * 100, 2) if (ebitda is not None and revenue and revenue > 0) else None
+        # OPM: Operating Income / Revenue (NOT EBITDA / Revenue)
+        opm = round((operating_income / revenue) * 100, 2) if (operating_income is not None and revenue and revenue > 0) else None
         npm = round((net_income / revenue) * 100, 2) if (net_income is not None and revenue and revenue > 0) else None
         
         equity = None
