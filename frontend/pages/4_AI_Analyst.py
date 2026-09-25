@@ -1,26 +1,39 @@
 import streamlit as st
 import sys
-from pathlib import Path
 import time
+from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from components.chat_interface import render_chat_message
 from components.theme import apply_theme, render_page_header, get_icon, render_html
 from utils.api_client import client
+from utils.workspace_state import (
+    render_workspace_sidebar_branding,
+    render_document_selector,
+    get_active_doc_id,
+    is_response_valid,
+)
 
-st.set_page_config(page_title="AI Analyst | FinIntel AI", layout="wide")
+st.set_page_config(
+    page_title="FININTEL — AI Analyst",
+    page_icon="frontend/assets/finintel_logo.png",
+    layout="wide"
+)
+
+# Apply Pitch Dark & Wine Red styling and official sidebar branding
 apply_theme()
+render_workspace_sidebar_branding()
 
 render_page_header(
     title="AI Financial Analyst",
-    subtitle="Ask questions about your uploaded financial documents with verifiable citations powered by Google Gemini.",
+    subtitle="Financial intelligence for the selected document with verifiable page-level citations.",
     icon_name="bot"
 )
 
 if "chat_messages" not in st.session_state:
     st.session_state["chat_messages"] = []
 
-# Fetch live documents
+# Fetch live documents from API
 live_docs = client.get_documents() or []
 
 if not live_docs:
@@ -30,101 +43,103 @@ if not live_docs:
         st.switch_page("pages/2_Upload.py")
     st.stop()
 
-doc_options = {}
-for d in live_docs:
-    doc_id = d.get("id", "")
-    filename = d.get("filename", "Document")
-    company = d.get("company_name") or filename.rsplit(".", 1)[0]
-    period = d.get("fiscal_period", "")
-    year = d.get("fiscal_year", "")
-    period_label = f"{period} FY{year}" if year else ""
-    label = f"{company} — {period_label} ({filename[:30]})"
-    doc_options[label] = d
+# Canonical Document Selector across all workspace pages
+selected_doc_info = render_document_selector(live_docs, key_prefix="ai_analyst")
+selected_doc_id = str(selected_doc_info.get("id"))
+selected_doc_filename = selected_doc_info.get("filename", "Document.pdf")
+company_name = selected_doc_info.get("company_name") or selected_doc_filename.rsplit(".", 1)[0]
 
-# Restore cross-page persistent selection from Dashboard or Analysis by ID
-target_id = st.session_state.get("selected_doc_id")
-target_label = None
-if target_id:
-    for lbl, d in doc_options.items():
-        if str(d.get("id")) == str(target_id):
-            target_label = lbl
-            break
+# Detect currency
+currency_label = "INR" if ("inr" in selected_doc_filename.lower() or "tcs" in selected_doc_filename.lower() or "infosys" in selected_doc_filename.lower()) else "USD"
 
-if not target_label or target_label not in doc_options:
-    target_label = st.session_state.get("selected_doc_label")
-    if target_label not in doc_options:
-        target_label = list(doc_options.keys())[0]
-
-if st.session_state.get("ai_analyst_doc_select") != target_label:
-    st.session_state["ai_analyst_doc_select"] = target_label
-
-selected_label = st.selectbox(
-    "Search Context / Document Target:",
-    options=list(doc_options.keys()),
-    key="ai_analyst_doc_select",
-)
-st.session_state["selected_doc_label"] = selected_label
-st.session_state["selected_doc_id"] = doc_options[selected_label].get("id", "")
-
-selected_doc_info = doc_options[selected_label]
-selected_doc_id = selected_doc_info.get("id")
-selected_doc_filename = selected_doc_info.get("filename", "Document")
-
-# Reset chat session if document switched to avoid mixed-context answers
+# Automatic conversation reset on document switch to prevent context poisoning
 if st.session_state.get("last_chat_doc_id") != selected_doc_id:
     st.session_state["chat_messages"] = []
     st.session_state["last_chat_doc_id"] = selected_doc_id
 
-# Document context banner
+# 1. Document Context Banner
 period_disp = selected_doc_info.get('fiscal_period', '')
 year_disp = selected_doc_info.get('fiscal_year', '')
 period_text = f"{period_disp} FY{year_disp}" if period_disp and period_disp != "FY" else (f"FY{year_disp}" if year_disp else "Active Filing")
-st.markdown(
-    f"<div style='color: #94A3B8; font-size: 0.85rem; margin-bottom: 12px;'>"
-    f"Active: <b style='color: #FFFFFF;'>{selected_doc_info.get('company_name', selected_doc_filename)}</b> "
-    f"— <span style='color: #E63946;'>{period_text}</span> "
-    f"— Filename: <code style='color: #E63946; background: rgba(184, 29, 36, 0.15);'>{selected_doc_filename[:35]}</code>"
-    f"</div>",
-    unsafe_allow_html=True,
-)
-st.divider()
 
-sparkles_svg = get_icon("sparkles", color="#E63946", size=18)
+brand_icon_svg = get_icon("activity", color="#E63946", size=18)
 render_html(f"""
-<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+<div style="
+    background: #111017;
+    border: 1px solid rgba(196, 30, 58, 0.28);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="
+            background: rgba(184, 29, 36, 0.2);
+            border: 1px solid rgba(230, 57, 70, 0.45);
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">
+            {brand_icon_svg}
+        </div>
+        <div>
+            <div style="font-size: 0.72rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;">ANALYZING FILING</div>
+            <div style="font-size: 1.05rem; font-weight: 700; color: #FFFFFF;">
+                {company_name} <span style="color: #64748B;">&bull;</span> <span style="color: #E63946;">{period_text}</span> <span style="color: #64748B;">&bull;</span> {currency_label}
+            </div>
+        </div>
+    </div>
+    <div>
+        <code style="color: #E63946; background: rgba(184, 29, 36, 0.15); border: 1px solid rgba(184, 29, 36, 0.3); padding: 5px 12px; border-radius: 6px; font-size: 0.82rem;">
+            {selected_doc_filename[:36]}
+        </code>
+    </div>
+</div>
+""")
+
+# 2. Suggested Questions Chips
+sparkles_svg = get_icon("sparkles", color="#E63946", size=16)
+render_html(f"""
+<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
     {sparkles_svg}
-    <span style="font-size: 1.05rem; font-weight: 600; color: #F1F5F9;">Suggested Financial Queries</span>
+    <span style="font-size: 0.95rem; font-weight: 600; color: #CBD5E1;">Suggested Inquiries</span>
 </div>
 """)
 
 suggestions = [
-    "What was the total revenue from operations?",
-    "What were the major risks mentioned in the filing?",
-    "What is the company's operating margin and EBITDA?",
-    "What is the company's total debt and cash position?"
+    "What was the total revenue?",
+    "What is the operating margin?",
+    "What were the major risks?",
+    "How much debt does the company have?",
+    "How did revenue change YoY?",
+    "Summarize the financial highlights.",
 ]
 
-cols = st.columns(len(suggestions))
+chip_cols = st.columns(len(suggestions))
 for idx, question in enumerate(suggestions):
-    if cols[idx].button(question, key=f"sug_{idx}"):
+    if chip_cols[idx].button(question, key=f"sug_chip_{idx}"):
         st.session_state["pending_prompt"] = question
         st.rerun()
 
 st.divider()
 
-msg_svg = get_icon("message-square", color="#E63946", size=18)
-render_html(f"""
-<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-    {msg_svg}
-    <span style="font-size: 1.05rem; font-weight: 600; color: #F1F5F9;">Conversation History</span>
-</div>
-""")
-
+# 3. Conversation Thread
 chat_container = st.container()
 
 with chat_container:
     if not st.session_state["chat_messages"]:
-        st.caption("No questions asked yet. Choose a suggested query above or type below.")
+        render_html(f"""
+<div style="text-align: center; padding: 40px 20px; color: #64748B;">
+    <div style="font-size: 0.95rem; margin-bottom: 6px; color: #94A3B8;">No questions asked yet for this document.</div>
+    <div style="font-size: 0.85rem;">Select an inquiry chip above or ask a custom question below.</div>
+</div>
+""")
     for message in st.session_state["chat_messages"]:
         render_chat_message(
             role=message["role"],
@@ -133,7 +148,8 @@ with chat_container:
             metrics=message.get("metrics")
         )
 
-prompt = st.chat_input("Ask a question about the selected document...")
+# 4. Sticky Chat Input
+prompt = st.chat_input("Ask about this financial document...")
 
 if st.session_state.get("pending_prompt"):
     prompt = st.session_state.pop("pending_prompt")
@@ -144,10 +160,14 @@ if prompt:
     with chat_container:
         render_chat_message(role="user", content=prompt)
             
-        with st.spinner("Retrieving grounded excerpts and generating answer via Gemini..."):
+        with st.spinner("FinIntel AI is analyzing financial disclosures..."):
             t0 = time.time()
             rag_res = client.query_rag(document_id=selected_doc_id, question=prompt, top_k=5)
             elapsed = time.time() - t0
+
+            # Race condition verification: ensure document hasn't changed during async processing
+            if not is_response_valid(selected_doc_id):
+                st.stop()
 
             if rag_res and rag_res.get("answer"):
                 response_text = rag_res.get("answer")
@@ -168,13 +188,13 @@ if prompt:
                 }
             else:
                 response_text = (
-                    f"No relevant excerpts found in **{selected_doc_filename}** answering: *{prompt}*.\n\n"
-                    f"Please verify that the document contains disclosures on this topic, or ensure your `GEMINI_API_KEY` is configured."
+                    "**AI analysis is temporarily unavailable.** "
+                    "Please check that the document has completed processing, or try asking about specific line items."
                 )
                 sources = []
                 metrics = {"time": f"{int(elapsed * 1000)}ms", "chunks": 0}
             
-            # Render assistant message
+            # Render and store assistant response
             render_chat_message(
                 role="assistant",
                 content=response_text,
@@ -182,7 +202,6 @@ if prompt:
                 metrics=metrics
             )
             
-            # Save assistant response to session state
             st.session_state["chat_messages"].append({
                 "role": "assistant",
                 "content": response_text,
