@@ -56,7 +56,7 @@ class Settings(BaseSettings):
 
     # ── AI Intelligence (Google Gemini & Local Fallbacks) ────────
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-2.5-flash"
+    GEMINI_MODEL: str = "gemini-3.5-flash-lite"
     OPENAI_API_KEY: str = ""
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
