@@ -127,9 +127,12 @@ def apply_theme(is_landing_page: bool = False):
     }
     
     .block-container {
-        padding-top: 2rem !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 3rem !important;
-        max-width: 1200px !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        max-width: 100% !important;
+        width: 100% !important;
         margin: 0 auto !important;
     }
     """
@@ -255,6 +258,9 @@ def apply_theme(is_landing_page: bool = False):
     div[data-testid="stMetricValue"] {{
         color: #FFFFFF !important;
         font-weight: 700 !important;
+        font-size: clamp(1.15rem, 1.4vw, 1.65rem) !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
         text-shadow: 0 0 12px rgba(230, 57, 70, 0.25);
     }}
 

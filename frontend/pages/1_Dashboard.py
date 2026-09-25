@@ -206,7 +206,7 @@ icon_export = get_icon("file-text", color="#E63946", size=20)
 st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'><span>{icon_export}</span><span style='font-weight: 700; color: #FFFFFF;'>Executive Report Export</span></div>", unsafe_allow_html=True)
 
 try:
-    from app.services.report_generator import generate_executive_pdf_report
+    from utils.report_generator import generate_executive_pdf_report
     ratios = {
         "opm": ratios_res.get("opm", 0.0) if ratios_res else 0.0,
         "npm": ratios_res.get("npm", 0.0) if ratios_res else 0.0,
