@@ -157,10 +157,27 @@ def apply_theme(is_landing_page: bool = False):
         pointer-events: auto !important;
     }
 
+    /* Remove unnecessary button/arrow in the top-left sidebar header */
+    [data-testid="stSidebarCollapseButton"],
+    button[data-testid="stSidebarCollapseButton"],
+    [data-testid="stSidebarHeader"] > button,
+    button[kind="header"],
+    [data-testid="collapsedControl"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    [data-testid="stSidebarHeader"] {
+        padding: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+    }
+
     [data-testid="stSidebar"] {
         background-color: #0D0C12 !important;
         border-right: 1px solid rgba(184, 29, 36, 0.25) !important;
         display: block !important;
+        padding-top: 1rem !important;
     }
     
     [data-testid="stSidebar"] * {
@@ -181,15 +198,31 @@ def apply_theme(is_landing_page: bool = False):
         max-width: 100% !important;
         width: 100% !important;
         margin: 0 auto !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Shimmer animation for skeleton loaders */
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+    .skeleton-shimmer {
+        background: linear-gradient(90deg, #15141E 25%, #282436 50%, #15141E 75%) !important;
+        background-size: 200% 100% !important;
+        animation: shimmer 1.5s infinite ease-in-out !important;
+        border-radius: 6px !important;
     }
     """
 
     css = f"""
     <style>
-    /* 1. Global Page Backgrounds */
-    .stApp {{
+    /* 1. Global Page Backgrounds & Overflow Control */
+    html, body, .stApp {{
         background-color: #08080A !important;
         color: #F1F5F9 !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
     }}
     
     {sidebar_landing_css}
