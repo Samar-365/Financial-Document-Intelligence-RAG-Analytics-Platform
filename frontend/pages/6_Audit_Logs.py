@@ -13,9 +13,17 @@ from datetime import datetime
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from components.theme import apply_theme, render_page_header, get_icon, render_html
 from utils.api_client import client
+from utils.workspace_state import render_workspace_sidebar_branding
 
-st.set_page_config(page_title="Audit & Telemetry | FinIntel AI", layout="wide")
+st.set_page_config(
+    page_title="FININTEL — Audit Logs",
+    page_icon="frontend/assets/finintel_logo.png",
+    layout="wide"
+)
+
+# Apply Pitch Dark & Wine Red styling and official sidebar branding
 apply_theme()
+render_workspace_sidebar_branding()
 
 render_page_header(
     title="System Telemetry & Audit Logs",

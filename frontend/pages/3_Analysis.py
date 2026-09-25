@@ -9,11 +9,25 @@ from components.theme import apply_theme, render_page_header, get_icon, render_h
 from components.kpi_card import render_kpi_card
 from components.advanced_charts import render_balance_sheet_composition, render_margin_comparison
 from utils.api_client import client
+from utils.workspace_state import (
+    render_workspace_sidebar_branding,
+    render_document_selector,
+    get_active_doc_id,
+    mark_document_loaded,
+    render_skeleton_banner,
+    render_skeleton_kpis,
+    is_response_valid,
+)
 
-st.set_page_config(page_title="Financial Analysis | FinIntel AI", layout="wide")
+st.set_page_config(
+    page_title="FININTEL — Financial Analysis",
+    page_icon="frontend/assets/finintel_logo.png",
+    layout="wide"
+)
 
-# Apply Pitch Dark & Wine Red styling
+# Apply Pitch Dark & Wine Red styling and official sidebar branding
 apply_theme()
+render_workspace_sidebar_branding()
 
 render_page_header(
     title="Financial Statement Analysis",
@@ -42,49 +56,24 @@ if not live_docs:
             st.switch_page("pages/2_Upload.py")
     st.stop()
 
-doc_options = {}
-for d in live_docs:
-    doc_id = d.get("id", "")
-    filename = d.get("filename", "Document")
-    company = d.get("company_name") or filename.rsplit(".", 1)[0]
-    period = d.get("fiscal_period", "")
-    year = d.get("fiscal_year", "")
-    period_label = f"{period} FY{year}" if year else ""
-    label = f"{company} — {period_label} ({filename[:30]})"
-    doc_options[label] = d
-
-# Restore cross-page persistent selection from Dashboard or previous pages
-target_id = st.session_state.get("selected_doc_id")
-target_label = None
-if target_id:
-    for lbl, d in doc_options.items():
-        if str(d.get("id")) == str(target_id):
-            target_label = lbl
-            break
-
-if not target_label or target_label not in doc_options:
-    target_label = st.session_state.get("selected_doc_label")
-    if target_label not in doc_options:
-        target_label = list(doc_options.keys())[0]
-
-# Keep session state key aligned with global selection
-if st.session_state.get("analysis_doc_select") != target_label:
-    st.session_state["analysis_doc_select"] = target_label
-
-selected_label = st.selectbox(
-    "Select Analyzed Document:",
-    options=list(doc_options.keys()),
-    key="analysis_doc_select",
-)
-st.session_state["selected_doc_label"] = selected_label
-st.session_state["selected_doc_id"] = doc_options[selected_label].get("id", "")
-
-selected_doc_info = doc_options[selected_label]
+# Canonical Document Selector across all workspace pages
+selected_doc_info = render_document_selector(live_docs, key_prefix="analysis")
 selected_doc_id = selected_doc_info.get("id")
 
-# Fetch live metrics & ratios from API
+# Skeleton loading if document was just switched
+if st.session_state.get("document_loading", False):
+    render_skeleton_banner()
+    render_skeleton_kpis()
+
+# Fetch live metrics & ratios from API strictly scoped to selected_doc_id
 raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []
 ratios_resp = client.get_financial_ratios(selected_doc_id) if selected_doc_id else None
+
+# Race-condition protection
+if not is_response_valid(selected_doc_id):
+    st.stop()
+
+mark_document_loaded(selected_doc_id)
 
 metrics_map = {m.get("metric_name", ""): float(m.get("value")) for m in raw_metrics if m.get("value") is not None}
 

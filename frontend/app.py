@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 
 st.set_page_config(
-    page_title="FinIntel AI — Enterprise Financial Intelligence",
-    page_icon="📊",
+    page_title="FININTEL — Financial Intelligence Platform",
+    page_icon="frontend/assets/finintel_logo.png",
     layout="wide",
     initial_sidebar_state="collapsed",
 )

@@ -8,9 +8,17 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 from components.theme import apply_theme, render_page_header, get_icon, render_html
 from components.advanced_charts import render_comparative_deltas_chart
 from utils.api_client import client
+from utils.workspace_state import render_workspace_sidebar_branding, format_doc_label
 
-st.set_page_config(page_title="Comparison | FinIntel AI", layout="wide")
+st.set_page_config(
+    page_title="FININTEL — Comparison",
+    page_icon="frontend/assets/finintel_logo.png",
+    layout="wide"
+)
+
+# Apply Pitch Dark & Wine Red styling and official sidebar branding
 apply_theme()
+render_workspace_sidebar_branding()
 
 render_page_header(
     title="Document Comparison",
@@ -34,13 +42,7 @@ if len(live_docs) < 2:
 
 doc_options = {}
 for d in live_docs:
-    doc_id = d.get("id", "")
-    filename = d.get("filename", "Document")
-    company = d.get("company_name") or filename.rsplit(".", 1)[0]
-    period = d.get("fiscal_period", "")
-    year = d.get("fiscal_year", "")
-    period_label = f"{period} FY{year}" if year else ""
-    label = f"{company} — {period_label} ({filename[:30]})"
+    label = format_doc_label(d)
     doc_options[label] = d
 
 options_list = list(doc_options.keys())

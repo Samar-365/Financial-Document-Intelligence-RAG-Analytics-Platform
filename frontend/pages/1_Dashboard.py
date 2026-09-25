@@ -11,11 +11,25 @@ from components.health_gauge import render_health_gauge
 from components.radar_chart import render_radar_chart
 from components.advanced_charts import render_revenue_waterfall, render_margin_comparison, render_balance_sheet_composition
 from utils.api_client import client
+from utils.workspace_state import (
+    render_workspace_sidebar_branding,
+    render_document_selector,
+    get_active_doc_id,
+    mark_document_loaded,
+    render_skeleton_kpis,
+    render_skeleton_banner,
+    is_response_valid,
+)
 
-st.set_page_config(page_title="Dashboard | FinIntel AI", layout="wide")
+st.set_page_config(
+    page_title="FININTEL — Dashboard",
+    page_icon="frontend/assets/finintel_logo.png",
+    layout="wide"
+)
 
-# Apply Pitch Dark & Wine Red styling
+# Apply Pitch Dark & Wine Red styling and official sidebar branding
 apply_theme()
+render_workspace_sidebar_branding()
 
 render_page_header(
     title="Executive Financial Dashboard",
@@ -44,50 +58,26 @@ if not live_docs:
             st.switch_page("pages/2_Upload.py")
     st.stop()
 
-# Build options dictionary from real documents
-doc_options = {}
-for d in live_docs:
-    doc_id = d.get("id", "")
-    filename = d.get("filename", "Document")
-    company = d.get("company_name") or filename.rsplit(".", 1)[0]
-    period = d.get("fiscal_period", "")
-    year = d.get("fiscal_year", "")
-    period_label = f"{period} FY{year}" if year else ""
-    label = f"{company} — {period_label} ({filename[:30]})"
-    doc_options[label] = d
-
-# Restore persisted selection if available by ID
-target_id = st.session_state.get("selected_doc_id")
-target_label = None
-if target_id:
-    for lbl, d in doc_options.items():
-        if str(d.get("id")) == str(target_id):
-            target_label = lbl
-            break
-
-if not target_label or target_label not in doc_options:
-    target_label = st.session_state.get("selected_doc_label")
-    if target_label not in doc_options:
-        target_label = list(doc_options.keys())[0]
-
-if st.session_state.get("dashboard_doc_select") != target_label:
-    st.session_state["dashboard_doc_select"] = target_label
-
-selected_label = st.selectbox(
-    "Active Document Context:",
-    options=list(doc_options.keys()),
-    key="dashboard_doc_select",
-)
-st.session_state["selected_doc_label"] = selected_label
-st.session_state["selected_doc_id"] = doc_options[selected_label].get("id", "")
-
-selected_doc_info = doc_options[selected_label]
+# Canonical Document Selector across all workspace pages
+selected_doc_info = render_document_selector(live_docs, key_prefix="dashboard")
 selected_doc_id = selected_doc_info.get("id")
 
-# Fetch live metrics first for currency detection
+# Skeleton loading if document was just switched
+is_loading = st.session_state.get("document_loading", False)
+if is_loading:
+    render_skeleton_banner()
+    render_skeleton_kpis()
+
+# Fetch live metrics scoped strictly to selected_doc_id
 raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []
 health_res = client.get_health_score(selected_doc_id) if selected_doc_id else None
 ratios_res = client.get_financial_ratios(selected_doc_id) if selected_doc_id else None
+
+# Race-condition protection: verify response belongs to currently active document
+if not is_response_valid(selected_doc_id):
+    st.stop()
+
+mark_document_loaded(selected_doc_id)
 
 metrics_map = {}
 currency_symbol = "$"
@@ -218,32 +208,30 @@ with tab_balance:
 st.divider()
 
 # 6. Qualitative Risks & AI Insights
-risk_col, insights_col = st.columns(2)
+icon_shield = get_icon("shield-check", color="#E63946", size=20)
+st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 10px;'><span>{icon_shield}</span><span style='font-size: 1.15rem; font-weight: 700; color: #FFFFFF;'>Risk Indicators & Audit Provenance</span></div>", unsafe_allow_html=True)
 
-with risk_col:
-    icon_shield = get_icon("shield-check", color="#E63946", size=20)
-    render_html(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'><span>{icon_shield}</span><span style='font-weight: 700; color: #FFFFFF;'>Qualitative Risk Disclosures</span></div>")
+risk_col1, risk_col2 = st.columns([1.5, 1])
+
+with risk_col1:
     with st.container(border=True):
         if risk_flags:
+            st.markdown("<b style='color: #F8FAFC;'>Automated Risk Classifications:</b>", unsafe_allow_html=True)
             for rf in risk_flags:
-                render_html(f"""
-<div style="background: rgba(184, 29, 36, 0.12); border-left: 3px solid #E63946; padding: 8px 12px; margin-bottom: 6px; border-radius: 4px; font-size: 0.9rem; color: #F1F5F9;">
-    {rf}
-</div>
-""")
+                sev = rf.get("severity", "MEDIUM")
+                s_color = "#E63946" if sev == "HIGH" else ("#F59E0B" if sev == "MEDIUM" else "#3B82F6")
+                st.markdown(f"<div style='padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06);'><span style='color: {s_color}; font-weight: bold;'>[{sev}]</span> <span style='color: #CBD5E1;'>{rf.get('category')}:</span> {rf.get('description')}</div>", unsafe_allow_html=True)
         else:
-            st.write("No qualitative risk disclosures flagged.")
+            st.markdown("<span style='color: #4ADE80;'>✓ No material solvency or financial distress flags detected in extracted indicators.</span>", unsafe_allow_html=True)
 
-with insights_col:
-    icon_bot = get_icon("bot", color="#E63946", size=20)
-    st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'><span>{icon_bot}</span><span style='font-weight: 700; color: #FFFFFF;'>Filing Metadata & Ingestion Provenance</span></div>", unsafe_allow_html=True)
+with risk_col2:
     with st.container(border=True):
         st.markdown(
             f"""
             * **Filing Document:** <code style='color: #E63946; background: rgba(184, 29, 36, 0.15);'>{selected_doc_info.get('filename')}</code>
             * **Composite Health Score:** **{overall_score:.1f} / 100**
             * **Database Engine:** PostgreSQL 16 Alpine with native `pgvector` index.
-            * **AI Intelligence:** Ask queries on the **AI Analyst** page powered by **Google Gemini 2.5 Flash**.
+            * **AI Intelligence:** Ask queries on the **AI Analyst** page powered by **Google Gemini**.
             """,
             unsafe_allow_html=True,
         )
@@ -265,15 +253,15 @@ try:
     }
     pdf_bytes = generate_executive_pdf_report(
         company_name=selected_doc_info.get("company_name", "Corporate Entity"),
-        fiscal_period=f"FY{selected_doc_info.get('fiscal_year', '2025')}",
+        fiscal_period=f"FY{selected_doc_info.get('fiscal_year', '2026')}",
         document_filename=selected_doc_info.get("filename", "Report.pdf"),
-        health_score=overall_score,
+        health_score=overall_score or 0.0,
         dimension_scores={
-            "growth_score": growth_score,
-            "profitability_score": profit_score,
-            "liquidity_score": liq_score,
-            "leverage_score": lev_score,
-            "cash_flow_score": cf_score,
+            "growth_score": growth_score or 0.0,
+            "profitability_score": profit_score or 0.0,
+            "liquidity_score": liq_score or 0.0,
+            "leverage_score": lev_score or 0.0,
+            "cash_flow_score": cf_score or 0.0,
         },
         metrics=raw_metrics,
         ratios=ratios,
