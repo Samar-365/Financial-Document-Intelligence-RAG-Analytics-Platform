@@ -36,8 +36,11 @@ doc_options = {}
 for d in live_docs:
     doc_id = d.get("id", "")
     filename = d.get("filename", "Document")
-    year = f"FY{d.get('fiscal_year', '')}" if d.get('fiscal_year') else ""
-    label = f"{filename} {year} ({doc_id[:8]}...)"
+    company = d.get("company_name") or filename.rsplit(".", 1)[0]
+    period = d.get("fiscal_period", "")
+    year = d.get("fiscal_year", "")
+    period_label = f"{period} FY{year}" if year else ""
+    label = f"{company} — {period_label} ({filename[:30]})"
     doc_options[label] = d
 
 options_list = list(doc_options.keys())

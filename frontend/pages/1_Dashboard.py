@@ -49,30 +49,76 @@ doc_options = {}
 for d in live_docs:
     doc_id = d.get("id", "")
     filename = d.get("filename", "Document")
-    year = f"FY{d.get('fiscal_year', '')}" if d.get('fiscal_year') else ""
-    label = f"{filename} {year} (ID: {doc_id[:8]}...)"
+    company = d.get("company_name") or filename.rsplit(".", 1)[0]
+    period = d.get("fiscal_period", "")
+    year = d.get("fiscal_year", "")
+    period_label = f"{period} FY{year}" if year else ""
+    label = f"{company} — {period_label} ({filename[:30]})"
     doc_options[label] = d
 
-selected_label = st.selectbox("Active Document Context:", options=list(doc_options.keys()))
+# Restore persisted selection if available by ID
+target_id = st.session_state.get("selected_doc_id")
+target_label = None
+if target_id:
+    for lbl, d in doc_options.items():
+        if str(d.get("id")) == str(target_id):
+            target_label = lbl
+            break
+
+if not target_label or target_label not in doc_options:
+    target_label = st.session_state.get("selected_doc_label")
+    if target_label not in doc_options:
+        target_label = list(doc_options.keys())[0]
+
+if st.session_state.get("dashboard_doc_select") != target_label:
+    st.session_state["dashboard_doc_select"] = target_label
+
+selected_label = st.selectbox(
+    "Active Document Context:",
+    options=list(doc_options.keys()),
+    key="dashboard_doc_select",
+)
+st.session_state["selected_doc_label"] = selected_label
+st.session_state["selected_doc_id"] = doc_options[selected_label].get("id", "")
+
 selected_doc_info = doc_options[selected_label]
 selected_doc_id = selected_doc_info.get("id")
 
+# Fetch live metrics first for currency detection
+raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []
+health_res = client.get_health_score(selected_doc_id) if selected_doc_id else None
+ratios_res = client.get_financial_ratios(selected_doc_id) if selected_doc_id else None
+
+metrics_map = {}
+currency_symbol = "$"
+for m in raw_metrics:
+    m_name = m.get("metric_name", "")
+    m_val = m.get("value")
+    if m_val is not None:
+        metrics_map[m_name] = float(m_val)
+    unit_str = str(m.get("unit", "")).lower()
+    if "inr" in unit_str or "cr" in unit_str:
+        currency_symbol = "₹"
+
+currency_display = "INR (₹) Crore" if currency_symbol == "₹" else "USD ($) Million"
+
 # Header Information Banner
 with st.container(border=True):
-    col_h1, col_h2, col_h3, col_h4 = st.columns(4)
+    col_h1, col_h2, col_h3, col_h4, col_h5 = st.columns(5)
     icon_check = get_icon("check-circle", color="#4ADE80", size=16)
-    col_h1.markdown(f"<span style='color: #94A3B8;'>Company:</span> <b style='color: #FFFFFF;'>{selected_doc_info.get('company_name', 'Corporate Entity')}</b>", unsafe_allow_html=True)
-    col_h2.markdown(f"<span style='color: #94A3B8;'>Period:</span> <b style='color: #FFFFFF;'>FY{selected_doc_info.get('fiscal_year', 'N/A')} {selected_doc_info.get('fiscal_period', '')}</b>", unsafe_allow_html=True)
-    col_h3.markdown(f"<span style='color: #94A3B8;'>Status:</span> <span style='color: #4ADE80; font-weight: 600;'>{icon_check} {selected_doc_info.get('status', 'PROCESSED')}</span>", unsafe_allow_html=True)
-    col_h4.markdown(f"<span style='color: #94A3B8;'>File:</span> <code style='color: #E63946; background: rgba(184, 29, 36, 0.15);'>{selected_doc_info.get('filename')}</code>", unsafe_allow_html=True)
+    company_display = selected_doc_info.get('company_name') or selected_doc_info.get('filename', 'N/A')
+    period_display = selected_doc_info.get('fiscal_period', '')
+    year_display = selected_doc_info.get('fiscal_year', '')
+    period_text = f"{period_display} FY{year_display}" if period_display and period_display != "FY" else (f"FY{year_display}" if year_display else "Active Filing")
+    col_h1.markdown(f"<span style='color: #94A3B8;'>Company:</span> <b style='color: #FFFFFF;'>{company_display}</b>", unsafe_allow_html=True)
+    col_h2.markdown(f"<span style='color: #94A3B8;'>Period:</span> <b style='color: #FFFFFF;'>{period_text}</b>", unsafe_allow_html=True)
+    col_h3.markdown(f"<span style='color: #94A3B8;'>Currency:</span> <b style='color: #FFFFFF;'>{currency_display}</b>", unsafe_allow_html=True)
+    col_h4.markdown(f"<span style='color: #94A3B8;'>Status:</span> <span style='color: #4ADE80; font-weight: 600;'>{icon_check} {selected_doc_info.get('status', 'PROCESSED')}</span>", unsafe_allow_html=True)
+    col_h5.markdown(f"<span style='color: #94A3B8;'>File:</span> <code style='color: #E63946; background: rgba(184, 29, 36, 0.15);'>{selected_doc_info.get('filename', '')[:40]}</code>", unsafe_allow_html=True)
 
 st.divider()
 
-# 2. Fetch Live Health Scores and Metrics
-health_res = client.get_health_score(selected_doc_id) if selected_doc_id else None
-raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []
-ratios_res = client.get_financial_ratios(selected_doc_id) if selected_doc_id else None
-
+# 2. Fetch Live Health Scores
 overall_score = float(health_res.get("overall_score")) if health_res and health_res.get("overall_score") is not None else None
 growth_score = float(health_res.get("growth_score")) if health_res and health_res.get("growth_score") is not None else None
 profit_score = float(health_res.get("profitability_score")) if health_res and health_res.get("profitability_score") is not None else None
@@ -85,32 +131,17 @@ risk_flags = health_res.get("risk_flags", []) if health_res else []
 icon_trend = get_icon("trending-up", color="#E63946", size=20)
 st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 10px;'><span>{icon_trend}</span><span style='font-size: 1.15rem; font-weight: 700; color: #FFFFFF;'>Key Financial Indicators</span></div>", unsafe_allow_html=True)
 
-metrics_map = {}
-currency_symbol = "$"
-for m in raw_metrics:
-    m_name = m.get("metric_name", "")
-    m_val = m.get("value")
-    if m_val is not None:
-        metrics_map[m_name] = float(m_val)
-    if "inr" in m.get("unit", "").lower():
-        currency_symbol = "₹"
-
 def format_curr(val_key: str):
     for m in raw_metrics:
         m_name = m.get("metric_name", "").lower()
-        for k in [val_key.lower()]:
-            if k in m_name:
-                val = m.get("value")
-                unit = m.get("unit", "")
-                if val is not None:
-                    # Display unit label based on what was actually stored
-                    if "inr" in unit.lower():
-                        unit_display = "₹ Cr"
-                    elif "usd" in unit.lower():
-                        unit_display = "USD M"
-                    else:
-                        unit_display = unit
-                    return f"{val:,.2f} {unit_display}"
+        if val_key.lower() in m_name:
+            val = m.get("value")
+            unit = m.get("unit", "")
+            if val is not None:
+                if "eps" in m_name:
+                    return f"{currency_symbol}{val:,.2f}"
+                u_clean = "Cr" if ("inr" in unit.lower() or "cr" in unit.lower() or currency_symbol == "₹") else ("M" if ("usd" in unit.lower() or "m" in unit.lower()) else unit)
+                return f"{currency_symbol}{val:,.1f} {u_clean}"
     return "N/A"
 
 rev_val = format_curr("revenue")
@@ -129,7 +160,7 @@ with kpi_col3:
 with kpi_col4:
     render_kpi_card("Total Debt", debt_val, "Detected" if debt_val != "N/A" else "N/A", icon_name="layers")
 with kpi_col5:
-    render_kpi_card("Operating Cash", cf_val, "Detected" if cf_val != "N/A" else "N/A", icon_name="pie-chart")
+    render_kpi_card("Operating Cash Flow", cf_val, "Detected" if cf_val != "N/A" else "N/A", icon_name="pie-chart")
 
 st.divider()
 
