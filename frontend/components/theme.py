@@ -64,13 +64,13 @@ def render_html(html_code: str):
 def render_page_header(title: str, subtitle: str = "", icon_name: str = "activity"):
     """Renders a luxurious Pitch Dark & Wine Red header with vector Lucide icon."""
     svg = get_icon(icon_name, color="#E63946", size=26)
-    sub_tag = f'<div style="margin: 4px 0 16px 0; color: #94A3B8; font-size: 0.95rem; font-weight: 400; line-height: 1.5;">{subtitle}</div>' if subtitle else ""
+    sub_tag = f'<div style="margin: 6px 0 20px 0; color: #94A3B8; font-size: 0.95rem; font-weight: 400; line-height: 1.5;">{subtitle}</div>' if subtitle else ""
     header_html = f"""
-<div style="display: flex; align-items: center; gap: 14px; margin-bottom: 4px; padding-top: 2px;">
-    <div style="background: rgba(184, 29, 36, 0.15); border: 1px solid rgba(196, 30, 58, 0.4); border-radius: 10px; padding: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(184, 29, 36, 0.2);">
+<div style="display: flex; align-items: center; gap: 14px; margin-bottom: 4px; padding-top: 4px;">
+    <div style="background: rgba(184, 29, 36, 0.15); border: 1px solid rgba(196, 30, 58, 0.4); border-radius: 10px; padding: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(184, 29, 36, 0.2); flex-shrink: 0;">
         {svg}
     </div>
-    <div style="margin: 0; font-size: 1.85rem; font-weight: 700; color: #FFFFFF; letter-spacing: -0.02em;">
+    <div style="margin: 0; font-size: 1.85rem; font-weight: 700; color: #FFFFFF; letter-spacing: -0.02em; line-height: 1.25;">
         {title}
     </div>
 </div>
@@ -149,6 +149,14 @@ def apply_theme(is_landing_page: bool = False):
     }
     """ if is_landing_page else """
     /* Authenticated Workspace: Show sidebar with 6 navigation items, hide root app */
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+        pointer-events: none !important;
+    }
+    header[data-testid="stHeader"] * {
+        pointer-events: auto !important;
+    }
+
     [data-testid="stSidebar"] {
         background-color: #0D0C12 !important;
         border-right: 1px solid rgba(184, 29, 36, 0.25) !important;
@@ -166,10 +174,10 @@ def apply_theme(is_landing_page: bool = False):
     }
     
     .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 3rem !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
+        padding-top: 4.5rem !important;
+        padding-bottom: 3.5rem !important;
+        padding-left: 2.5rem !important;
+        padding-right: 2.5rem !important;
         max-width: 100% !important;
         width: 100% !important;
         margin: 0 auto !important;
