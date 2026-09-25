@@ -63,12 +63,14 @@ def render_hero_section(
     overflow-y: hidden;
   }}
 
-  /* ── Full Hero Stage Container ── */
+  /* ── Full Hero Stage Container (Exact 100vh / 100dvh & 100vw) ── */
   #hero-stage {{
     position: relative;
     width: 100%;
     height: 100vh;
-    min-height: 820px;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
     background-color: {background_color};
     display: flex;
     flex-direction: column;
@@ -733,12 +735,12 @@ def render_hero_section(
 function goToWorkspace() {{
   try {{
     if (window.parent && window.parent.location) {{
-      window.parent.location.pathname = '/Dashboard';
+      window.parent.location.assign('/Dashboard');
     }} else {{
-      window.location.href = '/Dashboard';
+      window.location.assign('/Dashboard');
     }}
   }} catch (e) {{
-    window.location.href = '/Dashboard';
+    window.location.assign('/Dashboard');
   }}
 }}
 

@@ -98,15 +98,54 @@ def apply_theme(is_landing_page: bool = False):
     .stApp > header {
         display: none !important;
         visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
     }
-    
+
+    /* Edge-to-edge full viewport setup */
+    .stApp {
+        overflow-x: hidden !important;
+    }
+
+    .main,
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMainBlockContainer"],
+    .stAppViewMain {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100vw !important;
+        width: 100vw !important;
+    }
+
     .block-container {
-        padding-top: 1rem !important;
-        padding-bottom: 3rem !important;
-        padding-left: 2.5rem !important;
-        padding-right: 2.5rem !important;
-        max-width: 1340px !important;
+        padding: 0 !important;
+        max-width: 100vw !important;
+        width: 100vw !important;
+        margin: 0 !important;
+    }
+
+    /* Hero section iframe: True 100vw x 100vh / 100dvh edge-to-edge */
+    div[data-testid="stCustomComponentV1"]:first-of-type,
+    div[data-testid="stCustomComponentV1"]:first-of-type iframe,
+    iframe[title="components.laser_flow.render_hero_section"] {
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+        max-height: 100vh !important;
+        max-height: 100dvh !important;
+        border: none !important;
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Landing Content Container (Core Capabilities, Workflow, FAQ, Footer) below 100vh fold */
+    .landing-content-container {
+        max-width: 1280px !important;
         margin: 0 auto !important;
+        padding: 60px 24px 80px 24px !important;
     }
     """ if is_landing_page else """
     /* Authenticated Workspace: Show sidebar with 6 navigation items, hide root app */

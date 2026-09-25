@@ -25,9 +25,11 @@ render_hero_section(
 )
 
 # ─────────────────────────────────────────────────────────────
-# 2. CORE CAPABILITIES (FOCUSED & SPACIOUS)
+# 2. LANDING PAGE CONTENT (BELOW 100vh FIRST VIEWPORT FOLD)
 # ─────────────────────────────────────────────────────────────
-render_html("""<div id="capabilities" style="margin-top: 40px;"></div>""")
+render_html('<div class="landing-content-container">')
+
+render_html("""<div id="capabilities" style="margin-top: 10px;"></div>""")
 
 render_html("""
 <div style="text-align: center; margin-bottom: 36px;">
@@ -269,3 +271,5 @@ render_html("""
     <div>Financial intelligence for complex documents.</div>
 </div>
 """)
+
+render_html('</div>')
