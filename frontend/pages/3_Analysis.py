@@ -46,29 +46,81 @@ doc_options = {}
 for d in live_docs:
     doc_id = d.get("id", "")
     filename = d.get("filename", "Document")
-    year = f"FY{d.get('fiscal_year', '')}" if d.get('fiscal_year') else ""
-    label = f"{filename} {year} (ID: {doc_id[:8]}...)"
+    company = d.get("company_name") or filename.rsplit(".", 1)[0]
+    period = d.get("fiscal_period", "")
+    year = d.get("fiscal_year", "")
+    period_label = f"{period} FY{year}" if year else ""
+    label = f"{company} — {period_label} ({filename[:30]})"
     doc_options[label] = d
 
-selected_label = st.selectbox("Select Analyzed Document:", options=list(doc_options.keys()))
+# Restore cross-page persistent selection from Dashboard or previous pages
+target_id = st.session_state.get("selected_doc_id")
+target_label = None
+if target_id:
+    for lbl, d in doc_options.items():
+        if str(d.get("id")) == str(target_id):
+            target_label = lbl
+            break
+
+if not target_label or target_label not in doc_options:
+    target_label = st.session_state.get("selected_doc_label")
+    if target_label not in doc_options:
+        target_label = list(doc_options.keys())[0]
+
+# Keep session state key aligned with global selection
+if st.session_state.get("analysis_doc_select") != target_label:
+    st.session_state["analysis_doc_select"] = target_label
+
+selected_label = st.selectbox(
+    "Select Analyzed Document:",
+    options=list(doc_options.keys()),
+    key="analysis_doc_select",
+)
+st.session_state["selected_doc_label"] = selected_label
+st.session_state["selected_doc_id"] = doc_options[selected_label].get("id", "")
+
 selected_doc_info = doc_options[selected_label]
 selected_doc_id = selected_doc_info.get("id")
-
-st.markdown(
-    f"<div style='color: #94A3B8; font-size: 0.85rem; margin-bottom: 12px;'>Active Document Context: <b style='color: #FFFFFF;'>{selected_doc_info.get('filename')}</b> (ID: <code style='color: #E63946;'>{selected_doc_id}</code>)</div>",
-    unsafe_allow_html=True,
-)
-st.divider()
 
 # Fetch live metrics & ratios from API
 raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []
 ratios_resp = client.get_financial_ratios(selected_doc_id) if selected_doc_id else None
 
 metrics_map = {m.get("metric_name", ""): float(m.get("value")) for m in raw_metrics if m.get("value") is not None}
+
+# Determine currency and unit
 currency_sym = "$"
 for m in raw_metrics:
-    if "inr" in m.get("unit", "").lower():
+    unit_str = str(m.get("unit", "")).lower()
+    if "inr" in unit_str or "cr" in unit_str:
         currency_sym = "₹"
+        break
+
+currency_name = "INR (₹) Crore" if currency_sym == "₹" else "USD ($) Million"
+
+# Document context banner
+period_disp = selected_doc_info.get('fiscal_period', '')
+year_disp = selected_doc_info.get('fiscal_year', '')
+period_text = f"{period_disp} FY{year_disp}" if period_disp and period_disp != "FY" else (f"FY{year_disp}" if year_disp else "Active Filing")
+st.markdown(
+    f"<div style='color: #94A3B8; font-size: 0.85rem; margin-bottom: 12px;'>"
+    f"Active: <b style='color: #FFFFFF;'>{selected_doc_info.get('company_name', selected_doc_info.get('filename'))}</b> "
+    f"— <span style='color: #E63946;'>{period_text}</span> "
+    f"— Currency: <b style='color: #FFFFFF;'>{currency_name}</b>"
+    f"</div>",
+    unsafe_allow_html=True,
+)
+st.divider()
+
+def format_unit_label(raw_unit: str) -> str:
+    u = (raw_unit or "").upper().strip()
+    if "INR_CR" in u or "CR" in u:
+        return "Cr"
+    if "USD_M" in u or u == "M":
+        return "M"
+    if "USD_B" in u or u == "B":
+        return "B"
+    return raw_unit or ""
 
 def find_metric(name_patterns):
     for m in raw_metrics:
@@ -76,10 +128,14 @@ def find_metric(name_patterns):
         for p in name_patterns:
             if p.lower() in m_name:
                 val = m.get("value")
-                unit = m.get("unit", "M")
+                unit = m.get("unit", "")
                 conf = f"{int(m.get('confidence', 1.0) * 100)}%"
                 if val is not None:
-                    return f"{currency_sym}{val:,.1f} {unit}", conf, "Detected"
+                    if "eps" in m_name:
+                        return f"{currency_sym}{val:,.2f}", conf, "Detected"
+                    clean_unit = format_unit_label(unit)
+                    unit_suffix = f" {clean_unit}" if clean_unit else ""
+                    return f"{currency_sym}{val:,.1f}{unit_suffix}", conf, "Detected"
     return "N/A", "—", "Not Detected"
 
 # 1. Income Statement Cards
@@ -192,8 +248,45 @@ icon_table = get_icon("database", color="#E63946", size=18)
 st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'><span>{icon_table}</span><span style='font-weight: 700; color: #FFFFFF;'>All Extracted Metric Line Items</span></div>", unsafe_allow_html=True)
 
 if raw_metrics:
-    df_metrics = pd.DataFrame(raw_metrics)
-    display_cols = [c for c in ["metric_name", "value", "unit", "fiscal_year", "fiscal_period", "confidence"] if c in df_metrics.columns]
-    st.dataframe(df_metrics[display_cols] if display_cols else df_metrics, use_container_width=True, hide_index=True)
+    clean_rows = []
+    for r in raw_metrics:
+        m_name = r.get("metric_name", "")
+        val = r.get("value")
+        raw_u = str(r.get("unit", "")).upper()
+        
+        # Human-readable unit formatting
+        if "INR" in raw_u or "CR" in raw_u:
+            display_unit = "₹ Crore (INR Cr)"
+        elif "USD" in raw_u or "M" in raw_u:
+            display_unit = "$ Million (USD M)"
+        elif "B" in raw_u:
+            display_unit = "$ Billion (USD B)"
+        elif "eps" in m_name.lower():
+            display_unit = "Per Share"
+        else:
+            display_unit = r.get("unit") or "Standard"
+            
+        if val is not None:
+            formatted_val = f"{val:,.2f}" if "eps" in m_name.lower() else f"{val:,.1f}"
+        else:
+            formatted_val = "N/A"
+            
+        yr = r.get("fiscal_year")
+        year_str = str(int(yr)) if yr and str(yr).replace('.', '').isdigit() else (str(yr) if yr else "—")
+        
+        conf = r.get("confidence")
+        conf_str = f"{int(float(conf) * 100)}%" if conf is not None else "—"
+        
+        clean_rows.append({
+            "Metric Line Item": m_name,
+            "Value": formatted_val,
+            "Unit / Currency": display_unit,
+            "Fiscal Year": year_str,
+            "Period": r.get("fiscal_period") or "FY",
+            "Page": f"Page {r.get('source_page')}" if r.get("source_page") else "—",
+            "Confidence": conf_str,
+        })
+    df_metrics = pd.DataFrame(clean_rows)
+    st.dataframe(df_metrics, use_container_width=True, hide_index=True)
 else:
     st.write("No specific line items extracted for this document yet.")

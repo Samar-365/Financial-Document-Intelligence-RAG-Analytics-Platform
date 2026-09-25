@@ -34,15 +34,59 @@ doc_options = {}
 for d in live_docs:
     doc_id = d.get("id", "")
     filename = d.get("filename", "Document")
-    year = f"FY{d.get('fiscal_year', '')}" if d.get('fiscal_year') else ""
-    label = f"{filename} {year} (ID: {doc_id[:8]}...)"
+    company = d.get("company_name") or filename.rsplit(".", 1)[0]
+    period = d.get("fiscal_period", "")
+    year = d.get("fiscal_year", "")
+    period_label = f"{period} FY{year}" if year else ""
+    label = f"{company} — {period_label} ({filename[:30]})"
     doc_options[label] = d
 
-selected_label = st.selectbox("Search Context / Document Target:", options=list(doc_options.keys()))
+# Restore cross-page persistent selection from Dashboard or Analysis by ID
+target_id = st.session_state.get("selected_doc_id")
+target_label = None
+if target_id:
+    for lbl, d in doc_options.items():
+        if str(d.get("id")) == str(target_id):
+            target_label = lbl
+            break
+
+if not target_label or target_label not in doc_options:
+    target_label = st.session_state.get("selected_doc_label")
+    if target_label not in doc_options:
+        target_label = list(doc_options.keys())[0]
+
+if st.session_state.get("ai_analyst_doc_select") != target_label:
+    st.session_state["ai_analyst_doc_select"] = target_label
+
+selected_label = st.selectbox(
+    "Search Context / Document Target:",
+    options=list(doc_options.keys()),
+    key="ai_analyst_doc_select",
+)
+st.session_state["selected_doc_label"] = selected_label
+st.session_state["selected_doc_id"] = doc_options[selected_label].get("id", "")
+
 selected_doc_info = doc_options[selected_label]
 selected_doc_id = selected_doc_info.get("id")
 selected_doc_filename = selected_doc_info.get("filename", "Document")
 
+# Reset chat session if document switched to avoid mixed-context answers
+if st.session_state.get("last_chat_doc_id") != selected_doc_id:
+    st.session_state["chat_messages"] = []
+    st.session_state["last_chat_doc_id"] = selected_doc_id
+
+# Document context banner
+period_disp = selected_doc_info.get('fiscal_period', '')
+year_disp = selected_doc_info.get('fiscal_year', '')
+period_text = f"{period_disp} FY{year_disp}" if period_disp and period_disp != "FY" else (f"FY{year_disp}" if year_disp else "Active Filing")
+st.markdown(
+    f"<div style='color: #94A3B8; font-size: 0.85rem; margin-bottom: 12px;'>"
+    f"Active: <b style='color: #FFFFFF;'>{selected_doc_info.get('company_name', selected_doc_filename)}</b> "
+    f"— <span style='color: #E63946;'>{period_text}</span> "
+    f"— Filename: <code style='color: #E63946; background: rgba(184, 29, 36, 0.15);'>{selected_doc_filename[:35]}</code>"
+    f"</div>",
+    unsafe_allow_html=True,
+)
 st.divider()
 
 sparkles_svg = get_icon("sparkles", color="#E63946", size=18)
