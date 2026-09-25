@@ -248,8 +248,18 @@ def process_document_pipeline(
                         except ValueError:
                             pass
 
-        # Determine unit based on text markers ($ vs ₹)
-        unit_label = "USD_M" if "$" in extracted_text else "INR_CR"
+        # Determine unit based on text markers (₹ / Rs. / INR → INR_CR; $ → USD_M)
+        # TCS and Indian filings use ₹ or Rs. — never mislabel these as USD_M
+        has_inr = bool(re.search(r"[₹]|\bRs\.?\b|\bINR\b|\bRupees\b", extracted_text, re.IGNORECASE))
+        has_usd = bool(re.search(r"\$|\bUSD\b|\bU\.S\.\s*Dollar", extracted_text))
+        if has_inr and not has_usd:
+            unit_label = "INR_CR"
+        elif has_usd and not has_inr:
+            unit_label = "USD_M"
+        elif has_usd:
+            unit_label = "USD_M"  # mixed: default to USD if both symbols present
+        else:
+            unit_label = "INR_CR"  # default for Indian documents
 
         # Store FinancialMetric rows (only valid fields on FinancialMetric model)
         metric_rows = []
@@ -287,34 +297,72 @@ def process_document_pipeline(
             equity = total_assets - total_debt
 
         roe = round((net_income / equity) * 100, 2) if (net_income is not None and equity and equity > 0) else None
-        debt_to_equity = round(total_debt / equity, 2) if (total_debt is not None and equity and equity > 0) else 0.45
-        
-        current_ratio = 1.6 if total_assets else 1.4
-        quick_ratio = 1.2 if total_assets else 1.1
-        interest_coverage = 8.5 if ebitda else 5.0
+        # Debt-to-equity: only compute when both inputs are available, never fabricate
+        debt_to_equity = round(total_debt / equity, 2) if (total_debt is not None and equity and equity > 0) else None
 
-        # 5D Health Scores (Derived from genuine indicators or neutral 75.0)
-        growth_score = 78.0
-        profitability_score = min(98.0, max(25.0, npm * 3.5)) if npm is not None else 78.0
-        liquidity_score = 75.0
-        leverage_score = max(35.0, min(95.0, 95.0 - (debt_to_equity * 25.0))) if debt_to_equity is not None else 75.0
-        cash_flow_score = 80.0
-        
-        overall_score = round(
-            growth_score * 0.20 +
-            profitability_score * 0.25 +
-            liquidity_score * 0.20 +
-            leverage_score * 0.20 +
-            cash_flow_score * 0.15,
-            1
-        )
+        # Current ratio, quick ratio, and interest coverage require balance-sheet line items
+        # that are not always extractable from every document.  Return None rather than
+        # injecting a plausible-but-fabricated placeholder.
+        current_assets = metrics_dict.get("Current Assets")
+        current_liab = metrics_dict.get("Current Liabilities")
+        current_ratio = round(current_assets / current_liab, 2) if (current_assets and current_liab and current_liab > 0) else None
+        quick_ratio = None  # Requires inventory breakdown not always available
+        interest_coverage = None  # Requires interest expense line item
+
+        # 5D Health Scores — computed only from extracted values; None when inputs are missing.
+        # RULE: Never assign a plausible-looking default that could be mistaken for a real figure.
+        ocf = metrics_dict.get("Operating Cash Flow")
+
+        # Profitability: mapped from NPM (0-30% → 0-100 scale)
+        profitability_score = round(min(100.0, max(0.0, npm * 3.33)), 1) if npm is not None else None
+
+        # Leverage: inversely proportional to D/E ratio (D/E=0→100, D/E=4→0)
+        leverage_score = round(max(0.0, min(100.0, 100.0 - (debt_to_equity * 25.0))), 1) if debt_to_equity is not None else None
+
+        # Liquidity: current ratio mapped (CR≥2→100, CR=1→50, CR<1→0)
+        liquidity_score = round(min(100.0, max(0.0, current_ratio * 50.0)), 1) if current_ratio is not None else None
+
+        # Cash flow score: OCF / Revenue (0-20% → 0-100 scale)
+        ocf_revenue = metrics_dict.get("Operating Cash Flow")
+        revenue_for_cf = metrics_dict.get("Revenue")
+        cash_flow_score = round(min(100.0, max(0.0, (ocf_revenue / revenue_for_cf) * 500.0)), 1) \
+            if (ocf_revenue is not None and revenue_for_cf and revenue_for_cf > 0) else None
+
+        # Growth score: cannot be determined from a single document (requires prior period)
+        growth_score = None
+
+        # Overall: weighted average of available dimensions only
+        score_weights = [
+            (profitability_score, 0.30),
+            (leverage_score, 0.25),
+            (liquidity_score, 0.20),
+            (cash_flow_score, 0.15),
+            (growth_score, 0.10),
+        ]
+        valid_scores = [(s, w) for s, w in score_weights if s is not None]
+        if valid_scores:
+            total_weight = sum(w for _, w in valid_scores)
+            overall_score = round(sum(s * w for s, w in valid_scores) / total_weight, 1)
+        else:
+            overall_score = None
+
+        # Assemble risk flags from actual analysis
+        risk_flags_list = ["Document Analyzed & Indexed into Vector Database"]
+        if debt_to_equity is not None and debt_to_equity > 2.0:
+            risk_flags_list.append(f"High Leverage: D/E ratio = {debt_to_equity:.2f}x")
+        if current_ratio is not None and current_ratio < 1.0:
+            risk_flags_list.append(f"Liquidity Risk: Current ratio = {current_ratio:.2f}x (below 1.0)")
+        if npm is not None and npm < 5.0:
+            risk_flags_list.append(f"Low Net Margin: {npm:.2f}% (below 5%)")
 
         analysis = AnalysisResult(
             document_id=doc.id,
-            opm=opm or 28.5,
-            npm=npm or 22.0,
-            roe=roe or 30.0,
-            roce=25.0,
+            # STRICT RULE: never substitute a hardcoded default for a financial ratio.
+            # If the input metrics are unavailable, store None so the UI shows N/A.
+            opm=opm,          # Operating profit margin — None if revenue/EBITDA not found
+            npm=npm,          # Net profit margin    — None if revenue/net-income not found
+            roe=roe,          # Return on equity     — None if equity not derivable
+            roce=None,        # ROCE requires capital-employed which needs balance sheet
             current_ratio=current_ratio,
             quick_ratio=quick_ratio,
             debt_to_equity=debt_to_equity,
@@ -325,7 +373,7 @@ def process_document_pipeline(
             liquidity_score=liquidity_score,
             leverage_score=leverage_score,
             cash_flow_score=cash_flow_score,
-            risk_flags=["Document Analyzed & Indexed into Vector Database"],
+            risk_flags=risk_flags_list,
         )
         db.add(analysis)
 

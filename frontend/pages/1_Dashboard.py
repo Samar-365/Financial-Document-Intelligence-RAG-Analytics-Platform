@@ -73,13 +73,13 @@ health_res = client.get_health_score(selected_doc_id) if selected_doc_id else No
 raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []
 ratios_res = client.get_financial_ratios(selected_doc_id) if selected_doc_id else None
 
-overall_score = float(health_res.get("overall_score", 70.0)) if health_res else 70.0
-growth_score = float(health_res.get("growth_score", 70.0)) if health_res else 70.0
-profit_score = float(health_res.get("profitability_score", 70.0)) if health_res else 70.0
-liq_score = float(health_res.get("liquidity_score", 70.0)) if health_res else 70.0
-lev_score = float(health_res.get("leverage_score", 70.0)) if health_res else 70.0
-cf_score = float(health_res.get("cash_flow_score", 70.0)) if health_res else 70.0
-risk_flags = health_res.get("risk_flags", ["Active in Vector Database"]) if health_res else ["Active in Vector Database"]
+overall_score = float(health_res.get("overall_score")) if health_res and health_res.get("overall_score") is not None else None
+growth_score = float(health_res.get("growth_score")) if health_res and health_res.get("growth_score") is not None else None
+profit_score = float(health_res.get("profitability_score")) if health_res and health_res.get("profitability_score") is not None else None
+liq_score = float(health_res.get("liquidity_score")) if health_res and health_res.get("liquidity_score") is not None else None
+lev_score = float(health_res.get("leverage_score")) if health_res and health_res.get("leverage_score") is not None else None
+cf_score = float(health_res.get("cash_flow_score")) if health_res and health_res.get("cash_flow_score") is not None else None
+risk_flags = health_res.get("risk_flags", []) if health_res else []
 
 # 3. Key Performance Indicators (KPIs)
 icon_trend = get_icon("trending-up", color="#E63946", size=20)
@@ -96,9 +96,21 @@ for m in raw_metrics:
         currency_symbol = "₹"
 
 def format_curr(val_key: str):
-    for k, v in metrics_map.items():
-        if val_key.lower() in k.lower():
-            return f"{currency_symbol}{v:,.0f} M"
+    for m in raw_metrics:
+        m_name = m.get("metric_name", "").lower()
+        for k in [val_key.lower()]:
+            if k in m_name:
+                val = m.get("value")
+                unit = m.get("unit", "")
+                if val is not None:
+                    # Display unit label based on what was actually stored
+                    if "inr" in unit.lower():
+                        unit_display = "₹ Cr"
+                    elif "usd" in unit.lower():
+                        unit_display = "USD M"
+                    else:
+                        unit_display = unit
+                    return f"{val:,.2f} {unit_display}"
     return "N/A"
 
 rev_val = format_curr("revenue")
@@ -129,13 +141,18 @@ score_col1, score_col2 = st.columns([1, 1.2])
 
 with score_col1:
     with st.container(border=True):
-        render_health_gauge(int(overall_score), "Overall Health Score")
-        render_html(f"""
+        if overall_score is not None:
+            render_health_gauge(int(overall_score), "Overall Health Score")
+            status_color = '#4ADE80' if overall_score >= 70 else '#E63946'
+            status_label = 'Strong / Solvency Cushion' if overall_score >= 70 else 'Moderate / Monitoring'
+            render_html(f"""
 <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px;">
-    <span style="color: #94A3B8; font-size: 0.85rem;">Status: <b style="color: {'#4ADE80' if overall_score >= 70 else '#E63946'};">{'Strong / Solvency Cushion' if overall_score >= 70 else 'Moderate / Monitoring'}</b></span>
-    <span style="color: #E63946; font-weight: 700; font-size: 0.9rem;">{overall_score:.1f}%</span>
+    <span style="color: #94A3B8; font-size: 0.85rem;">Status: <b style="color: {status_color};">{status_label}</b></span>
+    <span style="color: #E63946; font-weight: 700; font-size: 0.9rem;">{overall_score:.1f} / 100</span>
 </div>
 """)
+        else:
+            st.info("Overall health score not computed — insufficient financial metrics extracted from this document. Income statement and balance sheet data required.")
 
 with score_col2:
     with st.container(border=True):
