@@ -11,7 +11,7 @@ from app.rag.gemini_client import (
 def test_gemini_initialization_defaults():
     """Verifies default parameters for GeminiClientWrapper."""
     wrapper = GeminiClientWrapper(api_key="test-gemini-key")
-    assert wrapper.model in ("gemini-2.5-flash", "gemini-1.5-flash")
+    assert wrapper.model in ("gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-2.5-flash", "gemini-1.5-flash")
     assert wrapper.temperature == 0.1
     assert wrapper.top_p == 0.95
     assert wrapper.max_tokens == 1024
