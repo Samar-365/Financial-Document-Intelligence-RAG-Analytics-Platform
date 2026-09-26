@@ -127,7 +127,11 @@ def generate_executive_pdf_report(
     story.append(Paragraph("3. Qualitative Risk Highlights (Item 1A / Notes)", section_style))
     risk_data = [["#", "Identified Risk Disclosure Factor"]]
     for idx, risk in enumerate(risks[:5], start=1):
-        risk_data.append([str(idx), risk])
+        if isinstance(risk, dict):
+            desc = str(risk.get("description") or risk.get("category") or str(risk))
+        else:
+            desc = str(risk)
+        risk_data.append([str(idx), desc])
     if len(risk_data) == 1:
         risk_data.append(["1", "No critical qualitative risk flags identified."])
 

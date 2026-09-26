@@ -16,12 +16,15 @@ from utils.workspace_state import (
     mark_document_loaded,
     render_skeleton_banner,
     render_skeleton_kpis,
+    render_skeleton_charts,
     is_response_valid,
 )
 
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
+
 st.set_page_config(
     page_title="FININTEL — Financial Analysis",
-    page_icon="frontend/assets/finintel_logo.png",
+    page_icon=FAVICON_PATH,
     layout="wide"
 )
 
@@ -64,6 +67,9 @@ selected_doc_id = selected_doc_info.get("id")
 if st.session_state.get("document_loading", False):
     render_skeleton_banner()
     render_skeleton_kpis()
+    render_skeleton_charts()
+    mark_document_loaded(selected_doc_id)
+    st.rerun()
 
 # Fetch live metrics & ratios from API strictly scoped to selected_doc_id
 raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []

@@ -15,9 +15,11 @@ from components.theme import apply_theme, render_page_header, get_icon, render_h
 from utils.api_client import client
 from utils.workspace_state import render_workspace_sidebar_branding
 
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
+
 st.set_page_config(
     page_title="FININTEL — Audit Logs",
-    page_icon="frontend/assets/finintel_logo.png",
+    page_icon=FAVICON_PATH,
     layout="wide"
 )
 
