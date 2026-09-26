@@ -2,9 +2,11 @@ import streamlit as st
 import sys
 from pathlib import Path
 
+FAVICON_PATH = str(Path(__file__).resolve().parent / "assets" / "finintel_logo.png")
+
 st.set_page_config(
     page_title="FININTEL — Financial Intelligence Platform",
-    page_icon="frontend/assets/finintel_logo.png",
+    page_icon=FAVICON_PATH,
     layout="wide",
     initial_sidebar_state="collapsed",
 )
