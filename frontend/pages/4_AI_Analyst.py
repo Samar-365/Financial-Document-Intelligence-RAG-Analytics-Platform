@@ -14,9 +14,11 @@ from utils.workspace_state import (
     is_response_valid,
 )
 
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
+
 st.set_page_config(
     page_title="FININTEL — AI Analyst",
-    page_icon="frontend/assets/finintel_logo.png",
+    page_icon=FAVICON_PATH,
     layout="wide"
 )
 
@@ -121,10 +123,16 @@ suggestions = [
     "Summarize the financial highlights.",
 ]
 
-chip_cols = st.columns(len(suggestions))
-for idx, question in enumerate(suggestions):
-    if chip_cols[idx].button(question, key=f"sug_chip_{idx}"):
-        st.session_state["pending_prompt"] = question
+row1_cols = st.columns(3)
+for idx in range(3):
+    if row1_cols[idx].button(suggestions[idx], key=f"sug_chip_{idx}", use_container_width=True):
+        st.session_state["pending_prompt"] = suggestions[idx]
+        st.rerun()
+
+row2_cols = st.columns(3)
+for idx in range(3, 6):
+    if row2_cols[idx - 3].button(suggestions[idx], key=f"sug_chip_{idx}", use_container_width=True):
+        st.session_state["pending_prompt"] = suggestions[idx]
         st.rerun()
 
 st.divider()
@@ -188,8 +196,7 @@ if prompt:
                 }
             else:
                 response_text = (
-                    "**AI analysis is temporarily unavailable.** "
-                    "Please check that the document has completed processing, or try asking about specific line items."
+                    "AI analysis is temporarily unavailable. Please try again."
                 )
                 sources = []
                 metrics = {"time": f"{int(elapsed * 1000)}ms", "chunks": 0}
