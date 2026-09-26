@@ -1,0 +1,20 @@
+{
+  "include": [
+    "app",
+    "frontend",
+    "scripts",
+    "tests"
+  ],
+  "extraPaths": [
+    ".",
+    "app",
+    "frontend"
+  ],
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "basic",
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none",
+  "reportMissingTypeStubs": false
+}
