@@ -91,15 +91,22 @@ def apply_theme(is_landing_page: bool = False):
         Shows the sidebar containing exactly the 6 authenticated workspace tabs, hiding any 'app' root links.
     """
     sidebar_landing_css = """
-    /* Hide Streamlit Sidebar entirely on the public landing page */
+    /* Hide Streamlit Sidebar and any stray collapsed arrow controls on the public landing page */
     [data-testid="stSidebar"],
     [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="stSidebarHeader"],
     header[data-testid="stHeader"],
-    .stApp > header {
+    .stApp > header,
+    button[kind="header"],
+    button[kind="headerNoPadding"] {
         display: none !important;
         visibility: hidden !important;
         height: 0 !important;
         width: 0 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
     }
 
     /* Edge-to-edge full viewport setup */
@@ -157,31 +164,164 @@ def apply_theme(is_landing_page: bool = False):
         pointer-events: auto !important;
     }
 
-    /* Remove unnecessary button/arrow in the top-left sidebar header */
-    [data-testid="stSidebarCollapseButton"],
-    button[data-testid="stSidebarCollapseButton"],
-    [data-testid="stSidebarHeader"] > button,
-    button[kind="header"],
-    [data-testid="collapsedControl"] {
-        display: none !important;
-        visibility: hidden !important;
-    }
-    [data-testid="stSidebarHeader"] {
-        padding: 0 !important;
-        height: 0 !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-    }
-
+    /* Workspace Sidebar Structure & Collapse Controls */
     [data-testid="stSidebar"] {
         background-color: #0D0C12 !important;
         border-right: 1px solid rgba(184, 29, 36, 0.25) !important;
         display: block !important;
-        padding-top: 1rem !important;
     }
-    
-    [data-testid="stSidebar"] * {
+
+    /* Clean up sidebar header & remove awkward top divider */
+    [data-testid="stSidebarHeader"] {
+        background: transparent !important;
+        padding: 0.5rem 1rem 0 1rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        border: none !important;
+        border-bottom: none !important;
+    }
+
+    /* Style legitimate sidebar collapse and expand controls */
+    [data-testid="stSidebarCollapseButton"],
+    button[data-testid="stSidebarCollapseButton"],
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapsedControl"] {
+        display: flex !important;
+        visibility: visible !important;
+        color: #94A3B8 !important;
+        background: transparent !important;
+        border: none !important;
+        transition: color 0.2s ease, transform 0.2s ease !important;
+        cursor: pointer !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"]:hover,
+    button[data-testid="stSidebarCollapseButton"]:hover,
+    [data-testid="collapsedControl"]:hover,
+    [data-testid="stSidebarCollapsedControl"]:hover {
+        color: #E63946 !important;
+    }
+
+    [data-testid="stSidebarContent"] {
+        display: flex !important;
+        flex-direction: column !important;
+        padding-top: 0 !important;
+    }
+
+    /* Place user content (Branding) at the very top of sidebar above navigation */
+    [data-testid="stSidebarUserContent"] {
+        order: 1 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    [data-testid="stSidebarUserContent"] > div {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    /* FinIntel Logo Lockup in Sidebar */
+    .finintel-brand-container {
+        display: block !important;
+        padding: 4px 2px 14px 2px !important;
+        margin-bottom: 10px !important;
+        border-bottom: 1px solid rgba(184, 29, 36, 0.28) !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .finintel-brand-link {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 12px !important;
+        text-decoration: none !important;
+        cursor: pointer !important;
+        padding: 6px 8px !important;
+        border-radius: 9px !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .finintel-brand-link:hover {
+        background-color: rgba(184, 29, 36, 0.12) !important;
+        transform: translateX(2px) !important;
+    }
+
+    .finintel-brand-badge {
+        background: rgba(184, 29, 36, 0.2) !important;
+        border: 1px solid rgba(230, 57, 70, 0.55) !important;
+        border-radius: 9px !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 0 14px rgba(230, 57, 70, 0.3) !important;
+        flex-shrink: 0 !important;
+    }
+
+    .finintel-brand-details {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        text-align: left !important;
+        overflow: hidden !important;
+    }
+
+    .finintel-brand-name {
+        font-size: 1.15rem !important;
+        font-weight: 800 !important;
+        color: #FFFFFF !important;
+        letter-spacing: -0.01em !important;
+        line-height: 1.15 !important;
+        white-space: nowrap !important;
+    }
+
+    .finintel-brand-red {
+        color: #E63946 !important;
+        font-weight: 800 !important;
+    }
+
+    .finintel-brand-sub {
+        font-size: 0.65rem !important;
+        font-weight: 600 !important;
+        color: #94A3B8 !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        margin-top: 3px !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+
+    /* Place page navigation directly beneath branding */
+    [data-testid="stSidebarNav"] {
+        order: 2 !important;
+        padding-top: 0 !important;
+    }
+
+    [data-testid="stSidebarNav"] * {
         color: #CBD5E1 !important;
+    }
+
+    [data-testid="stSidebarNav"] a {
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        transition: all 0.2s ease !important;
+    }
+
+    [data-testid="stSidebarNav"] a:hover {
+        background-color: rgba(184, 29, 36, 0.15) !important;
+        color: #FFFFFF !important;
+    }
+
+    [data-testid="stSidebarNav"] a[aria-current="page"] {
+        background-color: rgba(184, 29, 36, 0.28) !important;
+        border-left: 3px solid #E63946 !important;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
     }
     
     /* Ensure the root 'app.py' doesn't show in the workspace navigation */
@@ -201,6 +341,14 @@ def apply_theme(is_landing_page: bool = False):
         box-sizing: border-box !important;
     }
 
+    @media (max-width: 768px) {
+        .block-container {
+            padding-left: 1.25rem !important;
+            padding-right: 1.25rem !important;
+            padding-top: 3.5rem !important;
+        }
+    }
+
     /* Shimmer animation for skeleton loaders */
     @keyframes shimmer {
         0% { background-position: -200% 0; }
@@ -211,6 +359,45 @@ def apply_theme(is_landing_page: bool = False):
         background-size: 200% 100% !important;
         animation: shimmer 1.5s infinite ease-in-out !important;
         border-radius: 6px !important;
+    }
+
+    /* AI Analyst Suggestion Chips */
+    div[data-testid="stColumn"] button[kind="secondary"] {
+        border-radius: 20px !important;
+        font-size: 0.82rem !important;
+        padding: 6px 14px !important;
+        background: #111017 !important;
+        border: 1px solid rgba(196, 30, 58, 0.3) !important;
+        color: #CBD5E1 !important;
+        white-space: normal !important;
+        height: auto !important;
+        min-height: 38px !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+    div[data-testid="stColumn"] button[kind="secondary"]:hover {
+        border-color: #E63946 !important;
+        color: #FFFFFF !important;
+        background: rgba(184, 29, 36, 0.18) !important;
+        box-shadow: 0 0 12px rgba(230, 57, 70, 0.25) !important;
+    }
+
+    /* AI Analyst Chat Input */
+    [data-testid="stChatInput"] {
+        border-radius: 24px !important;
+        border: 1px solid rgba(196, 30, 58, 0.35) !important;
+        background-color: #111017 !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+    }
+    [data-testid="stChatInput"]:focus-within {
+        border-color: #E63946 !important;
+        box-shadow: 0 0 16px rgba(230, 57, 70, 0.3) !important;
+    }
+    [data-testid="stChatInput"] textarea {
+        color: #F1F5F9 !important;
+        font-size: 0.95rem !important;
+    }
+    [data-testid="stChatInput"] button {
+        color: #E63946 !important;
     }
     """
 
