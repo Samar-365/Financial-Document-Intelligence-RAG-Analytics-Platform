@@ -18,12 +18,15 @@ from utils.workspace_state import (
     mark_document_loaded,
     render_skeleton_kpis,
     render_skeleton_banner,
+    render_skeleton_charts,
     is_response_valid,
 )
 
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
+
 st.set_page_config(
     page_title="FININTEL — Dashboard",
-    page_icon="frontend/assets/finintel_logo.png",
+    page_icon=FAVICON_PATH,
     layout="wide"
 )
 
@@ -67,6 +70,9 @@ is_loading = st.session_state.get("document_loading", False)
 if is_loading:
     render_skeleton_banner()
     render_skeleton_kpis()
+    render_skeleton_charts()
+    mark_document_loaded(selected_doc_id)
+    st.rerun()
 
 # Fetch live metrics scoped strictly to selected_doc_id
 raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []
@@ -104,7 +110,9 @@ with st.container(border=True):
     col_h2.markdown(f"<span style='color: #94A3B8;'>Period:</span> <b style='color: #FFFFFF;'>{period_text}</b>", unsafe_allow_html=True)
     col_h3.markdown(f"<span style='color: #94A3B8;'>Currency:</span> <b style='color: #FFFFFF;'>{currency_display}</b>", unsafe_allow_html=True)
     col_h4.markdown(f"<span style='color: #94A3B8;'>Status:</span> <span style='color: #4ADE80; font-weight: 600;'>{icon_check} {selected_doc_info.get('status', 'PROCESSED')}</span>", unsafe_allow_html=True)
-    col_h5.markdown(f"<span style='color: #94A3B8;'>File:</span> <code style='color: #E63946; background: rgba(184, 29, 36, 0.15);'>{selected_doc_info.get('filename', '')[:40]}</code>", unsafe_allow_html=True)
+    raw_fn = selected_doc_info.get('filename', '')
+    trunc_fn = raw_fn[:24] + "..." if len(raw_fn) > 24 else raw_fn
+    col_h5.markdown(f"<span style='color: #94A3B8;'>File:</span> <code style='color: #E63946; background: rgba(184, 29, 36, 0.15); max-width: 100%; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;' title='{raw_fn}'>{trunc_fn}</code>", unsafe_allow_html=True)
 
 st.divider()
 
@@ -218,18 +226,40 @@ with risk_col1:
         if risk_flags:
             st.markdown("<b style='color: #F8FAFC;'>Automated Risk Classifications:</b>", unsafe_allow_html=True)
             for rf in risk_flags:
-                sev = rf.get("severity", "MEDIUM")
+                if isinstance(rf, dict):
+                    sev = str(rf.get("severity", "MEDIUM")).upper()
+                    cat = str(rf.get("category", "RISK"))
+                    desc = str(rf.get("description", ""))
+                else:
+                    text = str(rf)
+                    if ":" in text:
+                        cat, desc = text.split(":", 1)
+                        cat = cat.strip()
+                        desc = desc.strip()
+                    else:
+                        cat = "SYSTEM"
+                        desc = text.strip()
+
+                    low_text = text.lower()
+                    if "high" in low_text or "critical" in low_text or "distress" in low_text:
+                        sev = "HIGH"
+                    elif "risk" in low_text or "margin" in low_text or "warning" in low_text or "below" in low_text:
+                        sev = "MEDIUM"
+                    else:
+                        sev = "INFO"
+
                 s_color = "#E63946" if sev == "HIGH" else ("#F59E0B" if sev == "MEDIUM" else "#3B82F6")
-                st.markdown(f"<div style='padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06);'><span style='color: {s_color}; font-weight: bold;'>[{sev}]</span> <span style='color: #CBD5E1;'>{rf.get('category')}:</span> {rf.get('description')}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06);'><span style='color: {s_color}; font-weight: bold;'>[{sev}]</span> <span style='color: #CBD5E1;'>{cat}:</span> <span style='color: #94A3B8;'>{desc}</span></div>", unsafe_allow_html=True)
         else:
             st.markdown("<span style='color: #4ADE80;'>✓ No material solvency or financial distress flags detected in extracted indicators.</span>", unsafe_allow_html=True)
 
 with risk_col2:
     with st.container(border=True):
+        score_display = f"{overall_score:.1f} / 100" if overall_score is not None else "N/A (Extraction Pending)"
         st.markdown(
             f"""
             * **Filing Document:** <code style='color: #E63946; background: rgba(184, 29, 36, 0.15);'>{selected_doc_info.get('filename')}</code>
-            * **Composite Health Score:** **{overall_score:.1f} / 100**
+            * **Composite Health Score:** **{score_display}**
             * **Database Engine:** PostgreSQL 16 Alpine with native `pgvector` index.
             * **AI Intelligence:** Ask queries on the **AI Analyst** page powered by **Google Gemini**.
             """,
