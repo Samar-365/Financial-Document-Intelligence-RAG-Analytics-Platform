@@ -10,9 +10,11 @@ from components.advanced_charts import render_comparative_deltas_chart
 from utils.api_client import client
 from utils.workspace_state import render_workspace_sidebar_branding, format_doc_label
 
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
+
 st.set_page_config(
     page_title="FININTEL — Comparison",
-    page_icon="frontend/assets/finintel_logo.png",
+    page_icon=FAVICON_PATH,
     layout="wide"
 )
 
@@ -133,8 +135,10 @@ if st.session_state.get("has_compared", False):
         
         score_a = (health_a or {}).get("overall_score")
         score_b = (health_b or {}).get("overall_score")
-        flags_a = set((health_a or {}).get("risk_flags", []))
-        flags_b = set((health_b or {}).get("risk_flags", []))
+        raw_flags_a = (health_a or {}).get("risk_flags", [])
+        raw_flags_b = (health_b or {}).get("risk_flags", [])
+        flags_a = {str(f.get("description", f)) if isinstance(f, dict) else str(f) for f in raw_flags_a}
+        flags_b = {str(f.get("description", f)) if isinstance(f, dict) else str(f) for f in raw_flags_b}
         
         col1, col2, col3 = st.columns(3)
         with col1:
