@@ -40,16 +40,23 @@ def set_active_doc_id(doc_id: str) -> None:
         st.session_state[ACTIVE_DOC_KEY] = doc_id
         st.session_state["selected_doc_id"] = doc_id
         
-        # Clear stale metrics/ratios caches
+        # Clear stale metrics/ratios caches in session state
         st.session_state.pop("cached_metrics", None)
         st.session_state.pop("cached_ratios", None)
         st.session_state.pop("cached_health", None)
         
+        # Invalidate API client cache to guarantee fresh fetch
+        try:
+            from utils.api_client import invalidate_financial_cache
+            invalidate_financial_cache()
+        except Exception:
+            pass
+
         # Clear AI chat conversation to prevent cross-document hallucinations
         st.session_state["chat_messages"] = []
         st.session_state["last_chat_doc_id"] = doc_id
         
-        # Flag loading state
+        # Flag loading state to display skeleton placeholders
         st.session_state[DOC_LOADING_KEY] = True
 
 
@@ -91,7 +98,7 @@ def format_doc_label(doc: Dict[str, Any]) -> str:
     currency_hint = "INR" if ("inr" in filename.lower() or "tcs" in filename.lower() or "infosys" in filename.lower()) else "USD"
 
     # Clean truncated filename
-    clean_fn = filename[:24] + "..." if len(filename) > 24 else filename
+    clean_fn = filename[:22] + "..." if len(filename) > 22 else filename
 
     status = doc.get("status", "PROCESSED")
     status_display = "Processed" if status.upper() == "PROCESSED" else status.capitalize()
@@ -102,37 +109,19 @@ def format_doc_label(doc: Dict[str, Any]) -> str:
 def render_workspace_sidebar_branding():
     """Renders the official clickable FININTEL branding in the Streamlit sidebar."""
     with st.sidebar:
-        icon_brand = get_icon("activity", color="#E63946", size=22)
+        icon_brand = get_icon("activity", color="#E63946", size=20)
         render_html(f"""
-<a href="/" target="_top" style="
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 4px 18px 4px;
-    border-bottom: 1px solid rgba(184, 29, 36, 0.25);
-    margin-bottom: 20px;
-    cursor: pointer;
-">
-    <div style="
-        background: rgba(184, 29, 36, 0.2);
-        border: 1px solid rgba(230, 57, 70, 0.5);
-        border-radius: 9px;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 16px rgba(230, 57, 70, 0.25);
-        flex-shrink: 0;
-    ">
-        {icon_brand}
-    </div>
-    <div>
-        <div style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.01em; line-height: 1.1;">FININTEL</div>
-        <div style="font-size: 0.74rem; font-weight: 500; color: #94A3B8; letter-spacing: 0.04em; text-transform: uppercase; margin-top: 2px;">Financial Intelligence</div>
-    </div>
-</a>
+<div class="finintel-brand-container">
+    <a href="/" target="_top" class="finintel-brand-link">
+        <div class="finintel-brand-badge">
+            {icon_brand}
+        </div>
+        <div class="finintel-brand-details">
+            <div class="finintel-brand-name">FININTEL <span class="finintel-brand-red">AI</span></div>
+            <div class="finintel-brand-sub">Financial Intelligence</div>
+        </div>
+    </a>
+</div>
 """)
 
 
@@ -164,9 +153,13 @@ def render_document_selector(documents: List[Dict[str, Any]], key_prefix: str = 
 
     select_key = f"{key_prefix}_doc_selector"
 
+    # CRITICAL: Keep select_key synchronized with canonical active_id across all pages
+    if default_label and (select_key not in st.session_state or st.session_state.get(select_key) != default_label):
+        st.session_state[select_key] = default_label
+
     # Callback when user changes selection
     def on_change():
-        chosen_lbl = st.session_state[select_key]
+        chosen_lbl = st.session_state.get(select_key)
         chosen_doc = options_map.get(chosen_lbl)
         if chosen_doc:
             set_active_doc_id(str(chosen_doc.get("id")))
@@ -180,7 +173,7 @@ def render_document_selector(documents: List[Dict[str, Any]], key_prefix: str = 
         help="Select a financial filing to synchronize metrics, health scores, and AI analyst context."
     )
 
-    selected_doc = options_map[selected_label]
+    selected_doc = options_map.get(selected_label) or (documents[0] if documents else {})
     new_id = str(selected_doc.get("id"))
     
     if new_id != get_active_doc_id():
@@ -227,5 +220,26 @@ def render_skeleton_banner():
     <div style="flex: 1;"><div class="skeleton-shimmer" style="width: 60%; height: 18px;"></div></div>
     <div style="flex: 1;"><div class="skeleton-shimmer" style="width: 50%; height: 18px;"></div></div>
     <div style="flex: 1;"><div class="skeleton-shimmer" style="width: 70%; height: 18px;"></div></div>
+</div>
+""")
+
+
+def render_skeleton_charts():
+    """Renders sleek shimmering placeholder cards for charts and analysis views."""
+    render_html("""
+<div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; margin-bottom: 24px;">
+    <div style="background: #111017; border: 1px solid rgba(196, 30, 58, 0.2); border-radius: 12px; padding: 24px; text-align: center;">
+        <div style="color: #94A3B8; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px;">Corporate Health Score</div>
+        <div class="skeleton-shimmer" style="width: 160px; height: 160px; border-radius: 50%; margin: 0 auto 16px auto;"></div>
+        <div class="skeleton-shimmer" style="width: 50%; height: 18px; margin: 0 auto;"></div>
+    </div>
+    <div style="background: #111017; border: 1px solid rgba(196, 30, 58, 0.2); border-radius: 12px; padding: 24px;">
+        <div style="color: #94A3B8; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px;">5-Dimension Performance Radar</div>
+        <div class="skeleton-shimmer" style="width: 100%; height: 210px; border-radius: 8px;"></div>
+    </div>
+</div>
+<div style="background: #111017; border: 1px solid rgba(196, 30, 58, 0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px;">
+    <div style="color: #94A3B8; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px;">Financial Statement Visualization Bridge</div>
+    <div class="skeleton-shimmer" style="width: 100%; height: 240px; border-radius: 8px;"></div>
 </div>
 """)
