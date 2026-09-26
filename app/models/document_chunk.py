@@ -14,11 +14,35 @@ from sqlalchemy import (
     Boolean,
     Text,
     DateTime,
+    ForeignKey,
     Index,
+    Uuid,
 )
-from pgvector.sqlalchemy import Vector
+from sqlalchemy.orm import relationship
+from sqlalchemy.types import TypeDecorator, JSON
 
-from app.core.database import Base
+class SafeVector(TypeDecorator):
+    """Database-agnostic vector type decorator: uses pgvector on PostgreSQL and JSON elsewhere."""
+    impl = JSON
+    cache_ok = True
+
+    def __init__(self, dim: int = 384):
+        self.dim = dim
+        super().__init__()
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == "postgresql":
+            try:
+                from pgvector.sqlalchemy import Vector
+                return dialect.type_descriptor(Vector(self.dim))
+            except ImportError:
+                from sqlalchemy.dialects.postgresql import ARRAY
+                from sqlalchemy import Float
+                return dialect.type_descriptor(ARRAY(Float))
+        return dialect.type_descriptor(JSON())
+
+
+from app.db.base import Base
 
 
 class DocumentChunk(Base): #ORM model representing a single document chunk with its 384-dim embedding vector
@@ -39,13 +63,14 @@ class DocumentChunk(Base): #ORM model representing a single document chunk with 
 
     __tablename__ = "document_chunks"
 
-    id = Column( #Auto-generated UUID primary key for each chunk row
-        String(36),
+    id = Column(
+        Uuid(as_uuid=True),
         primary_key=True,
-        default=lambda: str(uuid.uuid4()),
+        default=uuid.uuid4,
     )
-    document_id = Column( #Links chunk back to its parent document for batch operations
-        String(255),
+    document_id = Column(
+        Uuid(as_uuid=True),
+        ForeignKey("documents.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -54,6 +79,7 @@ class DocumentChunk(Base): #ORM model representing a single document chunk with 
         nullable=False,
         unique=True,
         index=True,
+        default=lambda: str(uuid.uuid4()),
     )
     chunk_index = Column( #Sequential position of chunk within document (0-based)
         Integer,
@@ -78,7 +104,7 @@ class DocumentChunk(Base): #ORM model representing a single document chunk with 
         default=False,
     )
     embedding = Column( #384-dimensional dense vector stored via pgvector extension
-        Vector(384),
+        SafeVector(384),
         nullable=False,
     )
     created_at = Column( #UTC timestamp of when this chunk was persisted
@@ -87,16 +113,7 @@ class DocumentChunk(Base): #ORM model representing a single document chunk with 
         default=lambda: datetime.now(timezone.utc),
     )
 
-    # HNSW cosine similarity index for sub-50ms nearest-neighbor queries
-    __table_args__ = (
-        Index(
-            "ix_document_chunks_embedding_hnsw", #Named index for pgvector HNSW cosine search
-            embedding,
-            postgresql_using="hnsw",
-            postgresql_with={"m": 16, "ef_construction": 64}, #m=16 connections per node, ef_construction=64 build-time search width
-            postgresql_ops={"embedding": "vector_cosine_ops"}, #Uses cosine distance operator for financial text similarity
-        ),
-    )
+    document = relationship("Document", back_populates="chunks")
 
     def __repr__(self) -> str:
         return (

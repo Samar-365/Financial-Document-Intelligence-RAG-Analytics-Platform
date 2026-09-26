@@ -10,7 +10,7 @@ FORBIDDEN_PATTERNS = [
 
 
 class QueryRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
+    model_config = ConfigDict(extra="forbid")
 
     document_id: UUID
     question: str = Field(..., min_length=1, max_length=2000)

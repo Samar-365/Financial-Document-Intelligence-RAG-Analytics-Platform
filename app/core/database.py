@@ -14,22 +14,29 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 
 
-def _get_database_url() -> str: #Reads DATABASE_URL from environment with a sensible default
-    """Returns the database connection URL from environment configuration."""
-    return os.getenv(
-        "DATABASE_URL",
-        "postgresql://postgres:postgres@localhost:5432/financial_rag_db",
+from app.core.config import settings
+
+
+def _get_database_url() -> str:
+    """Returns the database connection URL from settings (.env)."""
+    return settings.DATABASE_URL
+
+
+_db_url = _get_database_url()
+if _db_url.startswith("sqlite"):
+    engine = create_engine(
+        _db_url,
+        connect_args={"check_same_thread": False},
+    )
+else:
+    engine = create_engine(
+        _db_url,
+        pool_pre_ping=True, #Validates connections before checkout to avoid stale TCP sockets
+        pool_size=5, #Maintains 5 persistent connections for concurrent query serving
+        max_overflow=10, #Allows up to 10 additional connections during traffic spikes
+        echo=False, #Set True to log all SQL statements for debugging
     )
 
-
-# SQLAlchemy engine — connection pool to PostgreSQL
-engine = create_engine(
-    _get_database_url(),
-    pool_pre_ping=True, #Validates connections before checkout to avoid stale TCP sockets
-    pool_size=5, #Maintains 5 persistent connections for concurrent query serving
-    max_overflow=10, #Allows up to 10 additional connections during traffic spikes
-    echo=False, #Set True to log all SQL statements for debugging
-)
 
 # Session factory — each call produces an independent database session
 SessionLocal = sessionmaker(
@@ -38,8 +45,7 @@ SessionLocal = sessionmaker(
     bind=engine,
 )
 
-# Declarative base — all ORM models inherit from this
-Base = declarative_base()
+from app.db.base import Base
 
 
 def get_db() -> Generator[Session, None, None]: #FastAPI dependency injection generator yielding one session per request

@@ -1,8 +1,7 @@
 """Extracted financial line items, one row per metric per fiscal period."""
 import uuid
 
-from sqlalchemy import Column, Float, ForeignKey, Index, Integer, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, Float, ForeignKey, Index, Integer, String, Uuid
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -11,9 +10,9 @@ from app.db.base import Base
 class FinancialMetric(Base):
     __tablename__ = "financial_metrics"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     document_id = Column(
-        UUID(as_uuid=True),
+        Uuid(as_uuid=True),
         ForeignKey("documents.id", ondelete="CASCADE"),
         nullable=False,
     )

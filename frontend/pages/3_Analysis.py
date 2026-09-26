@@ -1,110 +1,287 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import sys
 from pathlib import Path
 
 # Add project root path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
+from components.theme import apply_theme, render_page_header, get_icon, render_html
 from components.kpi_card import render_kpi_card
+from components.advanced_charts import render_balance_sheet_composition, render_margin_comparison
+from utils.api_client import client
+from utils.workspace_state import (
+    render_workspace_sidebar_branding,
+    render_document_selector,
+    get_active_doc_id,
+    mark_document_loaded,
+    render_skeleton_banner,
+    render_skeleton_kpis,
+    render_skeleton_charts,
+    is_response_valid,
+)
 
-st.set_page_config(page_title="Financial Analysis | FinIntel AI", layout="wide")
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
 
-st.title(" Financial Statement Analysis")
+st.set_page_config(
+    page_title="FININTEL — Financial Analysis",
+    page_icon=FAVICON_PATH,
+    layout="wide"
+)
 
-# Top Bar Selection
-processed_docs = [
-    doc["Filename"] for doc in st.session_state.get("document_list", [])
-    if "PROCESSED" in doc["Status"]
-]
-if not processed_docs:
-    processed_docs = ["ABC_AR_2025.pdf", "ABC_AR_2024.pdf"]
+# Apply Pitch Dark & Wine Red styling and official sidebar branding
+apply_theme()
+render_workspace_sidebar_branding()
 
-selected_doc = st.selectbox("Select Analyzed Document:", options=processed_docs)
-st.caption(f"Showing extracted metrics for: **{selected_doc}**")
+render_page_header(
+    title="Financial Statement Analysis",
+    subtitle="Line-item statement extraction, balance sheet structure diagnostics, and audited accounting metrics.",
+    icon_name="file-text",
+)
+
+# Top Bar Selection - Fetch live documents
+live_docs = client.get_documents() or []
+
+if not live_docs:
+    with st.container(border=True):
+        icon_alert = get_icon("alert-triangle", color="#E63946", size=24)
+        render_html(f"""
+<div style="display: flex; gap: 12px; align-items: flex-start; padding: 8px;">
+    <div>{icon_alert}</div>
+    <div>
+        <b style="color: #FFFFFF; font-size: 1rem;">No financial filings available in the database.</b>
+        <p style="margin: 4px 0 10px 0; color: #94A3B8; font-size: 0.9rem;">
+            Upload an Annual Report, 10-K, or CSV/Excel spreadsheet to generate statement analytics.
+        </p>
+    </div>
+</div>
+""")
+        if st.button("Upload Filings", type="primary"):
+            st.switch_page("pages/2_Upload.py")
+    st.stop()
+
+# Canonical Document Selector across all workspace pages
+selected_doc_info = render_document_selector(live_docs, key_prefix="analysis")
+selected_doc_id = selected_doc_info.get("id")
+
+# Skeleton loading if document was just switched
+if st.session_state.get("document_loading", False):
+    render_skeleton_banner()
+    render_skeleton_kpis()
+    render_skeleton_charts()
+    mark_document_loaded(selected_doc_id)
+    st.rerun()
+
+# Fetch live metrics & ratios from API strictly scoped to selected_doc_id
+raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []
+ratios_resp = client.get_financial_ratios(selected_doc_id) if selected_doc_id else None
+
+# Race-condition protection
+if not is_response_valid(selected_doc_id):
+    st.stop()
+
+mark_document_loaded(selected_doc_id)
+
+metrics_map = {m.get("metric_name", ""): float(m.get("value")) for m in raw_metrics if m.get("value") is not None}
+
+# Determine currency and unit
+currency_sym = "$"
+for m in raw_metrics:
+    unit_str = str(m.get("unit", "")).lower()
+    if "inr" in unit_str or "cr" in unit_str:
+        currency_sym = "₹"
+        break
+
+currency_name = "INR (₹) Crore" if currency_sym == "₹" else "USD ($) Million"
+
+# Document context banner
+period_disp = selected_doc_info.get('fiscal_period', '')
+year_disp = selected_doc_info.get('fiscal_year', '')
+period_text = f"{period_disp} FY{year_disp}" if period_disp and period_disp != "FY" else (f"FY{year_disp}" if year_disp else "Active Filing")
+st.markdown(
+    f"<div style='color: #94A3B8; font-size: 0.85rem; margin-bottom: 12px;'>"
+    f"Active: <b style='color: #FFFFFF;'>{selected_doc_info.get('company_name', selected_doc_info.get('filename'))}</b> "
+    f"— <span style='color: #E63946;'>{period_text}</span> "
+    f"— Currency: <b style='color: #FFFFFF;'>{currency_name}</b>"
+    f"</div>",
+    unsafe_allow_html=True,
+)
 st.divider()
 
+def format_unit_label(raw_unit: str) -> str:
+    u = (raw_unit or "").upper().strip()
+    if "INR_CR" in u or "CR" in u:
+        return "Cr"
+    if "USD_M" in u or u == "M":
+        return "M"
+    if "USD_B" in u or u == "B":
+        return "B"
+    return raw_unit or ""
+
+def find_metric(name_patterns):
+    for m in raw_metrics:
+        m_name = m.get("metric_name", "").lower()
+        for p in name_patterns:
+            if p.lower() in m_name:
+                val = m.get("value")
+                unit = m.get("unit", "")
+                conf = f"{int(m.get('confidence', 1.0) * 100)}%"
+                if val is not None:
+                    if "eps" in m_name:
+                        return f"{currency_sym}{val:,.2f}", conf, "Detected"
+                    clean_unit = format_unit_label(unit)
+                    unit_suffix = f" {clean_unit}" if clean_unit else ""
+                    return f"{currency_sym}{val:,.1f}{unit_suffix}", conf, "Detected"
+    return "N/A", "—", "Not Detected"
+
 # 1. Income Statement Cards
-st.subheader(" Income Statement Metrics")
+icon_inc = get_icon("dollar-sign", color="#E63946", size=18)
+st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'><span>{icon_inc}</span><span style='font-weight: 700; color: #FFFFFF;'>Income Statement Metrics</span></div>", unsafe_allow_html=True)
+
 inc_row1_col1, inc_row1_col2, inc_row1_col3, inc_row1_col4 = st.columns(4)
 
+rev_val, rev_conf, rev_sub = find_metric(["revenue", "sales", "turnover"])
+gp_val, gp_conf, gp_sub = find_metric(["gross profit", "gross margin"])
+ebitda_val, ebitda_conf, ebitda_sub = find_metric(["ebitda"])
+op_val, op_conf, op_sub = find_metric(["operating income", "ebit", "operating profit"])
+
 with inc_row1_col1:
-    render_kpi_card("Revenue", "₹11,450 Cr", "+12.4% YoY", confidence="99%")
+    render_kpi_card("Revenue", rev_val, rev_sub, confidence=rev_conf, icon_name="dollar-sign")
 with inc_row1_col2:
-    render_kpi_card("Gross Profit", "₹4,580 Cr", "+14.1% YoY", confidence="97%")
+    render_kpi_card("Gross Profit / Margin", gp_val, gp_sub, confidence=gp_conf, icon_name="trending-up")
 with inc_row1_col3:
-    render_kpi_card("EBITDA", "₹2,340 Cr", "+11.4% YoY", confidence="95%")
+    render_kpi_card("EBITDA", ebitda_val, ebitda_sub, confidence=ebitda_conf, icon_name="activity")
 with inc_row1_col4:
-    render_kpi_card("Operating Income", "₹1,890 Cr", "+10.2% YoY", confidence="96%")
+    render_kpi_card("Operating Income", op_val, op_sub, confidence=op_conf, icon_name="layers")
 
 inc_row2_col1, inc_row2_col2, _, _ = st.columns(4)
+net_val, net_conf, net_sub = find_metric(["net income", "pat", "profit after tax"])
+eps_val, eps_conf, eps_sub = find_metric(["eps", "earnings per share"])
+
 with inc_row2_col1:
-    render_kpi_card("Net Income", "₹1,410 Cr", "+17.5% YoY", confidence="98%")
+    render_kpi_card("Net Income", net_val, net_sub, confidence=net_conf, icon_name="trending-up")
 with inc_row2_col2:
-    render_kpi_card("EPS", "₹28.20", "+18.3% YoY", confidence="94%")
+    render_kpi_card("Diluted EPS", eps_val, eps_sub, confidence=eps_conf, icon_name="pie-chart")
 
 st.divider()
 
 # 2. Balance Sheet Cards
-st.subheader(" Balance Sheet Metrics")
+icon_bal = get_icon("pie-chart", color="#E63946", size=18)
+st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'><span>{icon_bal}</span><span style='font-weight: 700; color: #FFFFFF;'>Balance Sheet Metrics</span></div>", unsafe_allow_html=True)
+
 bal_col1, bal_col2, bal_col3, bal_col4 = st.columns(4)
 
+assets_val, assets_conf, assets_sub = find_metric(["total assets", "assets"])
+liab_val, liab_conf, liab_sub = find_metric(["total liabilities", "liabilities"])
+debt_val, debt_conf, debt_sub = find_metric(["total debt", "borrowings", "debt"])
+cash_val, cash_conf, cash_sub = find_metric(["cash", "cash & equivalents", "cash equivalents"])
+
 with bal_col1:
-    render_kpi_card("Total Assets", "₹18,500 Cr", "+8.5% YoY", confidence="99%")
+    render_kpi_card("Total Assets", assets_val, assets_sub, confidence=assets_conf, icon_name="layers")
 with bal_col2:
-    render_kpi_card("Total Liabilities", "₹9,800 Cr", "+3.1% YoY", confidence="96%")
+    render_kpi_card("Total Liabilities", liab_val, liab_sub, confidence=liab_conf, icon_name="layers")
 with bal_col3:
-    render_kpi_card("Total Debt", "₹3,900 Cr", "-7.1% YoY", delta_color="inverse", confidence="98%")
+    render_kpi_card("Total Debt", debt_val, debt_sub, confidence=debt_conf, icon_name="alert-triangle")
 with bal_col4:
-    render_kpi_card("Cash & Equivalents", "₹2,150 Cr", "+19.4% YoY", confidence="97%")
+    render_kpi_card("Cash & Equivalents", cash_val, cash_sub, confidence=cash_conf, icon_name="dollar-sign")
+
+# Balance Sheet Composition Visualizer
+with st.container(border=True):
+    render_balance_sheet_composition(metrics_map)
 
 st.divider()
 
 # 3. Cash Flow Cards
-st.subheader(" Cash Flow Metrics")
+icon_cf = get_icon("activity", color="#E63946", size=18)
+st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'><span>{icon_cf}</span><span style='font-weight: 700; color: #FFFFFF;'>Cash Flow & Solvency Metrics</span></div>", unsafe_allow_html=True)
+
 cf_col1, cf_col2, _, _ = st.columns(4)
+ocf_val, ocf_conf, ocf_sub = find_metric(["operating cash flow", "cash flow from operations", "cfo", "cash generated by operating activities"])
+fcf_val, fcf_conf, fcf_sub = find_metric(["free cash flow"])
 
 with cf_col1:
-    render_kpi_card("Operating Cash Flow", "₹2,680 Cr", "+15.2% YoY", confidence="98%")
+    render_kpi_card("Operating Cash Flow", ocf_val, ocf_sub, confidence=ocf_conf, icon_name="trending-up")
 with cf_col2:
-    render_kpi_card("Free Cash Flow", "₹1,850 Cr", "+22.1% YoY", confidence="93%")
+    render_kpi_card("Free Cash Flow", fcf_val, fcf_sub, confidence=fcf_conf, icon_name="dollar-sign")
 
 st.divider()
 
-# 4. Ratios Table
-st.subheader(" Financial Ratios")
-ratio_data = [
-    {"Ratio": "Revenue Growth", "Value": "12.25%", "Interpretation": "Strong growth"},
-    {"Ratio": "Profit Margin", "Value": "12.31%", "Interpretation": "Healthy profitability"},
-    {"Ratio": "EBITDA Margin", "Value": "20.44%", "Interpretation": "Good operating profit"},
-    {"Ratio": "Current Ratio", "Value": "1.65x", "Interpretation": "Adequate liquidity"},
-    {"Ratio": "Debt-to-Equity", "Value": "0.45x", "Interpretation": "Conservative leverage"},
-    {"Ratio": "Return on Assets", "Value": "7.62%", "Interpretation": "Efficient asset use"},
-    {"Ratio": "Return on Equity", "Value": "16.21%", "Interpretation": "Good shareholder return"},
-    {"Ratio": "OCF Ratio", "Value": "1.12x", "Interpretation": "Strong cash coverage"}
-]
-st.dataframe(pd.DataFrame(ratio_data), use_container_width=True, hide_index=True)
+# 4. Computed Ratios & Margins
+icon_ratios = get_icon("trending-up", color="#E63946", size=18)
+st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'><span>{icon_ratios}</span><span style='font-weight: 700; color: #FFFFFF;'>Key Financial Ratios & Margins</span></div>", unsafe_allow_html=True)
+
+if ratios_resp:
+    r_col1, r_col2, r_col3, r_col4, r_col5, r_col6 = st.columns(6)
+    with r_col1:
+        opm = ratios_resp.get("opm")
+        st.metric("Operating Margin", f"{opm:.2f}%" if opm is not None else "N/A")
+    with r_col2:
+        npm = ratios_resp.get("npm")
+        st.metric("Net Margin", f"{npm:.2f}%" if npm is not None else "N/A")
+    with r_col3:
+        roe = ratios_resp.get("roe")
+        st.metric("ROE", f"{roe:.2f}%" if roe is not None else "N/A")
+    with r_col4:
+        cr = ratios_resp.get("current_ratio")
+        st.metric("Current Ratio", f"{cr:.2f}x" if cr is not None else "N/A")
+    with r_col5:
+        dte = ratios_resp.get("debt_to_equity")
+        st.metric("Debt-to-Equity", f"{dte:.2f}x" if dte is not None else "N/A")
+    with r_col6:
+        ic = ratios_resp.get("interest_coverage")
+        st.metric("Interest Coverage", f"{ic:.2f}x" if ic is not None else "N/A")
+
+    # Margin comparison visualizer
+    with st.container(border=True):
+        render_margin_comparison(metrics_map, ratios_resp)
+else:
+    st.info("Ratios will be computed automatically once financial statements are extracted.")
 
 st.divider()
 
-# 5. Trend Charts
-st.subheader(" Trend Charts")
-trend_data = pd.DataFrame({
-    "Period": ["FY2022", "FY2023", "FY2024", "FY2025"],
-    "Revenue": [8500, 9400, 10200, 11450],
-    "Profit Margin (%)": [10.8, 11.2, 11.8, 12.31],
-    "Total Debt": [4500, 4300, 4200, 3900],
-    "Cash": [1200, 1500, 1800, 2150]
-})
+# 5. Raw Extracted Line Items Table
+icon_table = get_icon("database", color="#E63946", size=18)
+st.markdown(f"<div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'><span>{icon_table}</span><span style='font-weight: 700; color: #FFFFFF;'>All Extracted Metric Line Items</span></div>", unsafe_allow_html=True)
 
-chart_col1, chart_col2 = st.columns(2)
-with chart_col1:
-    fig_rev = px.bar(trend_data, x="Period", y="Revenue", title="Revenue by Period (₹ Cr)", text_auto=True)
-    st.plotly_chart(fig_rev, use_container_width=True)
-
-with chart_col2:
-    fig_margin = px.line(trend_data, x="Period", y="Profit Margin (%)", title="Profit Margins Over Time", markers=True)
-    st.plotly_chart(fig_margin, use_container_width=True)
-
-fig_debt_cash = px.bar(trend_data, x="Period", y=["Total Debt", "Cash"], barmode="group", title="Debt vs Cash Comparison (₹ Cr)")
-st.plotly_chart(fig_debt_cash, use_container_width=True)
+if raw_metrics:
+    clean_rows = []
+    for r in raw_metrics:
+        m_name = r.get("metric_name", "")
+        val = r.get("value")
+        raw_u = str(r.get("unit", "")).upper()
+        
+        # Human-readable unit formatting
+        if "INR" in raw_u or "CR" in raw_u:
+            display_unit = "₹ Crore (INR Cr)"
+        elif "USD" in raw_u or "M" in raw_u:
+            display_unit = "$ Million (USD M)"
+        elif "B" in raw_u:
+            display_unit = "$ Billion (USD B)"
+        elif "eps" in m_name.lower():
+            display_unit = "Per Share"
+        else:
+            display_unit = r.get("unit") or "Standard"
+            
+        if val is not None:
+            formatted_val = f"{val:,.2f}" if "eps" in m_name.lower() else f"{val:,.1f}"
+        else:
+            formatted_val = "N/A"
+            
+        yr = r.get("fiscal_year")
+        year_str = str(int(yr)) if yr and str(yr).replace('.', '').isdigit() else (str(yr) if yr else "—")
+        
+        conf = r.get("confidence")
+        conf_str = f"{int(float(conf) * 100)}%" if conf is not None else "—"
+        
+        clean_rows.append({
+            "Metric Line Item": m_name,
+            "Value": formatted_val,
+            "Unit / Currency": display_unit,
+            "Fiscal Year": year_str,
+            "Period": r.get("fiscal_period") or "FY",
+            "Page": f"Page {r.get('source_page')}" if r.get("source_page") else "—",
+            "Confidence": conf_str,
+        })
+    df_metrics = pd.DataFrame(clean_rows)
+    st.dataframe(df_metrics, use_container_width=True, hide_index=True)
+else:
+    st.write("No specific line items extracted for this document yet.")

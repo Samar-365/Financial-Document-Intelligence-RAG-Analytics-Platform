@@ -221,3 +221,38 @@ class RegexMetricExtractor: #Scans and extracts canonical financial metrics from
                     continue
 
         return extracted_metrics #Return all extracted metrics from the tables
+
+    def extract_from_text(self, raw_text: str) -> Dict[str, float]:
+        """Scans continuous text lines for financial metric patterns and figures."""
+        metrics: Dict[str, float] = {}
+        patterns = {
+            "revenue": [r"(?:total\s+revenue|revenue\s+from\s+operations|turnover|sales)\D*?(\d[\d,\.]*)\s*(cr|crore|lakh|million|mn|bn)?", re.IGNORECASE],
+            "ebitda": [r"(?:ebitda|operating\s+profit)\D*?(\d[\d,\.]*)\s*(cr|crore|lakh|million|mn|bn)?", re.IGNORECASE],
+            "net_income": [r"(?:net\s+profit|profit\s+after\s+tax|net\s+income|pat)\D*?(\d[\d,\.]*)\s*(cr|crore|lakh|million|mn|bn)?", re.IGNORECASE],
+            "operating_income": [r"(?:operating\s+income|ebit)\D*?(\d[\d,\.]*)\s*(cr|crore|lakh|million|mn|bn)?", re.IGNORECASE],
+            "total_debt": [r"(?:total\s+debt|borrowings)\D*?(\d[\d,\.]*)\s*(cr|crore|lakh|million|mn|bn)?", re.IGNORECASE],
+            "total_assets": [r"(?:total\s+assets)\D*?(\d[\d,\.]*)\s*(cr|crore|lakh|million|mn|bn)?", re.IGNORECASE],
+            "total_liabilities": [r"(?:total\s+liabilities)\D*?(\d[\d,\.]*)\s*(cr|crore|lakh|million|mn|bn)?", re.IGNORECASE],
+            "operating_cash_flow": [r"(?:cash\s+flow\s+from\s+operations|operating\s+cash\s+flow|cfo)\D*?(\d[\d,\.]*)\s*(cr|crore|lakh|million|mn|bn)?", re.IGNORECASE],
+        }
+        for metric_name, (pat, flags) in patterns.items():
+            match = re.search(pat, raw_text, flags)
+            if match:
+                num_str = match.group(1).replace(",", "")
+                try:
+                    val = float(num_str)
+                    if 0.1 <= val <= 100000000:
+                        canonical = metric_name.replace("_", " ").title()
+                        metrics[canonical] = val
+                except ValueError:
+                    continue
+        return metrics
+
+    def extract_all(self, raw_text: str) -> Dict[str, float]:
+        """Convenience method combining text extraction and table extraction."""
+        return self.extract_from_text(raw_text)
+
+
+# Backward-compatible alias
+RegexExtractor = RegexMetricExtractor
+

@@ -7,7 +7,10 @@ Responsible for:
 """
 
 from typing import Dict, List, Optional, Tuple
-import faiss
+try:
+    import faiss
+except ImportError:
+    faiss = None
 import numpy as np
 
 from app.document_processing.metadata_tagger import TextChunkDTO

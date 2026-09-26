@@ -10,7 +10,10 @@ from app.rag.retriever import VectorRetriever, RetrievedChunkDTO
 from app.rag.prompt_builder import PromptBuilder
 # Module 4.2: Strict negative-constraint system prompt formulation
 from app.rag.system_prompts import FinancialSystemPrompts
-# Module 4.3: OpenAI GPT-4o-mini client wrapper with deterministic parameters & retries
+# Module 4.3: Google Gemini API client wrapper & OpenAI compatibility layer
+from app.rag.gemini_client import (
+    GeminiClientWrapper,
+)
 from app.rag.llm_client import (
     OpenAIClientWrapper,
     LLMGenerationResultDTO,

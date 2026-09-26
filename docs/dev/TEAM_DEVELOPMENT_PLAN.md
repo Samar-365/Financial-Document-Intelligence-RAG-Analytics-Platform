@@ -3,9 +3,9 @@
 **Project**: Financial Document Intelligence & RAG Analytics Platform  
 **Target Delivery**: 8 Weeks (4 Sprints * 2 Weeks) or Accelerated 4 Weeks (4 Sprints * 1 Week)  
 **Team Allocation**:
-- **Developer 1**: AI, RAG & Financial Analytics Lead *(Core Intelligence & Analytics Engine)*
-- **Developer 2**: Backend, Database & API Architect *(Data Persistence, REST API & Business Logic Layer)*
-- **Developer 3**: Frontend & Visual Analytics Engineer *(Streamlit User Interface & Interactive Dashboards)*
+- **Developer 1 (Samar)**: AI, RAG & Financial Analytics Lead *(Core Intelligence & Analytics Engine)* — [samar.md](file:///d:/D/Financial-Document-Intelligence-RAG-Analytics-Platform/docs/dev/samar.md)
+- **Developer 2 (Dakshit)**: Backend, Database & API Architect *(Data Persistence, REST API & Business Logic Layer)* — [dakshit.md](file:///d:/D/Financial-Document-Intelligence-RAG-Analytics-Platform/docs/dev/dakshit.md)
+- **Developer 3 (Shreya)**: Frontend & Visual Analytics Engineer *(Streamlit User Interface & Interactive Dashboards)* — [Shreya.md](file:///d:/D/Financial-Document-Intelligence-RAG-Analytics-Platform/docs/dev/Shreya.md)
 - **Developer 4**: DevOps, Platform & Security Engineer *(Containerization, CI/CD, Security & Observability)*
 
 ---

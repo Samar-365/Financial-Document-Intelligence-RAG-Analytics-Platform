@@ -1,0 +1,159 @@
+services:
+  db:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.postgres
+    image: fdi-postgres:alpine
+    container_name: fdi-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    networks:
+      - fdi-prod-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: fdi-redis-prod
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_prod_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - fdi-prod-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: fdi-backend-prod
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      VECTOR_STORE_TYPE: pgvector
+      APP_ENV: production
+      LOG_LEVEL: INFO
+      RATE_LIMIT_PER_MINUTE: 100
+    ports:
+      - "8000:8000"
+    volumes:
+      - upload_prod_data:/app/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+    networks:
+      - fdi-prod-network
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: fdi-worker-prod
+    restart: always
+    command: ["celery", "-A", "app.core.tasks.celery_app", "worker", "--loglevel=info", "--concurrency=2"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      VECTOR_STORE_TYPE: pgvector
+      APP_ENV: production
+    volumes:
+      - upload_prod_data:/app/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    networks:
+      - fdi-prod-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: fdi-frontend-prod
+    restart: always
+    environment:
+      API_BASE_URL: http://backend:8000/api/v1
+    ports:
+      - "8501:8501"
+    depends_on:
+      backend:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    networks:
+      - fdi-prod-network
+
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    container_name: fdi-prometheus
+    restart: always
+    volumes:
+      - ./deploy/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - fdi-prod-network
+
+  grafana:
+    image: grafana/grafana:10.3.3
+    container_name: fdi-grafana
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - fdi-prod-network
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
+  upload_prod_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  fdi-prod-network:
+    driver: bridge
