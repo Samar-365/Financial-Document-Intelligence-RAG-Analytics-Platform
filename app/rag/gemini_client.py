@@ -108,12 +108,12 @@ class GeminiClientWrapper:
         # Initialize official Google GenAI client if not mock-injected
         if self.client is None and self.api_key:
             try:
-                from google import genai
+                from google import genai  # type: ignore[import-not-found, import-untyped]
                 self.client = genai.Client(api_key=self.api_key)
                 self._sdk_type = "google-genai"
             except Exception:
                 try:
-                    import google.generativeai as legacy_genai
+                    import google.generativeai as legacy_genai  # type: ignore[import-not-found, import-untyped]
                     legacy_genai.configure(api_key=self.api_key)
                     self.client = legacy_genai.GenerativeModel(model_name=self.model)
                     self._sdk_type = "google-generativeai"
@@ -204,7 +204,7 @@ class GeminiClientWrapper:
                 try:
                     # 2. google-genai (Official New SDK)
                     if self._sdk_type == "google-genai":
-                        from google.genai import types
+                        from google.genai import types  # type: ignore[import-not-found, import-untyped]
 
                         config = types.GenerateContentConfig(
                             temperature=self.temperature,
@@ -236,7 +236,7 @@ class GeminiClientWrapper:
 
                     # 3. google-generativeai (Legacy Fallback SDK)
                     if self._sdk_type == "google-generativeai":
-                        import google.generativeai as legacy_genai
+                        import google.generativeai as legacy_genai  # type: ignore[import-not-found, import-untyped]
 
                         model_instance = legacy_genai.GenerativeModel(
                             model_name=model_candidate,
