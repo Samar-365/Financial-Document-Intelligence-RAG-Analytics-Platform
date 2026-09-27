@@ -1,7 +1,17 @@
 import streamlit as st
-import pandas as pd
 import sys
 from pathlib import Path
+
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
+
+st.set_page_config(
+    page_title="FinDoc — Financial Analysis",
+    page_icon=FAVICON_PATH,
+    layout="wide"
+)
+
+import pandas as pd
+import time
 
 # Add project root path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -20,13 +30,6 @@ from utils.workspace_state import (
     is_response_valid,
 )
 
-FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
-
-st.set_page_config(
-    page_title="FinDoc — Financial Analysis",
-    page_icon=FAVICON_PATH,
-    layout="wide"
-)
 
 # Apply Pitch Dark & Wine Red styling and official sidebar branding
 apply_theme()
@@ -63,6 +66,28 @@ if not live_docs:
 selected_doc_info = render_document_selector(live_docs, key_prefix="analysis")
 selected_doc_id = selected_doc_info.get("id")
 
+# If document is actively processing in backend, display live loader with skeleton placeholders
+if selected_doc_info.get("status") == "PROCESSING":
+    with st.container(border=True):
+        icon_spin = get_icon("sparkles", color="#E63946", size=24)
+        render_html(f"""
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 16px;">
+    <div>{icon_spin}</div>
+    <div>
+        <div style="color: #FFFFFF; font-weight: 700; font-size: 1.05rem;">Filing Ingestion & Analysis in Progress</div>
+        <div style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">
+            Extracting financial statement tables, computing 5D health scores, and indexing vector embeddings...
+        </div>
+    </div>
+</div>
+""")
+    with st.spinner("Analyzing financial filing..."):
+        render_skeleton_banner()
+        render_skeleton_kpis()
+        render_skeleton_charts()
+        time.sleep(2)
+        st.rerun()
+
 # Skeleton loading if document was just switched
 if st.session_state.get("document_loading", False):
     render_skeleton_banner()
@@ -70,6 +95,7 @@ if st.session_state.get("document_loading", False):
     render_skeleton_charts()
     mark_document_loaded(selected_doc_id)
     st.rerun()
+
 
 # Fetch live metrics & ratios from API strictly scoped to selected_doc_id
 raw_metrics = client.get_financial_metrics(selected_doc_id) if selected_doc_id else []

@@ -226,38 +226,41 @@ def process_document_pipeline(
 
         text_patterns = {
             "Revenue": [
-                r"(?:revenue\s+from\s+operations|total\s+revenue|total\s+net\s+sales|net\s+sales)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)",
-                r"\b(?:revenue|turnover)\b[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+revenue\s+from\s+operations|revenue\s+from\s+operations|total\s+revenue|total\s+net\s+sales|net\s+sales|total\s+income)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)",
+                r"\b(?:revenue|turnover)\b[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)",
             ],
             "Gross Profit": [
-                r"(?:gross\s+margin|gross\s+profit)[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:gross\s+profit|gross\s+margin)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Operating Income": [
-                r"(?:operating\s+income|operating\s+profit)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:profit\s+before\s+exceptional\s+items\s+and\s+tax|operating\s+income|operating\s+profit|profit\s+before\s+tax|ebit)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Net Income": [
-                r"(?:profit\s+for\s+the\s+(?:year|period)|net\s+income|net\s+profit|profit\s+after\s+tax|pat)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:profit\s+for\s+the\s+(?:period|year)|profit\s+after\s+tax|net\s+profit|net\s+income|pat)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+            ],
+            "EBITDA": [
+                r"(?:ebitda|operating\s+ebitda)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Cash & Equivalents": [
-                r"(?:cash\s+and\s+cash\s+equivalents\s+at\s+the\s+end\s+of\s+the\s+year|cash\s+and\s+cash\s+equivalents|cash\s*&\s*equivalents)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:cash\s+and\s+cash\s+equivalents\s+at\s+the\s+end\s+of\s+the\s+(?:year|period)|cash\s+and\s+cash\s+equivalents|cash\s*&\s*equivalents)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Total Assets": [
-                r"(?:total\s+assets)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+assets)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Total Equity": [
-                r"(?:total\s+equity)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+equity|equity\s+share\s+capital|shareholders[’']?\s+equity)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Total Liabilities": [
-                r"(?:total\s+liabilities)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+liabilities)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Total Debt": [
-                r"(?:total\s+debt|term\s+debt|borrowings)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:total\s+debt|term\s+debt|borrowings|total\s+borrowings)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "Operating Cash Flow": [
-                r"(?:net\s+cash\s+flows?\s+generated\s+from\s+operating\s+activities|cash\s+generated\s+by\s+operating\s+activities|operating\s+cash\s+flow|cash\s+flows?\s+from\s+operating\s+activities)\s*(?:\([0-9]+\))?[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
+                r"(?:net\s+cash\s+flows?\s+generated\s+from\s+operating\s+activities|cash\s+generated\s+by\s+operating\s+activities|operating\s+cash\s+flow|cash\s+flows?\s+from\s+operating\s+activities)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)"
             ],
             "EPS": [
-                r"(?:earnings\s+per\s+equity\s+share[^\n\d]*|diluted\s+earnings\s+per\s+share|basic\s+and\s+diluted[^\n\d]*|diluted\s+eps|eps)[\s:\$,\|]+([0-9]+\.[0-9]{2})"
+                r"(?:diluted\s+eps|basic\s+and\s+diluted[^\n\d]*|diluted\s+earnings\s+per\s+share|earnings\s+per\s+equity\s+share|basic\s+eps|eps)[^\n\d]*[\s:\$,\|₹]+([0-9]+\.[0-9]{1,2})"
             ]
         }
 
@@ -270,12 +273,35 @@ def process_document_pipeline(
                     try:
                         val = float(raw_num)
                         # Sanity filter: avoid stray year numbers or single digits where financial metric is expected
-                        if val > 0 and (val != 2024 and val != 2025 and val != 2026 or "eps" in m_name.lower()):
+                        if val > 0 and (val not in (2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027) or "eps" in m_name.lower()):
                             metrics_dict[m_name] = val
                             metric_confidence[m_name] = 0.95
                             break
                     except ValueError:
                         pass
+
+        # Derive EBITDA if not explicitly reported but Operating Income and Depreciation exist
+        if ("EBITDA" not in metrics_dict or metrics_dict.get("EBITDA") is None) and ("Operating Income" in metrics_dict):
+            m_dep = re.search(r"(?:depreciation\s+and\s+amortisation\s+expense|depreciation\s+and\s+amortization|depreciation)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)", extracted_text, re.IGNORECASE)
+            if m_dep:
+                try:
+                    dep_val = float(m_dep.group(1).replace(",", ""))
+                    metrics_dict["EBITDA"] = round(metrics_dict["Operating Income"] + dep_val, 2)
+                    metric_confidence["EBITDA"] = 0.90
+                except ValueError:
+                    pass
+
+        # Derive Gross Profit if Revenue and Material/COGS expenses exist
+        if ("Gross Profit" not in metrics_dict or metrics_dict.get("Gross Profit") is None) and ("Revenue" in metrics_dict):
+            m_mat = re.search(r"(?:cost\s+of\s+materials\s+consumed|cost\s+of\s+goods\s+sold|cogs)[^\n\d]*[\s:\$,\|]+([0-9]+(?:,[0-9]{2,3})*(?:\.[0-9]+)?)", extracted_text, re.IGNORECASE)
+            if m_mat:
+                try:
+                    mat_val = float(m_mat.group(1).replace(",", ""))
+                    metrics_dict["Gross Profit"] = round(metrics_dict["Revenue"] - mat_val, 2)
+                    metric_confidence["Gross Profit"] = 0.88
+                except ValueError:
+                    pass
+
 
         # If Total Liabilities is not explicitly stated as a separate line but Total Assets and Total Equity exist:
         if ("Total Liabilities" not in metrics_dict or metrics_dict["Total Liabilities"] is None) and \

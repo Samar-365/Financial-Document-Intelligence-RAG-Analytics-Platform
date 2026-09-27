@@ -1,7 +1,16 @@
 import streamlit as st
 import sys
-import time
 from pathlib import Path
+
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
+
+st.set_page_config(
+    page_title="FinDoc — AI Analyst",
+    page_icon=FAVICON_PATH,
+    layout="wide"
+)
+
+import time
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from components.chat_interface import render_chat_message
@@ -14,13 +23,6 @@ from utils.workspace_state import (
     is_response_valid,
 )
 
-FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
-
-st.set_page_config(
-    page_title="FinDoc — AI Analyst",
-    page_icon=FAVICON_PATH,
-    layout="wide"
-)
 
 # Apply Pitch Dark & Wine Red styling and official sidebar branding
 apply_theme()

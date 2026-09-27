@@ -1,14 +1,6 @@
 import streamlit as st
-import pandas as pd
 import sys
 from pathlib import Path
-
-# Add project root path
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-from components.theme import apply_theme, render_page_header, get_icon, render_html
-from components.advanced_charts import render_comparative_deltas_chart
-from utils.api_client import client
-from utils.workspace_state import render_workspace_sidebar_branding, format_doc_label
 
 FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
 
@@ -17,6 +9,16 @@ st.set_page_config(
     page_icon=FAVICON_PATH,
     layout="wide"
 )
+
+import pandas as pd
+
+# Add project root path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from components.theme import apply_theme, render_page_header, get_icon, render_html
+from components.advanced_charts import render_comparative_deltas_chart
+from utils.api_client import client
+from utils.workspace_state import render_workspace_sidebar_branding, format_doc_label
+
 
 # Apply Pitch Dark & Wine Red styling and official sidebar branding
 apply_theme()

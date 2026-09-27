@@ -241,11 +241,11 @@ class APIClient:
         return None
 
 
-# Global singleton instance cached as a long-lived Streamlit resource
-@st.cache_resource
+# Global singleton instance
 def get_api_client() -> APIClient:
     return APIClient()
 
 
-client = get_api_client()
+client = APIClient()
+
 
