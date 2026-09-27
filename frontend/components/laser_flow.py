@@ -43,7 +43,7 @@ def render_hero_section(
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FinIntel AI</title>
+<title>FinDoc AI</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -633,7 +633,7 @@ def render_hero_section(
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E63946" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
       </div>
       <div>
-        <div class="brand-title">FinIntel <span>AI</span></div>
+        <div class="brand-title">FinDoc <span>AI</span></div>
         <div class="brand-subtitle">FINANCIAL INTELLIGENCE</div>
       </div>
     </a>
@@ -684,7 +684,7 @@ def render_hero_section(
           <span class="dot dot-yellow"></span>
           <span class="dot dot-green"></span>
         </div>
-        <div class="window-url">app.finintel.ai / workspace / dashboard</div>
+        <div class="window-url">app.findoc.ai / workspace / dashboard</div>
         <div class="window-tag">Enterprise SaaS</div>
       </div>
 

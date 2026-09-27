@@ -1,21 +1,23 @@
 import streamlit as st
-import pandas as pd
 import sys
-import time
 from pathlib import Path
+
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
+
+st.set_page_config(
+    page_title="FinDoc — Document Ingestion",
+    page_icon=FAVICON_PATH,
+    layout="wide"
+)
+
+import pandas as pd
+import time
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from components.theme import apply_theme, render_page_header, get_icon, render_html
 from utils.api_client import client
 from utils.workspace_state import render_workspace_sidebar_branding, set_active_doc_id
 
-FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
-
-st.set_page_config(
-    page_title="FININTEL — Document Ingestion",
-    page_icon=FAVICON_PATH,
-    layout="wide"
-)
 
 # Apply Pitch Dark & Wine Red styling
 apply_theme()
@@ -60,45 +62,61 @@ with st.container(border=True):
         if uploaded_file is None:
             st.error("Please select a valid PDF, CSV, or Excel file first!")
         else:
-            # Multi-stage progress tracking
-            progress_bar = st.progress(0, text="Uploading document...")
-            time.sleep(0.2)
-            progress_bar.progress(35, text="Uploading document to secure repository...")
-            
-            file_bytes = uploaded_file.read()
-            import re
-            fy_num = None
-            if financial_year:
-                m_fy = re.search(r"(\d{4})", financial_year)
-                if m_fy:
-                    fy_num = int(m_fy.group(1))
+            with st.spinner("Processing filing: extracting statements, generating vector embeddings, and scoring corporate health..."):
+                # Multi-stage progress tracking
+                progress_bar = st.progress(0, text="Uploading document to secure repository...")
+                time.sleep(0.15)
+                progress_bar.progress(25, text="Extracting financial statements & line items...")
+                
+                file_bytes = uploaded_file.read()
+                import re
+                fy_num = None
+                if financial_year:
+                    m_fy = re.search(r"(\d{4})", financial_year)
+                    if m_fy:
+                        fy_num = int(m_fy.group(1))
 
-            f_period = "FY"
-            if "Q1" in doc_type:
-                f_period = "Q1"
-            elif "Q2" in doc_type:
-                f_period = "Q2"
-            elif "Q3" in doc_type:
-                f_period = "Q3"
-            elif "Q4" in doc_type:
-                f_period = "Q4"
+                f_period = "FY"
+                if "Q1" in doc_type:
+                    f_period = "Q1"
+                elif "Q2" in doc_type:
+                    f_period = "Q2"
+                elif "Q3" in doc_type:
+                    f_period = "Q3"
+                elif "Q4" in doc_type:
+                    f_period = "Q4"
 
-            progress_bar.progress(65, text="Processing financial document & vector indexing...")
-            
-            result = client.upload_document(
-                file_bytes=file_bytes,
-                filename=uploaded_file.name,
-                company_name=company_name or None,
-                fiscal_year=fy_num,
-                fiscal_period=f_period,
-            )
-            progress_bar.progress(100, text="Complete")
-            time.sleep(0.2)
-            progress_bar.empty()
+                progress_bar.progress(55, text="Generating embeddings & indexing vector knowledge base...")
+                
+                result = client.upload_document(
+                    file_bytes=file_bytes,
+                    filename=uploaded_file.name,
+                    company_name=company_name or None,
+                    fiscal_year=fy_num,
+                    fiscal_period=f_period,
+                )
+                progress_bar.progress(85, text="Computing 5D health scores & financial ratios...")
+                time.sleep(0.2)
+                progress_bar.progress(100, text="Document analysis complete!")
+                time.sleep(0.25)
+                progress_bar.empty()
 
-            if result.get("is_duplicate"):
-                # Clean amber warning for duplicates without raw JSON
-                render_html("""
+                new_id = result.get("data", {}).get("document_id") if result.get("success") else None
+                if new_id:
+                    set_active_doc_id(str(new_id))
+
+                st.session_state["last_upload_result"] = {
+                    "success": result.get("success", False),
+                    "is_duplicate": result.get("is_duplicate", False),
+                    "filename": uploaded_file.name,
+                    "user_message": result.get("user_message", ""),
+                }
+
+
+    if "last_upload_result" in st.session_state:
+        res = st.session_state["last_upload_result"]
+        if res.get("is_duplicate"):
+            render_html("""
 <div style="
     background: rgba(245, 158, 11, 0.1);
     border: 1px solid rgba(245, 158, 11, 0.45);
@@ -115,10 +133,10 @@ with st.container(border=True):
     </div>
 </div>
 """)
-            elif result.get("success"):
-                # Clean green success message
-                fn_clean = uploaded_file.name
-                render_html(f"""
+            st.page_link("pages/1_Dashboard.py", label="Open in Executive Dashboard →", icon="📊")
+        elif res.get("success"):
+            fn_clean = res.get("filename")
+            render_html(f"""
 <div style="
     background: rgba(34, 197, 94, 0.1);
     border: 1px solid rgba(34, 197, 94, 0.45);
@@ -135,16 +153,10 @@ with st.container(border=True):
     </div>
 </div>
 """)
-                new_id = result.get("data", {}).get("document_id")
-                if new_id:
-                    set_active_doc_id(str(new_id))
+            st.page_link("pages/1_Dashboard.py", label="Open in Executive Dashboard →", icon="📊")
+        elif res.get("user_message"):
+            st.error(res.get("user_message"))
 
-                if st.button("Open in Executive Dashboard →", type="primary"):
-                    st.switch_page("pages/1_Dashboard.py")
-            else:
-                # Clean friendly failure message
-                err_text = result.get("user_message", "Something went wrong while uploading the document. Please try again.")
-                st.error(err_text)
 
 st.divider()
 

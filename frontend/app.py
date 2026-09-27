@@ -5,7 +5,7 @@ from pathlib import Path
 FAVICON_PATH = str(Path(__file__).resolve().parent / "assets" / "finintel_logo.png")
 
 st.set_page_config(
-    page_title="FININTEL — Financial Intelligence Platform",
+    page_title="FinDoc — Financial Intelligence Platform",
     page_icon=FAVICON_PATH,
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -187,16 +187,16 @@ render_html("""
 faq_col1, faq_col2 = st.columns(2)
 
 with faq_col1:
-    with st.expander("What types of financial documents can FinIntel AI analyze?"):
+    with st.expander("What types of financial documents can FinDoc AI analyze?"):
         st.write(
-            "FinIntel AI analyzes corporate financial reports, including annual reports, quarterly filings (10-K, 10-Q), "
+            "FinDoc AI analyzes corporate financial reports, including annual reports, quarterly filings (10-K, 10-Q), "
             "earnings releases, financial schedules, as well as structured spreadsheet files (CSV and Microsoft Excel workbooks). "
             "Tables and narratives are parsed into structured formats for automated indicator extraction."
         )
 
     with st.expander("How does the platform support evidence-backed analysis?"):
         st.write(
-            "Every analytical statement and metric extracted by FinIntel AI is grounded in the underlying source material. "
+            "Every analytical statement and metric extracted by FinDoc AI is grounded in the underlying source material. "
             "When exploring questions through the AI Analyst, each answer provides direct citations pointing to the specific "
             "document title, section heading, and page number from which the information was derived."
         )
@@ -276,7 +276,7 @@ with footer_c1:
             {icon_brand_small}
         </div>
         <div>
-            <span style="font-size: 1.0rem; font-weight: 800; color: #FFFFFF;">FinIntel AI</span>
+            <span style="font-size: 1.0rem; font-weight: 800; color: #FFFFFF;">FinDoc AI</span>
         </div>
     </div>
     <div style="color: #64748B; font-size: 0.75rem;">
@@ -295,7 +295,7 @@ with footer_c2:
 
 render_html("""
 <div style="border-top: 1px solid rgba(255,255,255,0.06); margin-top: 20px; padding-top: 16px; display: flex; justify-content: space-between; color: #64748B; font-size: 0.75rem;">
-    <div>&copy; 2026 FinIntel AI. All rights reserved.</div>
+    <div>&copy; 2026 FinDoc AI. All rights reserved.</div>
     <div>Financial intelligence for complex documents.</div>
 </div>
 """)

@@ -52,7 +52,7 @@ def render_chat_message(role: str, content: str, sources: list = None, metrics: 
             <div style="background: rgba(184, 29, 36, 0.2); border: 1px solid rgba(230, 57, 70, 0.4); border-radius: 6px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
                 {brand_svg}
             </div>
-            <span style="font-size: 0.8rem; font-weight: 800; color: #FFFFFF; letter-spacing: 0.04em;">FININTEL AI</span>
+            <span style="font-size: 0.8rem; font-weight: 800; color: #FFFFFF; letter-spacing: 0.04em;">FinDoc AI</span>
             <span style="font-size: 0.7rem; color: #94A3B8; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">Verified Audit Grounding</span>
         </div>
         <div class="finintel-ai-answer" style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.6;">

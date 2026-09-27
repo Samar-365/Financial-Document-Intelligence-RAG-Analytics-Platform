@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     )
 
     # ── Application ──────────────────────────────────────────
-    APP_NAME: str = "Financial Document Intelligence API"
+    APP_NAME: str = "FinDoc API"
     APP_VERSION: str = "0.1.0"
     ENVIRONMENT: str = Field(default="development")
 

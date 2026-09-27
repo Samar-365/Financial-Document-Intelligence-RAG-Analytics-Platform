@@ -5,9 +5,18 @@ and compliance audit logs for operations teams and financial auditors.
 """
 
 import streamlit as st
-import pandas as pd
 import sys
 from pathlib import Path
+
+FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
+
+st.set_page_config(
+    page_title="FinDoc — Audit Logs",
+    page_icon=FAVICON_PATH,
+    layout="wide"
+)
+
+import pandas as pd
 from datetime import datetime
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -15,13 +24,6 @@ from components.theme import apply_theme, render_page_header, get_icon, render_h
 from utils.api_client import client
 from utils.workspace_state import render_workspace_sidebar_branding
 
-FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
-
-st.set_page_config(
-    page_title="FININTEL — Audit Logs",
-    page_icon=FAVICON_PATH,
-    layout="wide"
-)
 
 # Apply Pitch Dark & Wine Red styling and official sidebar branding
 apply_theme()

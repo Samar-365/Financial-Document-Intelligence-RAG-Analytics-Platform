@@ -107,7 +107,7 @@ def format_doc_label(doc: Dict[str, Any]) -> str:
 
 
 def render_workspace_sidebar_branding():
-    """Renders the official clickable FININTEL branding in the Streamlit sidebar."""
+    """Renders the official clickable FinDoc branding in the Streamlit sidebar."""
     with st.sidebar:
         icon_brand = get_icon("activity", color="#E63946", size=20)
         render_html(f"""
@@ -117,7 +117,7 @@ def render_workspace_sidebar_branding():
             {icon_brand}
         </div>
         <div class="finintel-brand-details">
-            <div class="finintel-brand-name">FININTEL <span class="finintel-brand-red">AI</span></div>
+            <div class="finintel-brand-name">FinDoc <span class="finintel-brand-red">AI</span></div>
             <div class="finintel-brand-sub">Financial Intelligence</div>
         </div>
     </a>
