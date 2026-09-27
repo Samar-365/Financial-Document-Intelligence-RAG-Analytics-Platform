@@ -13,7 +13,7 @@ from utils.workspace_state import render_workspace_sidebar_branding, format_doc_
 FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
 
 st.set_page_config(
-    page_title="FININTEL — Comparison",
+    page_title="FinDoc — Comparison",
     page_icon=FAVICON_PATH,
     layout="wide"
 )

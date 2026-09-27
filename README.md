@@ -1,49 +1,38 @@
-# 📊 FININTEL AI — Financial Document Intelligence & RAG Analytics Platform
+# FinDoc AI — Financial Document Intelligence & RAG Analytics Platform
 
 <p align="center">
   <strong>Enterprise-grade AI platform combining Retrieval-Augmented Generation (RAG) with explainable corporate financial analytics, 5-dimension health scoring, interactive performance bridges, and citation-grounded intelligence from complex corporate filings.</strong>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/Streamlit-1.32+-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit" />
-  <img src="https://img.shields.io/badge/PostgreSQL-16%20Alpine-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/Vector%20DB-pgvector-00599C?style=for-the-badge" alt="pgvector" />
-  <img src="https://img.shields.io/badge/AI%20Engine-Google%20Gemini-8E75C2?style=for-the-badge&logo=google&logoColor=white" alt="Gemini" />
-  <img src="https://img.shields.io/badge/Docker-Multi--Container-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
-  <img src="https://img.shields.io/badge/Tests-367%20Passed-4ADE80?style=for-the-badge" alt="Tests" />
-</p>
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Capabilities & Differentiators](#key-capabilities--differentiators)
+- [System Architecture](#system-architecture)
+- [Platform Interface & Workflow](#platform-interface--workflow)
+- [Financial Analytics & Health Scoring](#financial-analytics--health-scoring)
+- [Technology Stack](#technology-stack)
+- [Docker Quickstart (Recommended)](#docker-quickstart-recommended)
+- [Local Development Setup](#local-development-setup)
+- [Environment Configuration](#environment-configuration)
+- [API Reference](#api-reference)
+- [Project Directory Structure](#project-directory-structure)
+- [Testing & Quality Assurance](#testing--quality-assurance)
+- [Enterprise Security & Auditing](#enterprise-security--auditing)
+- [Troubleshooting & FAQ](#troubleshooting--faq)
+- [License](#license)
 
 ---
 
-## 📑 Table of Contents
+## Overview
 
-- [Overview](#-overview)
-- [Key Capabilities & Differentiators](#-key-capabilities--differentiators)
-- [System Architecture](#-system-architecture)
-- [Platform Interface & Workflow](#-platform-interface--workflow)
-- [Financial Analytics & Health Scoring](#-financial-analytics--health-scoring)
-- [Technology Stack](#-technology-stack)
-- [Docker Quickstart (Recommended)](#-docker-quickstart-recommended)
-- [Local Development Setup](#-local-development-setup)
-- [Environment Configuration](#-environment-configuration)
-- [API Reference](#-api-reference)
-- [Project Directory Structure](#-project-directory-structure)
-- [Testing & Quality Assurance](#-testing--quality-assurance)
-- [Enterprise Security & Auditing](#-enterprise-security--auditing)
-- [Troubleshooting & FAQ](#-troubleshooting--faq)
-- [License](#-license)
-
----
-
-## 🔭 Overview
-
-**FININTEL AI** transforms complex, unstructured corporate filings (Annual Reports, 10-K/10-Q SEC filings, quarterly earnings decks, financial statements) into structured, queryable, audit-provenance financial intelligence.
+**FinDoc AI** transforms complex, unstructured corporate filings (Annual Reports, 10-K/10-Q SEC filings, quarterly earnings decks, financial statements) into structured, queryable, audit-provenance financial intelligence.
 
 Traditional financial document review requires manual reading of 100–300+ page reports, manual ratio computation, and subjective risk interpretation. Generic LLM chatbots frequently hallucinate numbers and fail on nested balance-sheet disclosures. 
 
-**FININTEL AI** bridges this gap by combining:
+**FinDoc AI** bridges this gap by combining:
 1. **Multi-Format Ingestion**: Hybrid OCR and table parsers supporting **PDF**, **Excel (.xlsx, .xls)**, and **CSV** datasets.
 2. **Deterministic Extraction + LLM Synthesis**: Rule-based regex and structured entity recognition combined with Google Gemini LLM synthesis.
 3. **Citation-Grounded RAG**: Vector-indexed semantic retrieval via PostgreSQL `pgvector` (with FAISS offline fallback) ensuring every claim cites specific pages and line items.
@@ -51,13 +40,13 @@ Traditional financial document review requires manual reading of 100–300+ page
 5. **Executive Visualizations**: Revenue waterfall bridge, DuPont margin analysis, balance sheet capital allocation, and side-by-side filing comparator.
 6. **One-Click C-Suite Export**: Instant PDF briefing generation powered by ReportLab.
 
-> **Disclaimer**: *FININTEL AI is engineered for financial research, analytical auditing, and educational intelligence. It does not provide certified financial advice, trading signals, or broker recommendations.*
+> **Disclaimer**: *FinDoc AI is engineered for financial research, analytical auditing, and educational intelligence. It does not provide certified financial advice, trading signals, or broker recommendations.*
 
 ---
 
-## 💎 Key Capabilities & Differentiators
+## Key Capabilities & Differentiators
 
-| Capability | Generic LLM Chatbots | Traditional BI Tools | FININTEL AI Platform |
+| Capability | Generic LLM Chatbots | Traditional BI Tools | FinDoc AI Platform |
 |---|:---:|:---:|:---:|
 | **Multi-Format Ingestion** | Text only | Structured databases only | **PDF, Excel (.xlsx/.xls), CSV** |
 | **Citation Provenance** | None / Hallucinates | N/A | **Exact page & chunk line provenance** |
@@ -70,7 +59,7 @@ Traditional financial document review requires manual reading of 100–300+ page
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TD
@@ -112,7 +101,7 @@ flowchart TD
 
 ---
 
-## 🖥️ Platform Interface & Workflow
+## Platform Interface & Workflow
 
 The platform provides a unified workspace built on a **Pitch Dark & Wine Red** luxury design system:
 
@@ -156,7 +145,7 @@ The platform provides a unified workspace built on a **Pitch Dark & Wine Red** l
 
 ---
 
-## 📐 Financial Analytics & Health Scoring
+## Financial Analytics & Health Scoring
 
 The **Composite Financial Health Score (0–100)** provides a standardized assessment across 5 core dimensions:
 
@@ -172,7 +161,7 @@ $$\text{Health Score} = 0.20(\text{Growth}) + 0.25(\text{Profitability}) + 0.20(
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Backend**: FastAPI, Uvicorn, SQLAlchemy 2.0, Pydantic V2, Alembic
 - **Frontend**: Streamlit, Plotly, Altair, HTML5/CSS3 (Pitch Dark & Wine Red System), ReportLab
@@ -183,9 +172,9 @@ $$\text{Health Score} = 0.20(\text{Growth}) + 0.25(\text{Profitability}) + 0.20(
 
 ---
 
-## 🐳 Docker Quickstart (Recommended)
+## Docker Quickstart (Recommended)
 
-Running FININTEL AI via Docker Compose is the fastest and most reliable way to deploy the complete multi-tier stack with PostgreSQL, pgvector, FastAPI, and Streamlit.
+Running FinDoc AI via Docker Compose is the fastest and most reliable way to deploy the complete multi-tier stack with PostgreSQL, pgvector, FastAPI, and Streamlit.
 
 ### Prerequisites
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (v24.0+) or Docker Engine on Linux
@@ -266,7 +255,7 @@ Open your browser to:
 
 ---
 
-## 💻 Local Development Setup
+## Local Development Setup
 
 If you prefer to run the application natively on your host machine without Docker:
 
@@ -309,7 +298,7 @@ streamlit run frontend/app.py --server.port 8501
 
 ---
 
-## ⚙️ Environment Configuration
+## Environment Configuration
 
 | Variable | Default Value | Description |
 |---|---|---|
@@ -325,7 +314,7 @@ streamlit run frontend/app.py --server.port 8501
 
 ---
 
-## 🔌 API Reference
+## API Reference
 
 The FastAPI service exposes a versioned RESTful API under `/api/v1`:
 
@@ -349,7 +338,7 @@ Interactive Swagger documentation is available live at `http://localhost:8000/do
 
 ---
 
-## 📁 Project Directory Structure
+## Project Directory Structure
 
 ```text
 Financial-Document-Intelligence-RAG-Analytics-Platform/
@@ -405,7 +394,7 @@ Financial-Document-Intelligence-RAG-Analytics-Platform/
 
 ---
 
-## 🧪 Testing & Quality Assurance
+## Testing & Quality Assurance
 
 The codebase includes an extensive automated test suite covering unit tests, analytics logic, RAG retrieval, API endpoints, and security validators.
 
@@ -421,7 +410,7 @@ pytest --cov=app --cov-report=term-missing
 
 ---
 
-## 🛡️ Enterprise Security & Auditing
+## Enterprise Security & Auditing
 
 - **Input Sanitization**: Multi-layer validation on upload file headers, file extensions, and MIME signatures.
 - **Data Isolation**: Unique document identifiers isolate extracted chunks and embeddings per filing.
@@ -431,7 +420,7 @@ pytest --cov=app --cov-report=term-missing
 
 ---
 
-## ❓ Troubleshooting & FAQ
+## Troubleshooting & FAQ
 
 #### Q: The AI Analyst says "AI analysis is temporarily unavailable".
 - **Fix**: Check that your `GEMINI_API_KEY` in `.env` is valid and has sufficient quota. You can inspect backend container logs via `docker compose logs -f backend`.
@@ -444,6 +433,6 @@ pytest --cov=app --cov-report=term-missing
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.

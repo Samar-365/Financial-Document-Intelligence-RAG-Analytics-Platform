@@ -17,7 +17,7 @@ from utils.workspace_state import (
 FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
 
 st.set_page_config(
-    page_title="FININTEL — AI Analyst",
+    page_title="FinDoc — AI Analyst",
     page_icon=FAVICON_PATH,
     layout="wide"
 )
@@ -168,7 +168,7 @@ if prompt:
     with chat_container:
         render_chat_message(role="user", content=prompt)
             
-        with st.spinner("FinIntel AI is analyzing financial disclosures..."):
+        with st.spinner("FinDoc AI is analyzing financial disclosures..."):
             t0 = time.time()
             rag_res = client.query_rag(document_id=selected_doc_id, question=prompt, top_k=5)
             elapsed = time.time() - t0

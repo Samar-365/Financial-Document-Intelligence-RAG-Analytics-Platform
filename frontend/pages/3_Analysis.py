@@ -23,7 +23,7 @@ from utils.workspace_state import (
 FAVICON_PATH = str(Path(__file__).resolve().parent.parent / "assets" / "finintel_logo.png")
 
 st.set_page_config(
-    page_title="FININTEL — Financial Analysis",
+    page_title="FinDoc — Financial Analysis",
     page_icon=FAVICON_PATH,
     layout="wide"
 )

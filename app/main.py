@@ -24,7 +24,7 @@ def create_application() -> FastAPI:
     configure_logging()
 
     app = FastAPI(
-        title="Financial Document Intelligence & RAG Analytics Platform",
+        title="FinDoc — Financial Document Intelligence & RAG Analytics Platform",
         description="Enterprise financial PDF processing, quantitative ratio analytics, and grounded RAG query engine.",
         version="1.0.0",
         docs_url="/docs",
@@ -59,7 +59,7 @@ def create_application() -> FastAPI:
     @app.get("/health", tags=["System"])
     def health_check():
         """Basic system health status check."""
-        return {"status": "ok", "service": "financial-intelligence-api", "version": "1.0.0"}
+        return {"status": "ok", "service": "findoc-api", "version": "1.0.0"}
 
     return app
 
