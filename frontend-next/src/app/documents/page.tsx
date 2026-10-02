@@ -1,123 +1,182 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { FolderUp, FileText, CheckCircle2, Clock, AlertCircle } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { UploadDropzone } from "@/components/documents/upload-dropzone";
+import { MetadataForm } from "@/components/documents/metadata-form";
+import { IngestionStepper } from "@/components/documents/ingestion-stepper";
+import { DocumentTable } from "@/components/documents/document-table";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { documentService } from "@/lib/services/document-service";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatBytes } from "@/lib/utils";
+import { useWorkspaceStore } from "@/stores/workspace-store";
+import { FolderUp, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function DocumentsPage() {
-  const { data, isLoading } = useQuery({
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
+  const [activeUploadFilename, setActiveUploadFilename] = useState<string>("");
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
+  const { setActiveDocument } = useWorkspaceStore();
+
+  // Query all documents
+  const {
+    data: documentData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["documents-list"],
-    queryFn: () => documentService.listDocuments(1, 50),
+    queryFn: () => documentService.listDocuments(1, 100),
+    refetchInterval: activeUploadId ? 3000 : false,
   });
 
-  const documents = data?.items || [];
+  const documents = documentData?.items || [];
+
+  // Upload Mutation
+  const uploadMutation = useMutation({
+    mutationFn: async (metadata: {
+      company_name?: string;
+      fiscal_year?: number;
+      fiscal_period?: string;
+    }) => {
+      if (!selectedFile) throw new Error("No file selected");
+      return await documentService.uploadDocument({
+        file: selectedFile,
+        company_name: metadata.company_name,
+        fiscal_year: metadata.fiscal_year,
+        fiscal_period: metadata.fiscal_period,
+      });
+    },
+    onSuccess: (res) => {
+      setActiveUploadId(res.document_id);
+      setActiveUploadFilename(res.filename);
+      setSelectedFile(null);
+      setUploadError(null);
+      queryClient.invalidateQueries({ queryKey: ["documents-list"] });
+    },
+    onError: (err: Error) => {
+      setUploadError(err.message || "Failed to upload document");
+    },
+  });
+
+  // Delete Mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await documentService.deleteDocument(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["documents-list"] });
+    },
+  });
+
+  const handleMetadataSubmit = async (metadata: {
+    company_name?: string;
+    fiscal_year?: number;
+    fiscal_period?: string;
+  }) => {
+    setUploadError(null);
+    await uploadMutation.mutateAsync(metadata);
+  };
+
+  const handleDeleteDocument = async (id: string) => {
+    await deleteMutation.mutateAsync(id);
+  };
 
   return (
     <AppLayout>
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-white">
-            Document Ingestion & Catalog
+          <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            <FolderUp className="h-5 w-5 text-blue-400" />
+            Document Ingestion & Index Management
           </h2>
           <p className="text-sm text-slate-400">
-            Upload, parse, and monitor autonomous extraction pipelines for financial reports.
+            Upload financial filings for automated text extraction, vector embedding, and Ind AS metric synthesis.
           </p>
         </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetch()}
+          className="gap-1.5 self-start sm:self-auto"
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+          <span>Refresh</span>
+        </Button>
       </div>
 
-      {/* Placeholder Upload Dropzone Box */}
-      <Card className="border-dashed border-2 border-slate-700 hover:border-blue-500/60 bg-slate-900/30 transition-all cursor-pointer">
-        <CardContent className="flex flex-col items-center justify-center p-10 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600/10 text-blue-400 mb-4 border border-blue-500/20">
-            <FolderUp className="h-7 w-7" />
-          </div>
-          <h3 className="text-base font-semibold text-white">
-            Drag and drop financial filings (PDF)
-          </h3>
-          <p className="text-xs text-slate-400 max-w-sm mt-1 mb-4">
-            Supports Annual Reports, 10-K, 10-Q, and Ind AS compliant financial statements up to 50MB.
-          </p>
-          <Button variant="gradient" size="sm">
-            Select PDF File
-          </Button>
+      {/* Live Ingestion Stepper Banner (shown during or right after upload) */}
+      {activeUploadId && (
+        <IngestionStepper
+          documentId={activeUploadId}
+          filename={activeUploadFilename}
+          onComplete={() => {
+            queryClient.invalidateQueries({ queryKey: ["documents-list"] });
+          }}
+          onDismiss={() => setActiveUploadId(null)}
+        />
+      )}
+
+      {/* Upload Section */}
+      <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-cyan-400" />
+            Upload New Filing
+          </CardTitle>
+          <CardDescription>
+            Select a PDF document and optionally provide filing metadata for enriched financial indexing.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <UploadDropzone
+            selectedFile={selectedFile}
+            onFileSelect={setSelectedFile}
+            disabled={uploadMutation.isPending}
+          />
+
+          {selectedFile && (
+            <div className="pt-2 border-t border-slate-800">
+              <MetadataForm
+                selectedFile={selectedFile}
+                onSubmit={handleMetadataSubmit}
+                isLoading={uploadMutation.isPending}
+              />
+            </div>
+          )}
+
+          {uploadError && (
+            <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{uploadError}</span>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Ingestion Table */}
-      <Card>
+      {/* Document Catalog */}
+      <Card className="border-slate-800 bg-slate-900/40">
         <CardHeader>
-          <CardTitle className="text-base">Indexed Documents ({documents.length})</CardTitle>
+          <CardTitle className="text-base">
+            Indexed Filings ({documents.length})
+          </CardTitle>
           <CardDescription>
-            Vectorized filings available for financial intelligence & RAG querying.
+            Manage ingested documents, set active analytics workspace, or inspect extraction status.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Filename</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Period</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Uploaded At</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-6 text-slate-400">
-                    Loading indexed documents...
-                  </TableCell>
-                </TableRow>
-              ) : documents.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-slate-500">
-                    No documents uploaded yet. Upload a PDF above to begin.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                documents.map((doc) => (
-                  <TableRow key={doc.id}>
-                    <TableCell className="font-medium text-slate-200 flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-blue-400 shrink-0" />
-                      <span className="truncate max-w-[200px]">{doc.filename}</span>
-                    </TableCell>
-                    <TableCell>{doc.company_name || "—"}</TableCell>
-                    <TableCell>
-                      {doc.fiscal_year ? `FY${doc.fiscal_year}` : "—"} {doc.fiscal_period ? `(${doc.fiscal_period})` : ""}
-                    </TableCell>
-                    <TableCell className="text-xs text-slate-400">
-                      {formatBytes(doc.file_size_bytes)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          doc.status === "COMPLETED"
-                            ? "success"
-                            : doc.status === "FAILED"
-                            ? "destructive"
-                            : "warning"
-                        }
-                      >
-                        {doc.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-xs text-slate-400">
-                      {new Date(doc.created_at).toLocaleDateString()}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          <DocumentTable
+            documents={documents}
+            isLoading={isLoading}
+            onDelete={handleDeleteDocument}
+            onRefresh={() => refetch()}
+          />
         </CardContent>
       </Card>
     </AppLayout>
