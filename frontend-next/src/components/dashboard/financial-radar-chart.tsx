@@ -88,23 +88,23 @@ export function FinancialRadarChart({
       <RadarChart cx="50%" cy="50%" outerRadius="72%" data={data}>
         <defs>
           <radialGradient id="radarFill" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.35} />
-            <stop offset="100%" stopColor="#6366f1" stopOpacity={0.08} />
+            <stop offset="0%" stopColor="#E63946" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#800020" stopOpacity={0.1} />
           </radialGradient>
         </defs>
-        <PolarGrid stroke="rgba(148,163,184,0.15)" />
+        <PolarGrid stroke="rgba(196,30,58,0.25)" />
         <PolarAngleAxis
           dataKey="subject"
-          tick={{ fill: "rgba(148,163,184,0.8)", fontSize: 11, fontWeight: 600 }}
+          tick={{ fill: "#CBD5E1", fontSize: 11, fontWeight: 700 }}
         />
         <Tooltip content={<CustomTooltip />} />
         <Radar
           name="Score"
           dataKey="value"
-          stroke="#3b82f6"
-          strokeWidth={2}
+          stroke="#E63946"
+          strokeWidth={2.5}
           fill="url(#radarFill)"
-          dot={{ r: 4, fill: "#3b82f6", strokeWidth: 2, stroke: "#1e40af" }}
+          dot={{ r: 4, fill: "#E63946", strokeWidth: 2, stroke: "#FFFFFF" }}
         />
       </RadarChart>
     </ResponsiveContainer>

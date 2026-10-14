@@ -90,12 +90,12 @@ export function UploadDropzone({
           className={cn(
             "group relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center transition-all cursor-pointer",
             isDragging
-              ? "border-blue-500 bg-blue-500/10 scale-[1.01]"
-              : "border-slate-700/80 bg-slate-900/40 hover:border-blue-500/50 hover:bg-slate-900/70",
+              ? "border-[#E63946] bg-[rgba(184,29,36,0.18)] scale-[1.01]"
+              : "border-[rgba(184,29,36,0.45)] bg-[#111018] hover:border-[#E63946] hover:bg-[#171522]",
             disabled && "opacity-50 pointer-events-none"
           )}
         >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600/10 text-blue-400 mb-3 border border-blue-500/20 group-hover:scale-110 transition-transform">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[rgba(184,29,36,0.18)] text-[#E63946] mb-3 border border-[rgba(196,30,58,0.4)] shadow-[0_0_15px_rgba(184,29,36,0.25)] group-hover:scale-110 transition-transform">
             <FolderUp className="h-7 w-7" />
           </div>
           <h3 className="text-sm font-semibold text-white">
@@ -106,9 +106,9 @@ export function UploadDropzone({
           </p>
         </div>
       ) : (
-        <div className="flex items-center justify-between rounded-xl border border-blue-500/30 bg-blue-950/20 p-4">
+        <div className="flex items-center justify-between rounded-xl border border-[rgba(196,30,58,0.4)] bg-[rgba(184,29,36,0.12)] p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[rgba(184,29,36,0.2)] text-[#E63946] border border-[rgba(196,30,58,0.4)]">
               <FileText className="h-5 w-5" />
             </div>
             <div>
@@ -127,7 +127,7 @@ export function UploadDropzone({
             size="icon"
             onClick={() => onFileSelect(null)}
             disabled={disabled}
-            className="text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+            className="text-slate-400 hover:text-[#E63946] hover:bg-[rgba(184,29,36,0.15)]"
             title="Remove file"
           >
             <X className="h-4 w-4" />
@@ -136,8 +136,8 @@ export function UploadDropzone({
       )}
 
       {errorMessage && (
-        <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
-          <AlertCircle className="h-4 w-4 shrink-0" />
+        <div className="flex items-center gap-2 rounded-lg border border-[rgba(230,57,70,0.4)] bg-[rgba(184,29,36,0.15)] p-3 text-xs text-[#FF6B6B]">
+          <AlertCircle className="h-4 w-4 shrink-0 text-[#E63946]" />
           <span>{errorMessage}</span>
         </div>
       )}

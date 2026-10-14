@@ -94,11 +94,11 @@ export function MetricsTable({
   }
 
   return (
-    <div className="flex flex-col gap-0 rounded-xl border border-slate-800/80 overflow-hidden bg-slate-900/60 backdrop-blur-md">
+    <div className="flex flex-col gap-0 rounded-xl border border-[rgba(196,30,58,0.24)] overflow-hidden bg-[#111017] shadow-xl backdrop-blur-md">
       {/* Search bar */}
-      <div className="flex items-center gap-3 border-b border-slate-800/80 px-4 py-3 bg-slate-950/30">
-        <Database className="h-4 w-4 text-slate-500 shrink-0" />
-        <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+      <div className="flex items-center gap-3 border-b border-[rgba(196,30,58,0.25)] px-4 py-3 bg-[#0D0C12]">
+        <Database className="h-4 w-4 text-[#E63946] shrink-0" />
+        <span className="text-xs font-semibold uppercase tracking-widest text-slate-300">
           All Extracted Metrics
         </span>
         <span className="ml-auto text-xs text-slate-500">{filtered.length} items</span>
@@ -110,7 +110,7 @@ export function MetricsTable({
             placeholder="Search metrics..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-8 w-48 rounded-lg border border-slate-700/60 bg-slate-800/60 pl-8 pr-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/60 transition-colors"
+            className="h-8 w-48 rounded-lg border border-[rgba(184,29,36,0.35)] bg-[#14131D] pl-8 pr-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#E63946] transition-colors"
           />
         </div>
       </div>
@@ -127,12 +127,12 @@ export function MetricsTable({
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-800/60 bg-slate-950/30">
+              <tr className="border-b border-[rgba(196,30,58,0.25)] bg-[#0D0C12]">
                 {COLS.map(({ key, label, align }) => (
                   <th
                     key={key}
                     className={cn(
-                      "py-2.5 px-4 text-[10px] font-semibold uppercase tracking-widest text-slate-500 cursor-pointer select-none hover:text-slate-300 transition-colors",
+                      "py-2.5 px-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 cursor-pointer select-none hover:text-[#E63946] transition-colors",
                       align ?? "text-left"
                     )}
                     onClick={() => handleSort(key)}
@@ -149,7 +149,7 @@ export function MetricsTable({
               {filtered.map((m, idx) => (
                 <tr
                   key={`${m.metric_name}-${idx}`}
-                  className="group border-b border-slate-800/40 hover:bg-slate-800/30 cursor-pointer transition-colors"
+                  className="group border-b border-[rgba(196,30,58,0.16)] hover:bg-[rgba(184,29,36,0.12)] cursor-pointer transition-colors"
                   onClick={() => onRowClick?.(m)}
                 >
                   <td className="py-2.5 pl-4 pr-3 text-sm text-slate-200 font-medium">

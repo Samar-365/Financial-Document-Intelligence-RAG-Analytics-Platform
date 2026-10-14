@@ -26,6 +26,8 @@ import {
   Target,
   Percent,
   CreditCard,
+  FileText,
+  Database,
 } from "lucide-react";
 import Link from "next/link";
 import { FinancialMetricItem } from "@/types/financial";
@@ -131,11 +133,11 @@ export default function DashboardPage() {
       <AppLayout>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
           <div className="relative">
-            <div className="h-24 w-24 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-              <BarChart3 className="h-12 w-12 text-blue-400" />
+            <div className="h-24 w-24 rounded-2xl bg-[rgba(184,29,36,0.15)] border border-[rgba(196,30,58,0.35)] flex items-center justify-center shadow-[0_0_25px_rgba(184,29,36,0.2)]">
+              <BarChart3 className="h-12 w-12 text-[#E63946]" />
             </div>
-            <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-              <span className="text-amber-400 text-xs font-bold">!</span>
+            <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-[rgba(184,29,36,0.3)] border border-[rgba(230,57,70,0.6)] flex items-center justify-center">
+              <span className="text-[#FF6B6B] text-xs font-bold">!</span>
             </div>
           </div>
           <div className="text-center max-w-md">
@@ -147,8 +149,8 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/documents">
-              <Button variant="outline" size="sm" className="gap-2">
-                <FolderUp className="h-4 w-4 text-blue-400" />
+              <Button variant="outline" size="sm" className="gap-2 border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] text-slate-200">
+                <FolderUp className="h-4 w-4 text-[#E63946]" />
                 Upload Filing
               </Button>
             </Link>
@@ -168,16 +170,16 @@ export default function DashboardPage() {
   return (
     <AppLayout>
       {/* ── Hero Banner ── */}
-      <div className="relative overflow-hidden rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-slate-950/60 p-6 backdrop-blur-xl">
-        {/* Animated background blobs */}
+      <div className="relative overflow-hidden rounded-2xl border border-[rgba(196,30,58,0.28)] bg-[#111017] p-6 backdrop-blur-xl shadow-2xl">
+        {/* Subtle accent glow */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-blue-600/8 blur-3xl" />
-          <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-indigo-600/8 blur-2xl" />
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-[rgba(184,29,36,0.12)] blur-3xl" />
+          <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-[rgba(184,29,36,0.08)] blur-2xl" />
         </div>
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-blue-400 mb-1">
-              <Zap className="h-4 w-4 text-cyan-400 animate-pulse" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-[#E63946] mb-1">
+              <Zap className="h-4 w-4 text-[#E63946] animate-pulse" />
               <span>ACTIVE WORKSPACE</span>
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-white">
@@ -185,25 +187,34 @@ export default function DashboardPage() {
                 ? `${activeDocument.company_name} — Financial Intelligence`
                 : "Financial Intelligence Dashboard"}
             </h2>
-            <p className="text-sm text-slate-400 mt-1 flex flex-wrap gap-3">
-              <span>
-                📄 <code className="text-blue-400 text-xs">{activeDocument.filename}</code>
+            <div className="text-sm text-slate-400 mt-1 flex flex-wrap items-center gap-4">
+              <span className="flex items-center gap-1.5">
+                <FileText className="h-3.5 w-3.5 text-[#E63946]" />
+                <code className="text-slate-300 text-xs bg-[#14131D] px-2 py-0.5 rounded border border-[rgba(196,30,58,0.25)]">
+                  {activeDocument.filename}
+                </code>
               </span>
               {activeDocument.fiscal_year && (
-                <span>📅 FY{activeDocument.fiscal_year}</span>
+                <span className="flex items-center gap-1.5 text-slate-300">
+                  <TrendingUp className="h-3.5 w-3.5 text-[#E63946]" />
+                  <span>FY{activeDocument.fiscal_year}</span>
+                </span>
               )}
               {activeDocument.fiscal_period && (
-                <span>🗂 {activeDocument.fiscal_period}</span>
+                <span className="flex items-center gap-1.5 text-slate-300">
+                  <Database className="h-3.5 w-3.5 text-[#E63946]" />
+                  <span>{activeDocument.fiscal_period}</span>
+                </span>
               )}
-              <span className="text-emerald-400 font-semibold">
-                ✓ {activeDocument.status}
+              <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                <span>✓</span> {activeDocument.status}
               </span>
-            </p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/documents">
-              <Button variant="outline" size="sm" className="gap-2">
-                <FolderUp className="h-4 w-4 text-blue-400" />
+              <Button variant="outline" size="sm" className="gap-2 border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] text-slate-200">
+                <FolderUp className="h-4 w-4 text-[#E63946]" />
                 Upload Filing
               </Button>
             </Link>
@@ -287,10 +298,10 @@ export default function DashboardPage() {
       {/* ── Health Gauge + Radar Row ── */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Health Gauge */}
-        <Card className="flex flex-col">
+        <Card className="flex flex-col pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-              <Target className="h-4 w-4 text-cyan-400" />
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <Target className="h-4 w-4 text-[#E63946]" />
               5-Dimension Corporate Health Score
             </CardTitle>
           </CardHeader>
@@ -305,16 +316,16 @@ export default function DashboardPage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full">
                 {[
                   { label: "Growth", value: healthData.growth_score, color: "text-emerald-400" },
-                  { label: "Profitability", value: healthData.profitability_score, color: "text-blue-400" },
-                  { label: "Liquidity", value: healthData.liquidity_score, color: "text-cyan-400" },
+                  { label: "Profitability", value: healthData.profitability_score, color: "text-[#E63946]" },
+                  { label: "Liquidity", value: healthData.liquidity_score, color: "text-slate-200" },
                   { label: "Leverage", value: healthData.leverage_score, color: "text-amber-400" },
-                  { label: "Cash Flow", value: healthData.cash_flow_score, color: "text-indigo-400" },
+                  { label: "Cash Flow", value: healthData.cash_flow_score, color: "text-[#FF4D6D]" },
                 ].map(({ label, value, color }) => (
                   <div
                     key={label}
-                    className="flex flex-col items-center rounded-lg border border-slate-800/60 bg-slate-800/30 px-3 py-2"
+                    className="flex flex-col items-center rounded-lg border border-[rgba(196,30,58,0.2)] bg-[#14131D] px-3 py-2"
                   >
-                    <span className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">
                       {label}
                     </span>
                     <span className={`text-sm font-bold ${color}`}>
@@ -328,10 +339,10 @@ export default function DashboardPage() {
         </Card>
 
         {/* Radar Chart */}
-        <Card className="flex flex-col">
+        <Card className="flex flex-col pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-              <Activity className="h-4 w-4 text-blue-400" />
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <Activity className="h-4 w-4 text-[#E63946]" />
               Financial Dimension Radar
             </CardTitle>
           </CardHeader>
@@ -353,10 +364,10 @@ export default function DashboardPage() {
       {/* ── Charts Row ── */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Revenue Trend Chart (takes 2/3 width) */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-blue-400" />
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-[#E63946]" />
               Revenue, EBITDA &amp; Net Income Trend
             </CardTitle>
           </CardHeader>
@@ -371,10 +382,10 @@ export default function DashboardPage() {
         </Card>
 
         {/* Capital Structure Donut */}
-        <Card>
+        <Card className="pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-              <PieChart className="h-4 w-4 text-emerald-400" />
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <PieChart className="h-4 w-4 text-[#E63946]" />
               Capital Structure
             </CardTitle>
           </CardHeader>
@@ -392,7 +403,7 @@ export default function DashboardPage() {
       {/* ── Risk Flags & Executive Insights ── */}
       <section>
         <div className="flex items-center gap-2 mb-3">
-          <Activity className="h-4 w-4 text-amber-400" />
+          <Activity className="h-4 w-4 text-[#E63946]" />
           <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
             Risk Indicators &amp; Audit Provenance
           </h3>
@@ -409,31 +420,31 @@ export default function DashboardPage() {
 
           {/* Quick Links */}
           <div className="flex flex-col gap-3">
-            <Card className="p-4 flex flex-col gap-2">
+            <Card className="p-4 flex flex-col gap-2 pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-1">
                 Deep Dive
               </h4>
               <Link href="/analysis" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start gap-2">
-                  <BarChart3 className="h-4 w-4 text-blue-400" />
+                <Button variant="outline" size="sm" className="w-full justify-start gap-2 border-[rgba(196,30,58,0.25)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.18)] hover:border-[#E63946] text-slate-200">
+                  <BarChart3 className="h-4 w-4 text-[#E63946]" />
                   Financial Statements
                 </Button>
               </Link>
               <Link href="/chat" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start gap-2">
-                  <Bot className="h-4 w-4 text-cyan-400" />
+                <Button variant="outline" size="sm" className="w-full justify-start gap-2 border-[rgba(196,30,58,0.25)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.18)] hover:border-[#E63946] text-slate-200">
+                  <Bot className="h-4 w-4 text-[#E63946]" />
                   AI Analyst / Q&amp;A
                 </Button>
               </Link>
               <Link href="/compare" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start gap-2">
-                  <Layers className="h-4 w-4 text-indigo-400" />
+                <Button variant="outline" size="sm" className="w-full justify-start gap-2 border-[rgba(196,30,58,0.25)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.18)] hover:border-[#E63946] text-slate-200">
+                  <Layers className="h-4 w-4 text-[#E63946]" />
                   Peer Benchmarking
                 </Button>
               </Link>
               <Link href="/audit" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start gap-2">
-                  <Activity className="h-4 w-4 text-amber-400" />
+                <Button variant="outline" size="sm" className="w-full justify-start gap-2 border-[rgba(196,30,58,0.25)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.18)] hover:border-[#E63946] text-slate-200">
+                  <Activity className="h-4 w-4 text-[#E63946]" />
                   Audit Logs
                 </Button>
               </Link>

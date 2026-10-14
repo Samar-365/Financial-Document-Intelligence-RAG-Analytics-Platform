@@ -121,9 +121,9 @@ type RatioCategory = {
 };
 
 const CATEGORIES: RatioCategory[] = [
-  { label: "Liquidity", icon: ShieldCheck, color: "text-cyan-400", ratios: LIQUIDITY_RATIOS },
-  { label: "Profitability", icon: TrendingUp, color: "text-emerald-400", ratios: PROFITABILITY_RATIOS },
-  { label: "Solvency & Leverage", icon: Layers, color: "text-amber-400", ratios: SOLVENCY_RATIOS },
+  { label: "Liquidity", icon: ShieldCheck, color: "text-[#E63946]", ratios: LIQUIDITY_RATIOS },
+  { label: "Profitability", icon: TrendingUp, color: "text-[#E63946]", ratios: PROFITABILITY_RATIOS },
+  { label: "Solvency & Leverage", icon: Layers, color: "text-[#E63946]", ratios: SOLVENCY_RATIOS },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -153,8 +153,8 @@ const STATUS_STYLES = {
     label: "Monitor",
   },
   danger: {
-    bar: "bg-red-500",
-    badge: "text-red-400 bg-red-500/10 border-red-500/30",
+    bar: "bg-[#E63946]",
+    badge: "text-[#FF6B6B] bg-[rgba(184,29,36,0.2)] border-[rgba(230,57,70,0.4)]",
     label: "At Risk",
   },
 };
@@ -164,12 +164,12 @@ const STATUS_STYLES = {
 function RatioCard({ def, value }: { def: RatioDef; value: number | null | undefined }) {
   if (value == null) {
     return (
-      <div className="rounded-xl border border-slate-800/60 bg-slate-900/40 p-4 flex flex-col gap-2 opacity-40">
+      <div className="rounded-xl border border-[rgba(196,30,58,0.2)] bg-[#111017] p-4 flex flex-col gap-2 opacity-40">
         <div className="flex items-start justify-between gap-2">
           <span className="text-xs font-semibold text-slate-300">{def.label}</span>
           <span className="text-xs text-slate-600">N/A</span>
         </div>
-        <div className="h-1 w-full rounded-full bg-slate-800" />
+        <div className="h-1 w-full rounded-full bg-[#1C1A27]" />
         <p className="text-[11px] text-slate-600 leading-relaxed">{def.description}</p>
       </div>
     );
@@ -189,7 +189,7 @@ function RatioCard({ def, value }: { def: RatioDef; value: number | null | undef
   }
 
   return (
-    <div className="group rounded-xl border border-slate-800/60 bg-slate-900/40 p-4 flex flex-col gap-2 hover:border-slate-700/80 transition-all">
+    <div className="group rounded-xl border border-[rgba(196,30,58,0.22)] bg-[#111017] p-4 flex flex-col gap-2 hover:border-[rgba(230,57,70,0.45)] hover:shadow-[0_4px_16px_rgba(184,29,36,0.18)] transition-all">
       <div className="flex items-start justify-between gap-2">
         <span className="text-xs font-semibold text-slate-200 leading-tight">{def.label}</span>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -208,7 +208,7 @@ function RatioCard({ def, value }: { def: RatioDef; value: number | null | undef
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-[#1C1A27] overflow-hidden">
         <div
           className={cn("h-full rounded-full transition-all duration-700", styles.bar)}
           style={{ width: `${barPct}%` }}
@@ -216,10 +216,10 @@ function RatioCard({ def, value }: { def: RatioDef; value: number | null | undef
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[11px] text-slate-500 leading-relaxed flex-1">{def.description}</p>
+        <p className="text-[11px] text-slate-400 leading-relaxed flex-1">{def.description}</p>
         {def.benchmark && (
-          <span className="text-[10px] text-slate-600 shrink-0 flex items-center gap-0.5">
-            <Info className="h-2.5 w-2.5" />
+          <span className="text-[10px] text-slate-500 shrink-0 flex items-center gap-0.5">
+            <Info className="h-2.5 w-2.5 text-[#E63946]" />
             {def.benchmark}
           </span>
         )}

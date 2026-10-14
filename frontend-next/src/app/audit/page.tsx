@@ -43,23 +43,27 @@ export default function AuditPage() {
       <div className="space-y-6 max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-emerald-400" />
-              Audit Logs & Governance
-            </h2>
-            <p className="text-sm text-slate-400">
-              System telemetry, extraction confidence logs, pgvector status, and error catalog reference.
-            </p>
+          <div className="flex items-center gap-3.5">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(184,29,36,0.18)] text-[#E63946] border border-[rgba(196,30,58,0.4)] shadow-[0_0_15px_rgba(184,29,36,0.25)] shrink-0">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-white">
+                System Telemetry &amp; Audit Logs
+              </h2>
+              <p className="text-sm text-slate-400">
+                Live monitoring of API health probes, pgvector database status, and processing audit logs.
+              </p>
+            </div>
           </div>
 
           <Button
             onClick={() => refetchHealth()}
             variant="outline"
             size="sm"
-            className="gap-2 text-xs border-slate-700 bg-slate-800/60 hover:bg-slate-700 text-slate-300"
+            className="gap-2 text-xs border-[rgba(196,30,58,0.3)] bg-[#111017] hover:bg-[rgba(184,29,36,0.15)] hover:border-[#E63946] text-slate-200"
           >
-            <RefreshCw className="h-3.5 w-3.5 text-blue-400" />
+            <RefreshCw className="h-3.5 w-3.5 text-[#E63946]" />
             <span>Poll Health Probes</span>
           </Button>
         </div>

@@ -6,11 +6,8 @@ import {
   Send,
   Loader2,
   Trash2,
-  Download,
   FileDown,
   Printer,
-  Sparkles,
-  Paperclip,
 } from "lucide-react";
 
 interface ChatInputBarProps {
@@ -66,20 +63,20 @@ export function ChatInputBar({
   };
 
   return (
-    <div className="border-t border-slate-800 bg-slate-950/80 p-4 backdrop-blur-xl">
+    <div className="border-t border-[rgba(184,29,36,0.25)] bg-[#0D0C12]/95 p-4 backdrop-blur-xl">
       <div className="mx-auto max-w-4xl space-y-2.5">
         {/* Controls row */}
         <div className="flex items-center justify-between text-xs text-slate-400">
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 text-[11px] text-slate-400">
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px]">
+            <span className="flex items-center gap-1 text-[11px] text-[#94A3B8]">
+              <kbd className="px-1.5 py-0.5 rounded bg-[#111017] border border-[rgba(196,30,58,0.3)] font-mono text-[10px] text-[#FFA8B2]">
                 Enter
               </kbd>
               <span>to send</span>
             </span>
             <span className="text-slate-600">•</span>
-            <span className="flex items-center gap-1 text-[11px] text-slate-400">
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px]">
+            <span className="flex items-center gap-1 text-[11px] text-[#94A3B8]">
+              <kbd className="px-1.5 py-0.5 rounded bg-[#111017] border border-[rgba(196,30,58,0.3)] font-mono text-[10px] text-[#FFA8B2]">
                 Shift + Enter
               </kbd>
               <span>for new line</span>
@@ -88,14 +85,14 @@ export function ChatInputBar({
 
           {/* Action buttons (Clear, Export) */}
           {hasMessages && (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={onExportMarkdown}
                 title="Export conversation to Markdown (.md)"
-                className="flex items-center gap-1 px-2 py-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-colors text-[11px]"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] text-[#CBD5E1] hover:text-white transition-colors text-[11px]"
               >
-                <FileDown className="h-3.5 w-3.5 text-blue-400" />
+                <FileDown className="h-3.5 w-3.5 text-[#E63946]" />
                 <span>Export MD</span>
               </button>
 
@@ -103,9 +100,9 @@ export function ChatInputBar({
                 type="button"
                 onClick={onPrintReport}
                 title="Print or save as PDF"
-                className="flex items-center gap-1 px-2 py-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-colors text-[11px]"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] text-[#CBD5E1] hover:text-white transition-colors text-[11px]"
               >
-                <Printer className="h-3.5 w-3.5 text-cyan-400" />
+                <Printer className="h-3.5 w-3.5 text-[#E63946]" />
                 <span>Print PDF</span>
               </button>
 
@@ -113,7 +110,7 @@ export function ChatInputBar({
                 type="button"
                 onClick={onClearThread}
                 title="Clear current conversation"
-                className="flex items-center gap-1 px-2 py-1 rounded hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition-colors text-[11px]"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] hover:bg-rose-500/10 hover:border-rose-500 text-slate-400 hover:text-rose-400 transition-colors text-[11px]"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 <span>Clear</span>
@@ -123,7 +120,7 @@ export function ChatInputBar({
         </div>
 
         {/* Input box */}
-        <div className="relative flex items-end gap-2 rounded-2xl border border-slate-800 bg-slate-900/90 p-2 shadow-2xl focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all">
+        <div className="relative flex items-end gap-2 rounded-2xl border border-[rgba(196,30,58,0.35)] bg-[#111017] p-2 shadow-[0_4px_20px_rgba(0,0,0,0.5)] focus-within:border-[#E63946] focus-within:ring-1 focus-within:ring-[#E63946] focus-within:shadow-[0_0_16px_rgba(230,57,70,0.3)] transition-all">
           <textarea
             ref={textareaRef}
             rows={1}
@@ -132,7 +129,7 @@ export function ChatInputBar({
             onKeyDown={handleKeyDown}
             disabled={disabled || isGenerating}
             placeholder={placeholder}
-            className="flex-1 max-h-40 min-h-[44px] resize-none bg-transparent px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none disabled:opacity-50"
+            className="flex-1 max-h-40 min-h-[44px] resize-none bg-transparent px-3 py-2.5 text-sm text-[#F1F5F9] placeholder-slate-500 focus:outline-none disabled:opacity-50"
           />
 
           <Button
@@ -141,7 +138,7 @@ export function ChatInputBar({
             disabled={!input.trim() || isGenerating || disabled}
             variant="gradient"
             size="sm"
-            className="h-10 px-4 rounded-xl shrink-0 gap-2 font-semibold shadow-lg shadow-blue-500/20"
+            className="h-10 px-4 rounded-xl shrink-0 gap-2 font-bold"
           >
             {isGenerating ? (
               <>

@@ -100,19 +100,23 @@ export default function ComparePage() {
       <div className="space-y-6 max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <GitCompare className="h-5 w-5 text-indigo-400" />
-              Peer Benchmarking & Comparison
-            </h2>
-            <p className="text-sm text-slate-400">
-              Cross-company and multi-period variance analysis, delta calculations, and risk trajectory tracking.
-            </p>
+          <div className="flex items-center gap-3.5">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(184,29,36,0.18)] text-[#E63946] border border-[rgba(196,30,58,0.4)] shadow-[0_0_15px_rgba(184,29,36,0.25)] shrink-0">
+              <GitCompare className="h-6 w-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-white">
+                Peer Benchmarking &amp; Comparison
+              </h2>
+              <p className="text-sm text-slate-400">
+                Cross-company and multi-period variance analysis, delta calculations, and risk trajectory tracking.
+              </p>
+            </div>
           </div>
 
           <Link href="/documents">
-            <Button variant="outline" size="sm" className="gap-2">
-              <FolderUp className="h-4 w-4 text-blue-400" />
+            <Button variant="outline" size="sm" className="gap-2 border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] text-slate-200">
+              <FolderUp className="h-4 w-4 text-[#E63946]" />
               Upload Filing
             </Button>
           </Link>
@@ -120,9 +124,11 @@ export default function ComparePage() {
 
         {/* If fewer than 2 documents exist */}
         {documents.length < 2 && !docsLoading && (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-8 text-center space-y-4">
-            <div className="flex justify-center text-slate-500">
-              <Layers className="h-12 w-12 text-indigo-400/60" />
+          <div className="rounded-2xl border border-[rgba(196,30,58,0.28)] bg-[#111017] p-8 text-center space-y-4 shadow-xl">
+            <div className="flex justify-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[rgba(184,29,36,0.15)] text-[#E63946] border border-[rgba(196,30,58,0.35)] shadow-[0_0_20px_rgba(184,29,36,0.2)]">
+                <Layers className="h-8 w-8" />
+              </div>
             </div>
             <h3 className="text-base font-bold text-white">
               At Least Two Documents Required for Comparison

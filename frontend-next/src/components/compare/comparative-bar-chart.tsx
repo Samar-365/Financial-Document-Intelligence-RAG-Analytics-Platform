@@ -50,8 +50,8 @@ export function ComparativeBarChart({
       const item = chartData.find((c) => c.metric === label);
       const pct = item?.pctDelta ?? 0;
       return (
-        <div className="rounded-xl border border-slate-700 bg-slate-950/95 p-3.5 shadow-xl text-xs space-y-2">
-          <p className="font-bold text-white border-b border-slate-800 pb-1">
+        <div className="rounded-xl border border-[rgba(196,30,58,0.35)] bg-[#111017] p-3.5 shadow-2xl text-xs space-y-2">
+          <p className="font-bold text-white border-b border-[rgba(196,30,58,0.2)] pb-1">
             {label}
           </p>
           <div className="space-y-1">
@@ -72,11 +72,11 @@ export function ComparativeBarChart({
               </div>
             ))}
           </div>
-          <div className="pt-1 border-t border-slate-800 flex justify-between items-center text-[11px]">
+          <div className="pt-1 border-t border-[rgba(196,30,58,0.2)] flex justify-between items-center text-[11px]">
             <span className="text-slate-400">Variance:</span>
             <span
               className={`font-bold font-mono ${
-                pct > 0 ? "text-emerald-400" : pct < 0 ? "text-rose-400" : "text-slate-400"
+                pct > 0 ? "text-emerald-400" : pct < 0 ? "text-[#FF6B6B]" : "text-slate-400"
               }`}
             >
               {pct > 0 ? "+" : ""}
@@ -90,10 +90,10 @@ export function ComparativeBarChart({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl backdrop-blur-md space-y-4">
+    <div className="rounded-2xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-5 shadow-xl backdrop-blur-md space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <BarChart2 className="h-4 w-4 text-blue-400" />
+          <BarChart2 className="h-4 w-4 text-[#E63946]" />
           <h4 className="text-sm font-bold text-white">Comparative Metric Trajectory</h4>
         </div>
         <span className="text-xs text-slate-400 font-mono">
@@ -107,17 +107,17 @@ export function ComparativeBarChart({
             data={chartData}
             margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.6} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(184, 29, 36, 0.15)" opacity={0.6} />
             <XAxis
               dataKey="metric"
-              stroke="#64748b"
+              stroke="#94A3B8"
               fontSize={11}
               angle={-20}
               textAnchor="end"
               tickLine={false}
             />
             <YAxis
-              stroke="#64748b"
+              stroke="#94A3B8"
               fontSize={11}
               tickLine={false}
               tickFormatter={(v) => `${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
@@ -129,13 +129,13 @@ export function ComparativeBarChart({
             />
             <Bar
               dataKey={docAName}
-              fill="#3b82f6"
+              fill="#800020"
               radius={[4, 4, 0, 0]}
               maxBarSize={45}
             />
             <Bar
               dataKey={docBName}
-              fill="#818cf8"
+              fill="#E63946"
               radius={[4, 4, 0, 0]}
               maxBarSize={45}
             />

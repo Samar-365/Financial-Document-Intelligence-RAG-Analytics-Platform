@@ -50,7 +50,7 @@ export function MetadataForm({
         {/* Company Name */}
         <div className="sm:col-span-1 space-y-1.5">
           <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-            <Building2 className="h-3.5 w-3.5 text-blue-400" />
+            <Building2 className="h-3.5 w-3.5 text-[#E63946]" />
             Company Name
           </label>
           <Input
@@ -58,23 +58,24 @@ export function MetadataForm({
             onChange={(e) => setCompanyName(e.target.value)}
             placeholder="e.g. Reliance Industries"
             disabled={isLoading}
+            className="border-[rgba(184,29,36,0.35)] bg-[#14131D] focus:border-[#E63946]"
           />
         </div>
 
         {/* Fiscal Year */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-emerald-400" />
+            <Calendar className="h-3.5 w-3.5 text-[#E63946]" />
             Fiscal Year
           </label>
           <select
             value={fiscalYear}
             onChange={(e) => setFiscalYear(Number(e.target.value))}
             disabled={isLoading}
-            className="flex h-10 w-full rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all cursor-pointer"
+            className="flex h-10 w-full rounded-lg border border-[rgba(184,29,36,0.35)] bg-[#14131D] px-3 py-2 text-sm text-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#E63946] transition-all cursor-pointer"
           >
             {[2026, 2025, 2024, 2023, 2022, 2021, 2020].map((yr) => (
-              <option key={yr} value={yr}>
+              <option key={yr} value={yr} className="bg-[#14131D] text-slate-100">
                 FY{yr}
               </option>
             ))}
@@ -84,20 +85,20 @@ export function MetadataForm({
         {/* Fiscal Period */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5 text-indigo-400" />
+            <Clock className="h-3.5 w-3.5 text-[#E63946]" />
             Period / Quarter
           </label>
           <select
             value={fiscalPeriod}
             onChange={(e) => setFiscalPeriod(e.target.value)}
             disabled={isLoading}
-            className="flex h-10 w-full rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all cursor-pointer"
+            className="flex h-10 w-full rounded-lg border border-[rgba(184,29,36,0.35)] bg-[#14131D] px-3 py-2 text-sm text-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#E63946] transition-all cursor-pointer"
           >
-            <option value="Annual">Annual (Full Year)</option>
-            <option value="Q1">Q1 (First Quarter)</option>
-            <option value="Q2">Q2 (Second Quarter / H1)</option>
-            <option value="Q3">Q3 (Third Quarter / 9M)</option>
-            <option value="Q4">Q4 (Fourth Quarter)</option>
+            <option value="Annual" className="bg-[#14131D] text-slate-100">Annual (Full Year)</option>
+            <option value="Q1" className="bg-[#14131D] text-slate-100">Q1 (First Quarter)</option>
+            <option value="Q2" className="bg-[#14131D] text-slate-100">Q2 (Second Quarter / H1)</option>
+            <option value="Q3" className="bg-[#14131D] text-slate-100">Q3 (Third Quarter / 9M)</option>
+            <option value="Q4" className="bg-[#14131D] text-slate-100">Q4 (Fourth Quarter)</option>
           </select>
         </div>
       </div>
@@ -110,7 +111,7 @@ export function MetadataForm({
             key={name}
             type="button"
             onClick={() => setCompanyName(name)}
-            className="text-[11px] px-2 py-0.5 rounded-md border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white hover:border-slate-700 transition-all"
+            className="text-[11px] px-2.5 py-1 rounded-md border border-[rgba(196,30,58,0.3)] bg-[#111017] text-slate-300 hover:text-white hover:border-[#E63946] hover:bg-[rgba(184,29,36,0.18)] transition-all"
           >
             {name}
           </button>

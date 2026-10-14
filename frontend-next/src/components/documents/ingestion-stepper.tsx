@@ -89,11 +89,11 @@ export function IngestionStepper({
   }
 
   return (
-    <div className="rounded-xl border border-blue-500/30 bg-gradient-to-b from-blue-950/30 to-slate-900/60 p-6 backdrop-blur-xl shadow-xl space-y-6">
+    <div className="rounded-xl border border-[rgba(196,30,58,0.35)] bg-[#111017] p-6 backdrop-blur-xl shadow-2xl space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-400">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#E63946]">
               Live Ingestion Pipeline
             </span>
             <Badge
@@ -120,7 +120,7 @@ export function IngestionStepper({
               variant="outline"
               size="sm"
               onClick={onDismiss}
-              className="text-xs h-7"
+              className="text-xs h-7 border-[rgba(196,30,58,0.35)] hover:border-[#E63946]"
             >
               Close
             </Button>
@@ -132,9 +132,9 @@ export function IngestionStepper({
       <div className="space-y-1.5">
         <div className="flex justify-between text-xs text-slate-400 font-medium">
           <span>Pipeline Progress</span>
-          <span>{progressPercent}%</span>
+          <span className="text-[#E63946] font-bold">{progressPercent}%</span>
         </div>
-        <Progress value={progressPercent} />
+        <Progress value={progressPercent} className="h-2 bg-[#1C1A27]" />
       </div>
 
       {/* Stepper Cards */}
@@ -153,8 +153,8 @@ export function IngestionStepper({
                 isDone
                   ? "border-emerald-500/30 bg-emerald-950/20 text-emerald-300"
                   : isCurrent
-                  ? "border-blue-500/50 bg-blue-950/40 text-blue-200 shadow-md shadow-blue-500/10 scale-[1.02]"
-                  : "border-slate-800 bg-slate-900/40 text-slate-500"
+                  ? "border-[rgba(230,57,70,0.6)] bg-[rgba(184,29,36,0.18)] text-white shadow-md shadow-[rgba(230,57,70,0.2)] scale-[1.02]"
+                  : "border-slate-800 bg-[#14131D] text-slate-500"
               )}
             >
               <div className="flex items-center justify-between mb-2">
@@ -164,14 +164,14 @@ export function IngestionStepper({
                     isDone
                       ? "text-emerald-400"
                       : isCurrent
-                      ? "text-blue-400"
+                      ? "text-[#E63946]"
                       : "text-slate-500"
                   )}
                 />
                 {isDone ? (
                   <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                 ) : isCurrent ? (
-                  <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />
+                  <Loader2 className="h-4 w-4 text-[#E63946] animate-spin" />
                 ) : (
                   <span className="text-[10px] text-slate-600 font-mono">
                     #{stepNum}

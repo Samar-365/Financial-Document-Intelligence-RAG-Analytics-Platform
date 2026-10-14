@@ -53,23 +53,23 @@ export function RiskProfileComparison({
   const ratingB = getScoreRating(scoreB, healthB?.rating);
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl backdrop-blur-md space-y-5">
+    <div className="rounded-2xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-5 shadow-xl backdrop-blur-md space-y-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-emerald-400" />
+          <ShieldCheck className="h-4 w-4 text-[#E63946]" />
           <h4 className="text-sm font-bold text-white">
-            Health Trajectory & Risk Factor Comparison
+            Health Trajectory &amp; Risk Factor Comparison
           </h4>
         </div>
         <span className="text-xs text-slate-400">
-          Composite 5D Health Scoring & Risk Flag Drift
+          Composite 5D Health Scoring &amp; Risk Flag Drift
         </span>
       </div>
 
       {/* Health Score Comparison Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Baseline Card */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 space-y-1">
+        <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#14131D] p-4 space-y-1">
           <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
             Baseline Health ({docAName})
           </span>
@@ -77,12 +77,12 @@ export function RiskProfileComparison({
             {scoreA !== null ? `${scoreA.toFixed(1)}/100` : "N/A"}
           </div>
           <p className="text-xs text-slate-400 font-medium">
-            Rating: <span className="text-blue-400">{ratingA}</span>
+            Rating: <span className="text-[#E63946] font-semibold">{ratingA}</span>
           </p>
         </div>
 
         {/* Target Card */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 space-y-1">
+        <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#14131D] p-4 space-y-1">
           <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
             Target Health ({docBName})
           </span>
@@ -93,7 +93,7 @@ export function RiskProfileComparison({
                 className={`text-xs font-mono font-bold px-2 py-0.5 rounded-full ${
                   deltaScore >= 0
                     ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                    : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                    : "bg-[rgba(184,29,36,0.2)] text-[#FF6B6B] border border-[rgba(230,57,70,0.4)]"
                 }`}
               >
                 {deltaScore >= 0 ? "+" : ""}
@@ -102,12 +102,12 @@ export function RiskProfileComparison({
             )}
           </div>
           <p className="text-xs text-slate-400 font-medium">
-            Rating: <span className="text-indigo-400">{ratingB}</span>
+            Rating: <span className="text-[#FF4D6D] font-semibold">{ratingB}</span>
           </p>
         </div>
 
         {/* Risk Drift Summary Card */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 space-y-1">
+        <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#14131D] p-4 space-y-1">
           <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
             Risk Factor Drift
           </span>

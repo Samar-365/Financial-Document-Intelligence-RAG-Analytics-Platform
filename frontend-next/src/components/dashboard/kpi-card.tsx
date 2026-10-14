@@ -23,8 +23,6 @@ export function KpiCard({
   yoyChange,
   yoyLabel,
   icon: Icon,
-  iconColor = "text-blue-400",
-  accentColor = "hover:border-blue-500/40",
   isLoading = false,
   unit,
   description,
@@ -36,38 +34,24 @@ export function KpiCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-slate-800/80",
-        "bg-slate-900/60 p-5 backdrop-blur-md shadow-xl shadow-black/20",
-        "transition-all duration-300",
-        accentColor
+        "group relative overflow-hidden rounded-xl border border-[rgba(196,30,58,0.24)]",
+        "bg-[#111017] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.5)]",
+        "transition-all duration-300 hover:border-[rgba(230,57,70,0.45)] hover:shadow-[0_6px_24px_rgba(184,29,36,0.18)]"
       )}
     >
-      {/* Subtle background glow */}
-      <div
-        className={cn(
-          "absolute -top-8 -right-8 h-24 w-24 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-500 blur-2xl",
-          iconColor.replace("text-", "bg-")
-        )}
-      />
-
-      <div className="flex items-start justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#94A3B8]">
           {title}
         </span>
-        <div
-          className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800/80",
-            iconColor
-          )}
-        >
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[rgba(184,29,36,0.15)] text-[#E63946] border border-[rgba(230,57,70,0.3)]">
           <Icon className="h-4 w-4" />
         </div>
       </div>
 
       {isLoading ? (
         <div className="space-y-2 mt-1">
-          <div className="h-7 w-28 rounded-md bg-slate-800 animate-pulse" />
-          <div className="h-4 w-20 rounded-md bg-slate-800/70 animate-pulse" />
+          <div className="h-7 w-28 rounded-md bg-[#1d1b26] animate-pulse" />
+          <div className="h-4 w-20 rounded-md bg-[#1d1b26]/70 animate-pulse" />
         </div>
       ) : (
         <>
@@ -87,12 +71,12 @@ export function KpiCard({
           {hasChange && (
             <div
               className={cn(
-                "mt-1.5 flex items-center gap-1 text-xs font-semibold",
+                "mt-2 flex items-center gap-1 text-xs font-semibold",
                 isPositive
                   ? "text-emerald-400"
                   : isNeutral
                   ? "text-slate-400"
-                  : "text-red-400"
+                  : "text-[#E63946]"
               )}
             >
               {isPositive ? (

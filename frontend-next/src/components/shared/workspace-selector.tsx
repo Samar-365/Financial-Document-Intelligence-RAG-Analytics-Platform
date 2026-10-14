@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { documentService } from "@/lib/services/document-service";
 import { useWorkspaceStore } from "@/stores/workspace-store";
-import { Building2, FileText, ChevronDown, Check, Coins } from "lucide-react";
+import { Building2, ChevronDown } from "lucide-react";
 
 export function WorkspaceSelector() {
   const {
@@ -54,14 +54,14 @@ export function WorkspaceSelector() {
     <div className="flex items-center gap-2">
       {/* Active Document Selector */}
       <div className="relative flex items-center">
-        <div className="absolute left-3 pointer-events-none text-slate-400">
+        <div className="absolute left-3 pointer-events-none text-[#E63946]">
           <Building2 className="h-4 w-4" />
         </div>
         <select
           value={activeDocumentId || ""}
           onChange={handleDocumentChange}
           disabled={isLoading || documents.length === 0}
-          className="h-9 pl-9 pr-8 bg-slate-900/80 hover:bg-slate-800/80 border border-slate-700/60 rounded-lg text-xs font-medium text-slate-100 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer min-w-[200px] max-w-[280px] truncate shadow-sm transition-all"
+          className="h-9 pl-9 pr-8 bg-[#111017] hover:bg-[#161522] border border-[rgba(196,30,58,0.3)] rounded-lg text-xs font-semibold text-white appearance-none focus:outline-none focus:border-[#E63946] focus:ring-1 focus:ring-[#E63946] cursor-pointer min-w-[200px] max-w-[280px] truncate shadow-sm transition-all"
         >
           {isLoading ? (
             <option value="">Loading filings...</option>
@@ -76,16 +76,16 @@ export function WorkspaceSelector() {
             ))
           )}
         </select>
-        <ChevronDown className="absolute right-2.5 h-3.5 w-3.5 pointer-events-none text-slate-400" />
+        <ChevronDown className="absolute right-2.5 h-3.5 w-3.5 pointer-events-none text-[#E63946]" />
       </div>
 
       {/* Currency Toggle */}
-      <div className="hidden md:flex items-center rounded-lg border border-slate-700/60 bg-slate-900/80 p-0.5 text-xs">
+      <div className="hidden md:flex items-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] p-0.5 text-xs">
         <button
           onClick={() => setCurrency("INR")}
-          className={`px-2 py-1 rounded-md transition-all font-semibold ${
+          className={`px-2.5 py-1 rounded-md transition-all font-bold text-[11px] ${
             currency === "INR"
-              ? "bg-blue-600 text-white shadow-sm"
+              ? "bg-[#E63946] text-white shadow-sm shadow-[rgba(230,57,70,0.3)]"
               : "text-slate-400 hover:text-slate-200"
           }`}
         >
@@ -93,9 +93,9 @@ export function WorkspaceSelector() {
         </button>
         <button
           onClick={() => setCurrency("USD")}
-          className={`px-2 py-1 rounded-md transition-all font-semibold ${
+          className={`px-2.5 py-1 rounded-md transition-all font-bold text-[11px] ${
             currency === "USD"
-              ? "bg-blue-600 text-white shadow-sm"
+              ? "bg-[#E63946] text-white shadow-sm shadow-[rgba(230,57,70,0.3)]"
               : "text-slate-400 hover:text-slate-200"
           }`}
         >
@@ -104,14 +104,14 @@ export function WorkspaceSelector() {
       </div>
 
       {/* Unit Scale Selector */}
-      <div className="hidden lg:flex items-center rounded-lg border border-slate-700/60 bg-slate-900/80 p-0.5 text-xs">
+      <div className="hidden lg:flex items-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] p-0.5 text-xs">
         {(["Cr", "Mn", "Bn", "K"] as const).map((scale) => (
           <button
             key={scale}
             onClick={() => setUnit(scale)}
-            className={`px-2 py-1 rounded-md transition-all font-medium ${
+            className={`px-2 py-1 rounded-md transition-all font-semibold text-[11px] ${
               unit === scale
-                ? "bg-slate-700 text-white shadow-sm"
+                ? "bg-[rgba(184,29,36,0.35)] border border-[rgba(230,57,70,0.5)] text-white shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >

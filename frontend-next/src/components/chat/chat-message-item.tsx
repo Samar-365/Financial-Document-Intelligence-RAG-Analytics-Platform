@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ChatMessage, Citation } from "@/types/rag";
 import { MarkdownRenderer } from "./markdown-renderer";
 import {
-  Bot,
+  Activity,
   User,
   Clock,
   Layers,
@@ -45,13 +45,13 @@ export function ChatMessageItem({
         <div className="flex flex-col items-end space-y-1 max-w-[85%]">
           <div className="flex items-center gap-2 text-[11px] text-slate-400">
             <span>{formattedTime}</span>
-            <span className="font-semibold text-slate-300">You</span>
+            <span className="font-bold text-[#E63946] uppercase tracking-wider text-[10px]">You</span>
           </div>
-          <div className="rounded-2xl rounded-tr-sm bg-gradient-to-r from-blue-600/90 to-blue-700/90 text-white px-4 py-3 text-sm shadow-md border border-blue-500/30 leading-relaxed whitespace-pre-wrap">
+          <div className="rounded-[14px_14px_2px_14px] bg-[#18121A] text-white px-5 py-3.5 text-sm shadow-[0_4px_16px_rgba(0,0,0,0.4)] border border-[rgba(230,57,70,0.4)] leading-relaxed whitespace-pre-wrap">
             {message.content}
           </div>
         </div>
-        <div className="h-8 w-8 rounded-full bg-blue-600/20 border border-blue-500/40 flex items-center justify-center shrink-0 text-blue-400 mt-5">
+        <div className="h-8 w-8 rounded-full bg-[rgba(184,29,36,0.2)] border border-[rgba(230,57,70,0.4)] flex items-center justify-center shrink-0 text-[#E63946] mt-5">
           <User className="h-4 w-4" />
         </div>
       </div>
@@ -61,8 +61,8 @@ export function ChatMessageItem({
   return (
     <div className="flex justify-start gap-3.5 max-w-4xl mr-auto group">
       {/* AI Avatar */}
-      <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shrink-0 text-white shadow-lg shadow-blue-500/20 border border-blue-400/30">
-        <Bot className="h-4 w-4 text-white" />
+      <div className="h-9 w-9 rounded-xl bg-[rgba(184,29,36,0.2)] border border-[rgba(230,57,70,0.55)] flex items-center justify-center shrink-0 text-[#E63946] shadow-[0_0_14px_rgba(230,57,70,0.3)]">
+        <Activity className="h-4 w-4 text-[#E63946]" />
       </div>
 
       {/* Message Body */}
@@ -70,12 +70,14 @@ export function ChatMessageItem({
         {/* Assistant Header & Telemetry */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-white flex items-center gap-1.5">
+            <span className="text-xs font-extrabold text-white flex items-center gap-1.5 tracking-wide">
               FinDoc AI Analyst
-              <Sparkles className="h-3 w-3 text-cyan-400" />
+            </span>
+            <span className="text-[10px] text-[#94A3B8] bg-white/5 border border-white/10 px-2 py-0.5 rounded">
+              Verified Audit Grounding
             </span>
             {message.model_used && (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#111017] text-slate-400 border border-[rgba(196,30,58,0.28)]">
                 {message.model_used}
               </span>
             )}
@@ -90,8 +92,8 @@ export function ChatMessageItem({
             )}
             {message.citations && message.citations.length > 0 && (
               <span className="flex items-center gap-1">
-                <Layers className="h-3 w-3 text-blue-400" />
-                <span className="text-blue-300 font-medium">
+                <Layers className="h-3 w-3 text-[#E63946]" />
+                <span className="text-[#FFA8B2] font-semibold">
                   {message.citations.length} sources
                 </span>
               </span>
@@ -114,7 +116,7 @@ export function ChatMessageItem({
         </div>
 
         {/* Content Box */}
-        <div className="rounded-2xl rounded-tl-sm bg-slate-900/80 border border-slate-800 p-5 shadow-xl backdrop-blur-sm">
+        <div className="rounded-[2px_14px_14px_14px] bg-[#111017] border border-white/10 border-l-[3px] border-l-[#E63946] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
           <MarkdownRenderer
             content={message.content}
             citations={message.citations}
@@ -123,10 +125,10 @@ export function ChatMessageItem({
 
           {/* Citations Row / Chips */}
           {message.citations && message.citations.length > 0 && (
-            <div className="mt-5 pt-4 border-t border-slate-800/80 space-y-2">
+            <div className="mt-5 pt-4 border-t border-[rgba(196,30,58,0.24)] space-y-2">
               <div className="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider">
                 <span className="flex items-center gap-1.5 text-slate-300 text-[11px]">
-                  <BookOpen className="h-3.5 w-3.5 text-blue-400" />
+                  <BookOpen className="h-3.5 w-3.5 text-[#E63946]" />
                   Grounded Evidence Sources ({message.citations.length})
                 </span>
                 <span className="text-[10px] text-slate-500 font-normal lowercase">
@@ -144,24 +146,24 @@ export function ChatMessageItem({
                       onClick={() => onCitationClick(cite)}
                       className={cn(
                         "flex items-start justify-between gap-2 text-left p-2.5 rounded-lg border transition-all text-xs",
-                        "bg-slate-950/60 border-slate-800 hover:border-blue-500/40 hover:bg-slate-800/60 group/pill"
+                        "bg-[rgba(184,29,36,0.08)] border-[rgba(184,29,36,0.25)] hover:border-[#E63946] hover:bg-[rgba(184,29,36,0.18)] group/pill"
                       )}
                     >
                       <div className="space-y-1 overflow-hidden">
                         <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-blue-300">
+                          <span className="font-bold text-[#E63946]">
                             Page {cite.page_number}
                           </span>
                           <span className="text-slate-500">•</span>
-                          <span className="text-[10px] font-mono text-slate-400">
+                          <span className="text-[10px] font-mono text-[#FFA8B2]">
                             {pct}% match
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-400 line-clamp-1 italic font-serif">
+                        <p className="text-[11px] text-slate-300 line-clamp-1 italic font-serif">
                           &ldquo;{cite.snippet}&rdquo;
                         </p>
                       </div>
-                      <ExternalLink className="h-3.5 w-3.5 text-slate-500 group-hover/pill:text-blue-400 shrink-0 mt-0.5" />
+                      <ExternalLink className="h-3.5 w-3.5 text-slate-500 group-hover/pill:text-[#E63946] shrink-0 mt-0.5" />
                     </button>
                   );
                 })}

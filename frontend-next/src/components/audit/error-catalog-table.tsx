@@ -69,13 +69,13 @@ export function ErrorCatalogTable() {
   );
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl backdrop-blur-md space-y-4">
+    <div className="rounded-2xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-5 shadow-xl backdrop-blur-md space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <BookOpen className="h-4 w-4 text-cyan-400" />
+          <BookOpen className="h-4 w-4 text-[#E63946]" />
           <div>
             <h4 className="text-sm font-bold text-white">
-              Platform Error & Exception Reference Catalog
+              Platform Error &amp; Exception Reference Catalog
             </h4>
             <p className="text-xs text-slate-400">
               Standardized error codes, fault isolation domains, and auditor remediation steps
@@ -89,15 +89,15 @@ export function ErrorCatalogTable() {
             placeholder="Search error code or domain..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-8 pl-8 text-xs bg-slate-950 border-slate-800"
+            className="h-8 pl-8 text-xs bg-[#14131D] border-[rgba(184,29,36,0.35)] focus:border-[#E63946]"
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/70">
+      <div className="overflow-x-auto rounded-xl border border-[rgba(196,30,58,0.25)] bg-[#0D0C12]">
         <Table>
-          <TableHeader className="bg-slate-900/90 text-slate-300">
-            <TableRow className="border-slate-800 hover:bg-transparent">
+          <TableHeader className="bg-[#0D0C12] text-slate-300">
+            <TableRow className="border-b border-[rgba(196,30,58,0.25)] hover:bg-transparent">
               <TableHead className="font-semibold text-slate-300 text-xs w-28">
                 Error Code
               </TableHead>
@@ -105,17 +105,17 @@ export function ErrorCatalogTable() {
                 Domain
               </TableHead>
               <TableHead className="font-semibold text-slate-300 text-xs">
-                Description & Root Cause
+                Description &amp; Root Cause
               </TableHead>
               <TableHead className="font-semibold text-slate-300 text-xs">
                 Remediation Action
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="divide-y divide-slate-800/60 text-xs">
+          <TableBody className="divide-y divide-[rgba(196,30,58,0.15)] text-xs">
             {filteredErrors.map((item) => (
-              <TableRow key={item.code} className="hover:bg-slate-900/40 transition-colors">
-                <TableCell className="font-mono font-bold text-blue-400">
+              <TableRow key={item.code} className="hover:bg-[rgba(184,29,36,0.12)] transition-colors">
+                <TableCell className="font-mono font-bold text-[#E63946]">
                   {item.code}
                 </TableCell>
                 <TableCell>

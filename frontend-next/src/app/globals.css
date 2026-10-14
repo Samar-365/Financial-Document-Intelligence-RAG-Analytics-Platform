@@ -2,104 +2,171 @@
 
 @layer base {
   :root {
-    --background: 220 33% 98%;
-    --foreground: 224 71% 4%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 71% 4%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 4%;
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 9% 46%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 220 14% 96%;
-    --accent-foreground: 220 9% 46%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 221 83% 53%;
+    --background: 240 11% 4%;
+    --foreground: 210 40% 98%;
+    --card: 250 17% 8%;
+    --card-foreground: 210 40% 98%;
+    --popover: 250 17% 8%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 355 78% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 17% 10%;
+    --secondary-foreground: 215 20% 85%;
+    --muted: 250 17% 10%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 355 78% 56%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 355 78% 56%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 355 45% 22%;
+    --input: 250 17% 10%;
+    --ring: 355 78% 56%;
     --radius: 0.75rem;
 
-    --brand-emerald: 160 84% 39%;
-    --brand-cyan: 189 94% 43%;
-    --brand-indigo: 239 84% 67%;
-    --brand-amber: 38 92% 50%;
+    --brand-wine-red: #E63946;
+    --brand-dark-burgundy: #B81D24;
+    --brand-pitch-dark: #08080A;
+    --brand-card-dark: #111017;
+    --brand-sidebar-dark: #0D0C12;
   }
 
   .dark {
-    --background: 222 47% 7%;
+    --background: 240 11% 4%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 10%;
+    --card: 250 17% 8%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 9%;
+    --popover: 250 17% 8%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 15%;
+    --primary: 355 78% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 17% 10%;
+    --secondary-foreground: 215 20% 85%;
+    --muted: 250 17% 10%;
     --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 224 76% 48%;
-
-    --brand-emerald: 158 64% 52%;
-    --brand-cyan: 188 86% 53%;
-    --brand-indigo: 234 89% 74%;
-    --brand-amber: 43 96% 56%;
+    --accent: 355 78% 56%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 355 78% 56%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 355 45% 22%;
+    --input: 250 17% 10%;
+    --ring: 355 78% 56%;
   }
 }
 
 * {
-  border-color: hsl(var(--border));
+  border-color: rgba(196, 30, 58, 0.24);
 }
 
-body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+html, body {
+  background-color: #08080A !important;
+  color: #F1F5F9 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Plus Jakarta Sans", Inter, sans-serif;
   overflow-x: hidden;
+  selection-background-color: rgba(230, 57, 70, 0.4);
 }
 
-/* Glassmorphism styling */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+::selection {
+  background: rgba(230, 57, 70, 0.4);
+  color: #FFFFFF;
 }
 
-.light .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+/* Luxury Pitch Dark & Wine Red Custom Components */
+.pitch-card {
+  background-color: #111017 !important;
+  border: 1px solid rgba(196, 30, 58, 0.24) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Custom modern scrollbar */
+.pitch-card:hover {
+  border-color: rgba(230, 57, 70, 0.45) !important;
+  box-shadow: 0 6px 24px rgba(184, 29, 36, 0.22) !important;
+}
+
+/* Primary Button with Metallic Flare Finish */
+.btn-primary-wine {
+  background: linear-gradient(180deg, #E62538 0%, #B81424 45%, #850B17 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 175, 190, 0.75) !important;
+  border-radius: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.75),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.55),
+    0 0 28px rgba(255, 35, 60, 0.45),
+    0 8px 24px rgba(0, 0, 0, 0.7) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-primary-wine:hover {
+  background: linear-gradient(180deg, #FF384D 0%, #D41A2D 45%, #9E0F1D 100%) !important;
+  box-shadow: 
+    inset 0 1px 3px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.55),
+    0 0 36px rgba(255, 35, 60, 0.65),
+    0 10px 28px rgba(0, 0, 0, 0.8) !important;
+  transform: translateY(-1px) scale(1.01) !important;
+}
+
+/* Secondary Button with Wine Red Outline */
+.btn-secondary-wine {
+  background-color: #111017 !important;
+  border: 1px solid rgba(196, 30, 58, 0.35) !important;
+  color: #CBD5E1 !important;
+  border-radius: 9px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.btn-secondary-wine:hover {
+  border-color: #E63946 !important;
+  color: #FFFFFF !important;
+  background-color: rgba(184, 29, 36, 0.18) !important;
+  box-shadow: 0 0 14px rgba(230, 57, 70, 0.3) !important;
+}
+
+/* Custom modern scrollbar matching Streamlit theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #08080A;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.25);
+  background: rgba(196, 30, 58, 0.35);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.45);
+  background: rgba(230, 57, 70, 0.6);
 }
 
-/* Financial glow pulse */
-.financial-glow {
-  box-shadow: 0 0 35px -5px rgba(56, 189, 248, 0.15);
+/* Shimmer animation for skeleton loaders */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #15141E 25%, #282436 50%, #15141E 75%) !important;
+  background-size: 200% 100% !important;
+  animation: shimmer 1.5s infinite ease-in-out !important;
+  border-radius: 6px !important;
+}
+
+/* Vertical Volumetric Laser Beam */
+.laser-beam {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFA8B2 25%, #E63946 60%, transparent 100%);
+  box-shadow: 
+    0 0 10px #FFFFFF,
+    0 0 25px #E63946,
+    0 0 60px rgba(230, 57, 70, 0.7),
+    0 0 120px rgba(184, 29, 36, 0.5);
+  pointer-events: none;
 }

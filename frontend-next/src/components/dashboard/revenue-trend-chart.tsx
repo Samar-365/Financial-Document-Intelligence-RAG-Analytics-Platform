@@ -115,17 +115,17 @@ export function RevenueTrendChart({
       >
         <defs>
           <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9} />
-            <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0.7} />
+            <stop offset="0%" stopColor="#E63946" stopOpacity={0.95} />
+            <stop offset="100%" stopColor="#B81424" stopOpacity={0.75} />
           </linearGradient>
           <linearGradient id="ebitdaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#6366f1" stopOpacity={0.85} />
-            <stop offset="100%" stopColor="#4338ca" stopOpacity={0.65} />
+            <stop offset="0%" stopColor="#800020" stopOpacity={0.9} />
+            <stop offset="100%" stopColor="#58111A" stopOpacity={0.7} />
           </linearGradient>
         </defs>
         <CartesianGrid
           strokeDasharray="3 3"
-          stroke="rgba(148,163,184,0.08)"
+          stroke="rgba(196,30,58,0.15)"
           vertical={false}
         />
         <XAxis

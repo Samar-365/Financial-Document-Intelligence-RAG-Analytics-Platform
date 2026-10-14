@@ -89,23 +89,27 @@ export default function DocumentsPage() {
     <AppLayout>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <FolderUp className="h-5 w-5 text-blue-400" />
-            Document Ingestion & Index Management
-          </h2>
-          <p className="text-sm text-slate-400">
-            Upload financial filings for automated text extraction, vector embedding, and Ind AS metric synthesis.
-          </p>
+        <div className="flex items-center gap-3.5">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(184,29,36,0.18)] text-[#E63946] border border-[rgba(196,30,58,0.4)] shadow-[0_0_15px_rgba(184,29,36,0.25)] shrink-0">
+            <FolderUp className="h-6 w-6" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-white">
+              Document &amp; Dataset Ingestion
+            </h2>
+            <p className="text-sm text-slate-400">
+              Upload corporate filings and spreadsheet datasets across PDF, CSV, and Excel (.xlsx) formats for vector indexing and financial intelligence.
+            </p>
+          </div>
         </div>
 
         <Button
           variant="outline"
           size="sm"
           onClick={() => refetch()}
-          className="gap-1.5 self-start sm:self-auto"
+          className="gap-1.5 self-start sm:self-auto border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] hover:bg-[rgba(184,29,36,0.15)] text-slate-200"
         >
-          <RefreshCw className="h-3.5 w-3.5" />
+          <RefreshCw className="h-3.5 w-3.5 text-[#E63946]" />
           <span>Refresh</span>
         </Button>
       </div>
@@ -123,14 +127,14 @@ export default function DocumentsPage() {
       )}
 
       {/* Upload Section */}
-      <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md">
+      <Card className="pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-cyan-400" />
-            Upload New Filing
+            <Sparkles className="h-4 w-4 text-[#E63946]" />
+            Upload New Filing or Spreadsheet
           </CardTitle>
           <CardDescription>
-            Select a PDF document and optionally provide filing metadata for enriched financial indexing.
+            Select an Annual Report, 10-K, CSV balance sheet, or Excel workbook (.xlsx) up to 50MB.
           </CardDescription>
         </CardHeader>
 
@@ -142,7 +146,7 @@ export default function DocumentsPage() {
           />
 
           {selectedFile && (
-            <div className="pt-2 border-t border-slate-800">
+            <div className="pt-2 border-t border-[rgba(196,30,58,0.2)]">
               <MetadataForm
                 selectedFile={selectedFile}
                 onSubmit={handleMetadataSubmit}
@@ -152,8 +156,8 @@ export default function DocumentsPage() {
           )}
 
           {uploadError && (
-            <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <div className="flex items-center gap-2 rounded-lg border border-[rgba(230,57,70,0.4)] bg-[rgba(184,29,36,0.15)] p-3 text-xs text-[#FF6B6B]">
+              <AlertCircle className="h-4 w-4 shrink-0 text-[#E63946]" />
               <span>{uploadError}</span>
             </div>
           )}
@@ -161,7 +165,7 @@ export default function DocumentsPage() {
       </Card>
 
       {/* Document Catalog */}
-      <Card className="border-slate-800 bg-slate-900/40">
+      <Card className="pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
         <CardHeader>
           <CardTitle className="text-base">
             Indexed Filings ({documents.length})

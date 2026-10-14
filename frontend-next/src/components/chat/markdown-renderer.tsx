@@ -55,10 +55,10 @@ export function MarkdownRenderer({
           key={`cite-${matchStart}-${pageNum}`}
           type="button"
           onClick={() => onCitationClick?.(matchedCitation)}
-          className="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-blue-500/15 border border-blue-500/30 text-blue-300 hover:bg-blue-500/25 hover:border-blue-400 transition-colors align-baseline"
+          className="inline-flex items-center gap-1 mx-1 px-2 py-0.5 rounded text-xs font-bold bg-[rgba(184,29,36,0.18)] border border-[rgba(230,57,70,0.35)] text-[#FFA8B2] hover:bg-[rgba(184,29,36,0.3)] hover:border-[#E63946] transition-colors align-baseline cursor-pointer"
           title={`Click to inspect source citation on Page ${pageNum}`}
         >
-          <BookOpen className="h-3 w-3 inline" />
+          <BookOpen className="h-3 w-3 inline text-[#E63946]" />
           <span>Page {pageNum}{chunkNum ? ` (#${chunkNum})` : ""}</span>
         </button>
       );

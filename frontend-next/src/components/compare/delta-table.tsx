@@ -93,7 +93,7 @@ export function DeltaTable({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl backdrop-blur-md space-y-4">
+    <div className="rounded-2xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-5 shadow-xl backdrop-blur-md space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h4 className="text-sm font-bold text-white">Detailed Line-Item Variance Table</h4>
@@ -109,7 +109,7 @@ export function DeltaTable({
               placeholder="Search line item..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-8 pl-8 text-xs bg-slate-950 border-slate-800"
+              className="h-8 pl-8 text-xs bg-[#14131D] border-[rgba(184,29,36,0.35)] focus:border-[#E63946]"
             />
           </div>
 
@@ -117,25 +117,25 @@ export function DeltaTable({
             onClick={handleExportCSV}
             variant="outline"
             size="sm"
-            className="h-8 gap-1.5 text-xs border-slate-700 bg-slate-800/60 hover:bg-slate-700 text-slate-300"
+            className="h-8 gap-1.5 text-xs border-[rgba(196,30,58,0.3)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.2)] hover:border-[#E63946] text-slate-200"
           >
-            <Download className="h-3.5 w-3.5 text-blue-400" />
+            <Download className="h-3.5 w-3.5 text-[#E63946]" />
             <span>Export CSV</span>
           </Button>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/70">
+      <div className="overflow-x-auto rounded-xl border border-[rgba(196,30,58,0.25)] bg-[#0D0C12]">
         <Table>
-          <TableHeader className="bg-slate-900/90 text-slate-300">
-            <TableRow className="border-slate-800 hover:bg-transparent">
+          <TableHeader className="bg-[#0D0C12] text-slate-300">
+            <TableRow className="border-b border-[rgba(196,30,58,0.25)] hover:bg-transparent">
               <TableHead className="font-semibold text-slate-300 text-xs">
                 Financial Metric
               </TableHead>
-              <TableHead className="font-semibold text-blue-300 text-xs text-right">
+              <TableHead className="font-semibold text-[#E63946] text-xs text-right">
                 {docAName} (Baseline)
               </TableHead>
-              <TableHead className="font-semibold text-indigo-300 text-xs text-right">
+              <TableHead className="font-semibold text-[#FF4D6D] text-xs text-right">
                 {docBName} (Target)
               </TableHead>
               <TableHead className="font-semibold text-slate-300 text-xs text-right">
@@ -149,7 +149,7 @@ export function DeltaTable({
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="divide-y divide-slate-800/60 font-mono text-xs">
+          <TableBody className="divide-y divide-[rgba(196,30,58,0.15)] font-mono text-xs">
             {filteredDeltas.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8 text-slate-500 font-sans">
@@ -165,7 +165,7 @@ export function DeltaTable({
                 const Icon = meta.icon;
 
                 return (
-                  <TableRow key={idx} className="hover:bg-slate-900/50 transition-colors">
+                  <TableRow key={idx} className="hover:bg-[rgba(184,29,36,0.12)] transition-colors">
                     <TableCell className="font-sans font-medium text-slate-200">
                       {d.metric_name}
                     </TableCell>

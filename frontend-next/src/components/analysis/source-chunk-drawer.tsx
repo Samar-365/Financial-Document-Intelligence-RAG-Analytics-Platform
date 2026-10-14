@@ -85,24 +85,26 @@ export function SourceChunkDrawer({
         aria-label="Source Chunk Inspector"
         className={cn(
           "fixed right-0 top-0 z-50 h-full w-full max-w-md",
-          "border-l border-slate-800/80 bg-slate-950/95 shadow-2xl backdrop-blur-xl",
+          "border-l border-[rgba(196,30,58,0.35)] bg-[#0D0C12] shadow-2xl backdrop-blur-2xl",
           "flex flex-col transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-[rgba(196,30,58,0.25)] px-5 py-4">
           <div className="flex items-center gap-2.5">
-            <FileSearch className="h-5 w-5 text-blue-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[rgba(184,29,36,0.2)] text-[#E63946] border border-[rgba(196,30,58,0.4)]">
+              <FileSearch className="h-4 w-4" />
+            </div>
             <div>
               <h3 className="text-sm font-bold text-white">Source Chunk Inspector</h3>
-              <p className="text-xs text-slate-500">Extraction provenance & confidence</p>
+              <p className="text-xs text-slate-400">Extraction provenance & confidence</p>
             </div>
           </div>
           <button
             id="close-drawer-btn"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#14131D] text-slate-400 hover:text-white hover:border-[#E63946] hover:bg-[rgba(184,29,36,0.18)] transition-all"
           >
             <X className="h-4 w-4" />
           </button>
@@ -112,11 +114,11 @@ export function SourceChunkDrawer({
         {metric ? (
           <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
             {/* Metric Name */}
-            <div className="rounded-xl border border-slate-800/60 bg-slate-900/60 p-4">
+            <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-4">
               <div className="flex items-start gap-2 mb-3">
-                <Tag className="h-4 w-4 text-blue-400 mt-0.5 shrink-0" />
+                <Tag className="h-4 w-4 text-[#E63946] mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mb-0.5">
+                  <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold mb-0.5">
                     Metric Line Item
                   </p>
                   <p className="text-base font-bold text-white leading-tight">
@@ -126,15 +128,15 @@ export function SourceChunkDrawer({
               </div>
 
               {/* Extracted value */}
-              <div className="rounded-lg bg-blue-500/5 border border-blue-500/15 px-4 py-3 text-center">
-                <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider font-semibold">
+              <div className="rounded-lg bg-[rgba(184,29,36,0.15)] border border-[rgba(196,30,58,0.35)] px-4 py-3 text-center">
+                <p className="text-xs text-[#E63946] mb-1 uppercase tracking-wider font-semibold">
                   Extracted Value
                 </p>
                 <p className="text-2xl font-bold text-white">
                   {formatDisplayValue(metric, currencySymbol, unit)}
                 </p>
                 {metric.unit && (
-                  <p className="text-xs text-slate-500 mt-0.5">Unit: {metric.unit}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Unit: {metric.unit}</p>
                 )}
               </div>
             </div>

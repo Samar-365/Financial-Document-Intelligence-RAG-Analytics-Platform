@@ -60,11 +60,11 @@ export default function AnalysisPage() {
       <AppLayout>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
           <div className="relative">
-            <div className="h-24 w-24 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-              <FileText className="h-12 w-12 text-indigo-400" />
+            <div className="h-24 w-24 rounded-2xl bg-[rgba(184,29,36,0.15)] border border-[rgba(196,30,58,0.35)] flex items-center justify-center shadow-[0_0_25px_rgba(184,29,36,0.2)]">
+              <FileText className="h-12 w-12 text-[#E63946]" />
             </div>
-            <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-              <span className="text-amber-400 text-xs font-bold">!</span>
+            <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-[rgba(184,29,36,0.3)] border border-[rgba(230,57,70,0.6)] flex items-center justify-center">
+              <span className="text-[#FF6B6B] text-xs font-bold">!</span>
             </div>
           </div>
           <div className="text-center max-w-md">
@@ -75,8 +75,8 @@ export default function AnalysisPage() {
             </p>
           </div>
           <Link href="/documents">
-            <Button variant="outline" size="sm" className="gap-2">
-              <FolderUp className="h-4 w-4 text-blue-400" />
+            <Button variant="outline" size="sm" className="gap-2 border-[rgba(196,30,58,0.35)] bg-[#111017] hover:border-[#E63946]">
+              <FolderUp className="h-4 w-4 text-[#E63946]" />
               Upload Filing
             </Button>
           </Link>
@@ -90,7 +90,7 @@ export default function AnalysisPage() {
     return (
       <AppLayout>
         <div className="flex flex-col items-center justify-center min-h-[40vh] gap-4">
-          <p className="text-sm text-red-400">
+          <p className="text-sm text-[#FF6B6B]">
             Failed to load financial metrics. Check that the backend is reachable.
           </p>
           <Link href="/documents">
@@ -105,31 +105,40 @@ export default function AnalysisPage() {
     <>
       <AppLayout>
         {/* ── Hero Banner ── */}
-        <div className="relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 via-blue-950/30 to-slate-950/60 p-6 backdrop-blur-xl">
+        <div className="relative overflow-hidden rounded-2xl border border-[rgba(196,30,58,0.28)] bg-[#111017] p-6 backdrop-blur-xl shadow-2xl">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-indigo-600/8 blur-3xl" />
-            <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-blue-600/8 blur-2xl" />
+            <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-[rgba(184,29,36,0.12)] blur-3xl" />
+            <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-[rgba(184,29,36,0.08)] blur-2xl" />
           </div>
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 mb-1">
-                <Zap className="h-4 w-4 text-blue-400 animate-pulse" />
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#E63946] mb-1">
+                <Zap className="h-4 w-4 text-[#E63946] animate-pulse" />
                 <span>FINANCIAL STATEMENT ANALYSIS</span>
               </div>
               <h2 className="text-2xl font-bold tracking-tight text-white">
                 {activeDocument.company_name ?? "Financial Statement Deep-Dive"}
               </h2>
-              <p className="text-sm text-slate-400 mt-1 flex flex-wrap gap-3">
-                <span>
-                  📄 <code className="text-indigo-400 text-xs">{activeDocument.filename}</code>
+              <div className="text-sm text-slate-400 mt-1 flex flex-wrap items-center gap-4">
+                <span className="flex items-center gap-1.5">
+                  <FileText className="h-3.5 w-3.5 text-[#E63946]" />
+                  <code className="text-slate-300 text-xs bg-[#14131D] px-2 py-0.5 rounded border border-[rgba(196,30,58,0.25)]">
+                    {activeDocument.filename}
+                  </code>
                 </span>
                 {activeDocument.fiscal_year && (
-                  <span>📅 FY{activeDocument.fiscal_year}</span>
+                  <span className="flex items-center gap-1.5 text-slate-300">
+                    <TrendingUp className="h-3.5 w-3.5 text-[#E63946]" />
+                    <span>FY{activeDocument.fiscal_year}</span>
+                  </span>
                 )}
                 {activeDocument.fiscal_period && (
-                  <span>🗂 {activeDocument.fiscal_period}</span>
+                  <span className="flex items-center gap-1.5 text-slate-300">
+                    <Database className="h-3.5 w-3.5 text-[#E63946]" />
+                    <span>{activeDocument.fiscal_period}</span>
+                  </span>
                 )}
-              </p>
+              </div>
             </div>
             <UnitCurrencyControls />
           </div>
@@ -138,7 +147,7 @@ export default function AnalysisPage() {
         {/* ── Section 1: Financial Statements (Tabs) ── */}
         <section>
           <div className="flex items-center gap-2 mb-3">
-            <TableProperties className="h-4 w-4 text-blue-400" />
+            <TableProperties className="h-4 w-4 text-[#E63946]" />
             <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
               Financial Statements
             </h3>
@@ -146,7 +155,7 @@ export default function AnalysisPage() {
               <span className="ml-auto text-xs text-slate-500">
                 {metrics.length} line items extracted
                 <span
-                  className="ml-2 text-slate-600 text-[10px] cursor-help"
+                  className="ml-2 text-slate-500 text-[10px] cursor-help"
                   title="Click any row to inspect its extraction source and confidence score."
                 >
                   (click a row to inspect source)
@@ -166,7 +175,7 @@ export default function AnalysisPage() {
         {/* ── Section 2: Ratio Analysis Grid ── */}
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="h-4 w-4 text-emerald-400" />
+            <TrendingUp className="h-4 w-4 text-[#E63946]" />
             <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
               Key Financial Ratios &amp; Benchmark Comparison
             </h3>
@@ -178,25 +187,25 @@ export default function AnalysisPage() {
         {!ratiosLoading && ratiosData && (
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <BarChart3 className="h-4 w-4 text-cyan-400" />
+              <BarChart3 className="h-4 w-4 text-[#E63946]" />
               <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
                 Margin &amp; Returns Overview
               </h3>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {[
-                { label: "Oper. Margin (OPM)", value: ratiosData.opm, suffix: "%", color: "text-blue-400", border: "border-blue-500/20" },
-                { label: "Net Margin (NPM)", value: ratiosData.npm, suffix: "%", color: "text-emerald-400", border: "border-emerald-500/20" },
-                { label: "ROE", value: ratiosData.roe, suffix: "%", color: "text-indigo-400", border: "border-indigo-500/20" },
-                { label: "ROCE", value: ratiosData.roce, suffix: "%", color: "text-cyan-400", border: "border-cyan-500/20" },
-                { label: "Current Ratio", value: ratiosData.current_ratio, suffix: "x", color: "text-amber-400", border: "border-amber-500/20" },
-                { label: "Interest Coverage", value: ratiosData.interest_coverage, suffix: "x", color: "text-rose-400", border: "border-rose-500/20" },
-              ].map(({ label, value, suffix, color, border }) => (
+                { label: "Oper. Margin (OPM)", value: ratiosData.opm, suffix: "%", color: "text-[#E63946]" },
+                { label: "Net Margin (NPM)", value: ratiosData.npm, suffix: "%", color: "text-emerald-400" },
+                { label: "ROE", value: ratiosData.roe, suffix: "%", color: "text-[#FF4D6D]" },
+                { label: "ROCE", value: ratiosData.roce, suffix: "%", color: "text-amber-400" },
+                { label: "Current Ratio", value: ratiosData.current_ratio, suffix: "x", color: "text-slate-200" },
+                { label: "Interest Coverage", value: ratiosData.interest_coverage, suffix: "x", color: "text-rose-400" },
+              ].map(({ label, value, suffix, color }) => (
                 <div
                   key={label}
-                  className={`rounded-xl border ${border} bg-slate-900/50 p-4 flex flex-col gap-1`}
+                  className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-4 flex flex-col gap-1 hover:border-[rgba(230,57,70,0.45)] hover:shadow-[0_4px_16px_rgba(184,29,36,0.15)] transition-all"
                 >
-                  <span className="text-[10px] uppercase tracking-widest font-semibold text-slate-500">
+                  <span className="text-[10px] uppercase tracking-widest font-semibold text-slate-400">
                     {label}
                   </span>
                   <span className={`text-xl font-bold ${color}`}>

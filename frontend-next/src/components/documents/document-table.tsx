@@ -88,7 +88,7 @@ export function DocumentTable({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by company name or filename..."
-            className="pl-9 h-9 text-xs"
+            className="pl-9 h-9 text-xs border-[rgba(184,29,36,0.35)] bg-[#14131D] focus:border-[#E63946]"
           />
         </div>
 
@@ -101,8 +101,8 @@ export function DocumentTable({
               className={cn(
                 "px-2.5 py-1 rounded-lg text-xs font-semibold transition-all shrink-0",
                 statusFilter === status
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800"
+                  ? "bg-[#E63946] text-white shadow-md shadow-[rgba(230,57,70,0.35)]"
+                  : "bg-[#111017] text-slate-400 hover:text-slate-200 border border-[rgba(184,29,36,0.28)] hover:border-[#E63946]"
               )}
             >
               {status}
@@ -114,7 +114,7 @@ export function DocumentTable({
       {/* Main Table */}
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="border-b border-[rgba(196,30,58,0.25)] bg-[#0D0C12]">
             <TableHead>Company & Filing</TableHead>
             <TableHead>Period</TableHead>
             <TableHead>File Size</TableHead>
@@ -128,7 +128,7 @@ export function DocumentTable({
             <TableRow>
               <TableCell colSpan={6} className="text-center py-10 text-slate-400">
                 <div className="flex flex-col items-center justify-center gap-2">
-                  <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
+                  <Loader2 className="h-6 w-6 animate-spin text-[#E63946]" />
                   <span className="text-xs">Fetching indexed filings...</span>
                 </div>
               </TableCell>
@@ -150,14 +150,14 @@ export function DocumentTable({
                 <TableRow
                   key={doc.id}
                   className={cn(
-                    "transition-colors",
-                    isActive && "bg-blue-950/20 border-l-2 border-l-blue-500"
+                    "transition-colors hover:bg-[rgba(184,29,36,0.12)] border-b border-[rgba(196,30,58,0.18)]",
+                    isActive && "bg-[rgba(184,29,36,0.18)] border-l-4 border-l-[#E63946]"
                   )}
                 >
                   {/* Company & Filename */}
                   <TableCell className="font-medium text-slate-200">
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/10 text-blue-400 border border-blue-500/20 shrink-0">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[rgba(184,29,36,0.18)] text-[#E63946] border border-[rgba(196,30,58,0.35)] shrink-0">
                         <FileText className="h-4 w-4" />
                       </div>
                       <div className="flex flex-col min-w-0">
@@ -223,14 +223,14 @@ export function DocumentTable({
                         size="sm"
                         onClick={() => setActiveDocument(doc)}
                         className={cn(
-                          "text-xs h-7 px-2.5 gap-1",
-                          isActive && "bg-blue-600/20 text-blue-300 border-blue-500/40"
+                          "text-xs h-7 px-2.5 gap-1 border-[rgba(196,30,58,0.3)]",
+                          isActive && "bg-[rgba(184,29,36,0.25)] text-white border-[#E63946] shadow-[0_0_10px_rgba(230,57,70,0.3)]"
                         )}
                         title={isActive ? "Active Workspace" : "Set as Active Workspace"}
                       >
                         {isActive ? (
                           <>
-                            <Check className="h-3 w-3 text-blue-400" />
+                            <Check className="h-3 w-3 text-[#E63946]" />
                             <span>Active</span>
                           </>
                         ) : (

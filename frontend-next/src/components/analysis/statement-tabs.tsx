@@ -121,8 +121,8 @@ function StatementRow({
   return (
     <tr
       className={cn(
-        "group border-b border-slate-800/50 transition-colors",
-        hasValue ? "hover:bg-slate-800/30 cursor-pointer" : "opacity-50"
+        "group border-b border-[rgba(196,30,58,0.16)] transition-colors",
+        hasValue ? "hover:bg-[rgba(184,29,36,0.12)] cursor-pointer" : "opacity-50"
       )}
       onClick={() => hasValue && metric && onChunkClick?.(metric)}
     >
@@ -156,7 +156,7 @@ function StatementRow({
       </td>
       <td className="py-2.5 pr-4 text-right hidden lg:table-cell">
         {hasValue && onChunkClick && (
-          <ChevronRight className="ml-auto h-4 w-4 text-slate-600 group-hover:text-blue-400 transition-colors" />
+          <ChevronRight className="ml-auto h-4 w-4 text-slate-600 group-hover:text-[#E63946] transition-colors" />
         )}
       </td>
     </tr>
@@ -183,10 +183,10 @@ function TableSkeleton({ rows = 8 }: { rows?: number }) {
 
 // ── Tab definitions ───────────────────────────────────────────────────────────
 
-const TABS: { id: StatementType; label: string; icon: React.ElementType; color: string }[] = [
-  { id: "pl", label: "Income Statement (P&L)", icon: DollarSign, color: "text-blue-400" },
-  { id: "balance", label: "Balance Sheet", icon: Layers, color: "text-emerald-400" },
-  { id: "cashflow", label: "Cash Flow", icon: Activity, color: "text-indigo-400" },
+const TABS: { id: StatementType; label: string; icon: React.ElementType }[] = [
+  { id: "pl", label: "Income Statement (P&L)", icon: DollarSign },
+  { id: "balance", label: "Balance Sheet", icon: Layers },
+  { id: "cashflow", label: "Cash Flow", icon: Activity },
 ];
 
 // ── Main Component ────────────────────────────────────────────────────────────
@@ -224,10 +224,10 @@ export function StatementTabs({
   ];
 
   return (
-    <div className="flex flex-col gap-0 rounded-xl border border-slate-800/80 overflow-hidden bg-slate-900/60 backdrop-blur-md">
+    <div className="flex flex-col gap-0 rounded-xl border border-[rgba(196,30,58,0.24)] overflow-hidden bg-[#111017] shadow-xl backdrop-blur-md">
       {/* Tab Bar */}
-      <div className="flex border-b border-slate-800/80 bg-slate-950/40 overflow-x-auto">
-        {TABS.map(({ id, label, icon: Icon, color }) => (
+      <div className="flex border-b border-[rgba(196,30,58,0.25)] bg-[#0D0C12] overflow-x-auto">
+        {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             id={`tab-${id}`}
@@ -235,11 +235,11 @@ export function StatementTabs({
             className={cn(
               "flex items-center gap-2 whitespace-nowrap px-5 py-3.5 text-xs font-semibold transition-all border-b-2",
               activeTab === id
-                ? `border-blue-500 text-white bg-slate-800/40 ${color}`
-                : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/20"
+                ? "border-[#E63946] text-white bg-[rgba(184,29,36,0.18)] font-bold shadow-[inset_0_-2px_0_#E63946]"
+                : "border-transparent text-slate-400 hover:text-white hover:bg-[rgba(184,29,36,0.1)]"
             )}
           >
-            <Icon className={cn("h-3.5 w-3.5", activeTab === id ? color : "")} />
+            <Icon className={cn("h-3.5 w-3.5", activeTab === id ? "text-[#E63946]" : "text-slate-400")} />
             {label}
           </button>
         ))}

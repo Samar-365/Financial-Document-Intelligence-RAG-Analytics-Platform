@@ -21,15 +21,15 @@ export function UnitCurrencyControls() {
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Currency Toggle */}
-      <div className="flex items-center rounded-lg border border-slate-700/60 bg-slate-900/60 p-0.5">
+      <div className="flex items-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] p-0.5">
         <button
           id="currency-inr"
           onClick={() => setCurrency("INR")}
           className={cn(
             "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
             currency === "INR"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-              : "text-slate-400 hover:text-white"
+              ? "bg-[#E63946] text-white shadow-md shadow-[rgba(230,57,70,0.35)]"
+              : "text-slate-400 hover:text-white hover:bg-[rgba(184,29,36,0.12)]"
           )}
         >
           <IndianRupee className="h-3 w-3" />
@@ -41,8 +41,8 @@ export function UnitCurrencyControls() {
           className={cn(
             "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
             currency === "USD"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-              : "text-slate-400 hover:text-white"
+              ? "bg-[#E63946] text-white shadow-md shadow-[rgba(230,57,70,0.35)]"
+              : "text-slate-400 hover:text-white hover:bg-[rgba(184,29,36,0.12)]"
           )}
         >
           <DollarSign className="h-3 w-3" />
@@ -51,7 +51,7 @@ export function UnitCurrencyControls() {
       </div>
 
       {/* Unit Toggle */}
-      <div className="flex items-center rounded-lg border border-slate-700/60 bg-slate-900/60 p-0.5">
+      <div className="flex items-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] p-0.5">
         {UNITS.map((u) => (
           <button
             key={u}
@@ -61,8 +61,8 @@ export function UnitCurrencyControls() {
             className={cn(
               "rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
               unit === u
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25"
-                : "text-slate-400 hover:text-white"
+                ? "bg-[#E63946] text-white shadow-md shadow-[rgba(230,57,70,0.35)]"
+                : "text-slate-400 hover:text-white hover:bg-[rgba(184,29,36,0.12)]"
             )}
           >
             {u}

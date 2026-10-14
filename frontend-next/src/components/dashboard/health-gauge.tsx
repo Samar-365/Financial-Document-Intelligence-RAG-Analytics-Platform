@@ -11,10 +11,10 @@ interface HealthGaugeProps {
 }
 
 function getScoreColor(score: number): { stroke: string; text: string; label: string } {
-  if (score >= 75) return { stroke: "#10b981", text: "text-emerald-400", label: "Excellent" };
-  if (score >= 55) return { stroke: "#3b82f6", text: "text-blue-400", label: "Healthy" };
-  if (score >= 40) return { stroke: "#f59e0b", text: "text-amber-400", label: "Moderate" };
-  return { stroke: "#ef4444", text: "text-red-400", label: "At Risk" };
+  if (score >= 85) return { stroke: "#10b981", text: "text-emerald-400", label: "Prime (Low Risk)" };
+  if (score >= 70) return { stroke: "#E63946", text: "text-[#E63946]", label: "Good (Stable)" };
+  if (score >= 45) return { stroke: "#B81D24", text: "text-[#FFA8B2]", label: "Moderate" };
+  return { stroke: "#800020", text: "text-rose-400", label: "High Risk / Distress" };
 }
 
 export function HealthGauge({

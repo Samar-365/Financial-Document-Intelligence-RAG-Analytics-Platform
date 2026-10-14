@@ -197,42 +197,38 @@ export default function ChatPage() {
     <AppLayout>
       <div className="flex flex-col h-[calc(100vh-130px)] max-w-5xl mx-auto">
         {/* Document Context Header Banner */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 mb-4 backdrop-blur-md shadow-xl flex items-center justify-between gap-4 shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+        <div className="rounded-xl border border-[rgba(196,30,58,0.28)] bg-[#111017] p-4 mb-4 shadow-[0_4px_16px_rgba(0,0,0,0.4)] flex items-center justify-between gap-4 shrink-0">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="h-10 w-10 rounded-lg bg-[rgba(184,29,36,0.2)] border border-[rgba(230,57,70,0.45)] flex items-center justify-center text-[#E63946] shrink-0">
               <Activity className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold tracking-wider uppercase text-blue-400">
-                  Target Filing Context
-                </span>
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block" />
-                <span className="text-[10px] text-slate-400 font-mono">
-                  {currency}
-                </span>
+              <div className="text-[11px] font-bold tracking-[0.06em] uppercase text-[#94A3B8]">
+                ANALYZING FILING
               </div>
               <h2 className="text-base font-bold text-white truncate leading-tight">
                 {activeDocument.company_name || activeDocument.filename}
                 <span className="text-slate-500 mx-2 font-normal">•</span>
-                <span className="text-blue-300 font-semibold">{periodText}</span>
+                <span className="text-[#E63946] font-bold">{periodText}</span>
+                <span className="text-slate-500 mx-2 font-normal">•</span>
+                <span className="text-slate-300 font-mono text-xs">{currency}</span>
               </h2>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800/80 border border-slate-700/60 text-slate-300 text-xs font-mono max-w-[220px] truncate">
-              <FileText className="h-3.5 w-3.5 text-blue-400 shrink-0" />
+            <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[rgba(184,29,36,0.15)] border border-[rgba(184,29,36,0.3)] text-[#E63946] text-xs font-mono max-w-[240px] truncate">
+              <FileText className="h-3.5 w-3.5 text-[#E63946] shrink-0" />
               <span className="truncate">{activeDocument.filename}</span>
             </span>
 
             <button
               type="button"
               onClick={() => setShowSuggestions(!showSuggestions)}
-              className="flex items-center gap-1 text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-lg border border-slate-800 bg-slate-800/40 hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-1 text-xs text-[#CBD5E1] hover:text-white px-2.5 py-1 rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] transition-colors"
             >
-              <Sparkles className="h-3 w-3 text-cyan-400" />
-              <span className="hidden sm:inline">Suggestions</span>
+              <Sparkles className="h-3 w-3 text-[#E63946]" />
+              <span className="hidden sm:inline">Inquiries</span>
               {showSuggestions ? (
                 <ChevronUp className="h-3.5 w-3.5" />
               ) : (
