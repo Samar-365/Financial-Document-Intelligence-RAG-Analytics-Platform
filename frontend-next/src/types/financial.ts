@@ -33,5 +33,6 @@ export interface HealthScoreResponse {
   liquidity_score: number;
   leverage_score: number;
   cash_flow_score: number;
-  risk_flags: string[];
+  risk_flags: (string | { description?: string; severity?: string })[];
+  rating?: string;
 }

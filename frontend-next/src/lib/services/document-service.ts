@@ -30,6 +30,10 @@ export const documentService = {
     return data;
   },
 
+  async getDocuments(): Promise<DocumentListResponse> {
+    return this.listDocuments(1, 100);
+  },
+
   async getDocument(documentId: string): Promise<DocumentItem> {
     const { data } = await apiClient.get<DocumentItem>(
       `/documents/${documentId}`

@@ -9,6 +9,9 @@ export interface Citation {
   page_number: number;
   snippet: string;
   relevance_score: number;
+  chunk_index?: number;
+  doc_title?: string;
+  section?: string;
 }
 
 export interface RAGResponse {

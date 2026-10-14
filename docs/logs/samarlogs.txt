@@ -174,3 +174,19 @@ DEVELOPER 1 IMPLEMENTATION LOG (SAMAR)
 - Target files: app/rag/pgvector_store.py, app/models/document_chunk.py, app/core/database.py, tests/rag/test_pgvector_store.py
 - Tests: 46/46 unit tests passed (321/321 total suite).
 - Commit: c9e8620
+
+[2026-10-14] Frontend Migration Phase 6: AI Analyst (RAG Chatbot) with Citations
+- Implemented ChatMessageItem, MarkdownRenderer with GFM tables & code styling, CitationDrawer slide-over inspector, SuggestedInquiries, and ChatInputBar with Markdown & Print/PDF export.
+- Integrated chat-store (Zustand with localStorage persistence) per document_id.
+- Target files: frontend-next/src/app/chat/page.tsx, frontend-next/src/components/chat/*, frontend-next/src/stores/chat-store.ts.
+
+[2026-10-14] Frontend Migration Phase 7: Multi-Company Comparison & Audit Logs
+- Implemented ComparisonSelector, ComparativeBarChart (Recharts side-by-side grouped bars), DeltaTable (with trend classification, search, and CSV export), and RiskProfileComparison (health score delta and risk factor drift).
+- Implemented TelemetryCards (FastAPI probe, DB status, pgvector HNSW index, confidence guard), AuditTelemetryTable (dynamic lifecycle traces, status filtering, CSV export, trace inspector modal), and ErrorCatalogTable (standardized error code directory).
+- Target files: frontend-next/src/app/compare/page.tsx, frontend-next/src/app/audit/page.tsx, frontend-next/src/components/compare/*, frontend-next/src/components/audit/*.
+
+[2026-10-14] Frontend Migration Phase 8: Dockerization, Testing, CORS & Production Polish
+- Added multi-stage standalone Dockerfile.next for Next.js 15+ frontend.
+- Updated docker-compose.yml and docker-compose.prod.yml with frontend-next service.
+- Enabled output: "standalone" in next.config.ts; verified zero TypeScript errors and successful production build with all routes prerendered.
+
