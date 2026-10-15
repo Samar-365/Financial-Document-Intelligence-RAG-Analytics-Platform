@@ -10,17 +10,12 @@ import { ChatInputBar } from "@/components/chat/chat-input-bar";
 import { SuggestedInquiries } from "@/components/chat/suggested-inquiries";
 import { CitationDrawer } from "@/components/chat/citation-drawer";
 import { Button } from "@/components/ui/button";
-import { Citation } from "@/types/rag";
 import {
-  Bot,
-  Sparkles,
-  FileText,
   FolderUp,
   Activity,
-  Layers,
-  ShieldCheck,
   ChevronDown,
   ChevronUp,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -44,7 +39,6 @@ export default function ChatPage() {
   const messages = activeDocumentId ? threads[activeDocumentId] || [] : [];
   const hasMessages = messages.length > 0;
 
-  // Auto-scroll to bottom of conversation
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -57,14 +51,12 @@ export default function ChatPage() {
   const handleSendMessage = async (questionText: string) => {
     if (!activeDocumentId || isGenerating || !questionText.trim()) return;
 
-    // 1. Add User Message
     addMessage(activeDocumentId, {
       role: "user",
       content: questionText.trim(),
     });
 
     setIsGenerating(true);
-
     const startTime = performance.now();
 
     try {
@@ -76,7 +68,6 @@ export default function ChatPage() {
 
       const elapsed = Math.round(performance.now() - startTime);
 
-      // 2. Add Assistant Message
       addMessage(activeDocumentId, {
         role: "assistant",
         content: response.answer,
@@ -92,7 +83,7 @@ export default function ChatPage() {
 
       addMessage(activeDocumentId, {
         role: "assistant",
-        content: `I encountered an issue querying the financial intelligence engine (${errorDetail}). Please verify that the FastAPI backend is running and that the document has been fully indexed.`,
+        content: `Error querying financial intelligence engine (${errorDetail}). Verify that the backend is running and that this document has completed vector indexing.`,
         citations: [],
         latency_ms: elapsed,
         model_used: "Error",
@@ -113,7 +104,7 @@ export default function ChatPage() {
     mdContent += `**Generated Date:** ${new Date().toLocaleString()}\n\n`;
     mdContent += `---\n\n`;
 
-    messages.forEach((msg, idx) => {
+    messages.forEach((msg) => {
       const speaker = msg.role === "user" ? "### Question" : "### AI Analyst Response";
       mdContent += `${speaker} (${new Date(msg.timestamp).toLocaleTimeString()})\n\n`;
       mdContent += `${msg.content}\n\n`;
@@ -142,15 +133,13 @@ export default function ChatPage() {
     URL.revokeObjectURL(url);
   };
 
-  // Print conversation report
   const handlePrintReport = () => {
     window.print();
   };
 
-  // Clear current thread
   const handleClearThread = () => {
     if (!activeDocumentId) return;
-    if (confirm("Are you sure you want to clear the conversation for this document?")) {
+    if (confirm("Clear current conversation thread for this document?")) {
       clearThread(activeDocumentId);
     }
   };
@@ -159,31 +148,25 @@ export default function ChatPage() {
   if (!activeDocument) {
     return (
       <AppLayout>
-        <div className="flex flex-col items-center justify-center min-h-[65vh] gap-6 text-center max-w-lg mx-auto">
-          <div className="relative">
-            <div className="h-24 w-24 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shadow-xl shadow-blue-500/10">
-              <Bot className="h-12 w-12 text-blue-400" />
+        <div className="flex flex-col items-center justify-center min-h-[65vh] p-8">
+          <div className="max-w-xl w-full border-2 border-black bg-white p-10 shadow-[8px_8px_0px_#000000] text-center">
+            <div className="inline-block border border-black bg-black text-white px-3 py-1 text-xs font-mono font-bold tracking-widest uppercase mb-6">
+              [ STATUS: NO ACTIVE CORPUS ]
             </div>
-            <div className="absolute -top-1.5 -right-1.5 h-6 w-6 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center">
-              <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight text-white">
-              No Document Selected
+            <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter text-black mb-4 leading-none">
+              RAG ENGINE <br />
+              <span className="stroke-text-thick">OFFLINE</span>
             </h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Please select a processed annual report or quarterly filing in the top bar to begin querying with verified page citations and Ind AS extraction.
+            <p className="text-sm font-mono text-zinc-600 mb-8 max-w-md mx-auto leading-relaxed">
+              Select an ingested filing from the top workspace selector or upload a 10-K to initiate verified citation querying and Ind AS extraction.
             </p>
+            <Link href="/documents" className="inline-block">
+              <Button className="bg-black text-white hover:bg-black/90 font-black uppercase tracking-wider rounded-none border border-black shadow-[3px_3px_0px_#000000] gap-2 px-6">
+                <FolderUp className="h-4 w-4 text-[#FF0000]" />
+                Upload Filing
+              </Button>
+            </Link>
           </div>
-
-          <Link href="/documents">
-            <Button variant="gradient" className="gap-2">
-              <FolderUp className="h-4 w-4" />
-              Upload & Process Filing
-            </Button>
-          </Link>
         </div>
       </AppLayout>
     );
@@ -195,44 +178,43 @@ export default function ChatPage() {
 
   return (
     <AppLayout>
-      <div className="flex flex-col h-[calc(100vh-130px)] max-w-5xl mx-auto">
+      <div className="flex flex-col h-[calc(100vh-130px)] max-w-5xl mx-auto space-y-4">
         {/* Document Context Header Banner */}
-        <div className="rounded-xl border border-[rgba(196,30,58,0.28)] bg-[#111017] p-4 mb-4 shadow-[0_4px_16px_rgba(0,0,0,0.4)] flex items-center justify-between gap-4 shrink-0">
+        <div className="border border-black bg-white p-4 shadow-[4px_4px_0px_#000000] flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3.5 min-w-0">
-            <div className="h-10 w-10 rounded-lg bg-[rgba(184,29,36,0.2)] border border-[rgba(230,57,70,0.45)] flex items-center justify-center text-[#E63946] shrink-0">
-              <Activity className="h-5 w-5" />
+            <div className="h-9 w-9 border border-black bg-black text-white flex items-center justify-center shrink-0">
+              <Activity className="h-4 w-4 text-[#FF0000]" />
             </div>
             <div className="min-w-0">
-              <div className="text-[11px] font-bold tracking-[0.06em] uppercase text-[#94A3B8]">
-                ANALYZING FILING
+              <div className="text-[10px] font-mono font-bold tracking-widest uppercase text-zinc-500">
+                [ 03 / RAG ] ACTIVE ANALYTICS CONTEXT
               </div>
-              <h2 className="text-base font-bold text-white truncate leading-tight">
+              <h1 className="text-base font-black uppercase text-black truncate leading-tight">
                 {activeDocument.company_name || activeDocument.filename}
-                <span className="text-slate-500 mx-2 font-normal">•</span>
-                <span className="text-[#E63946] font-bold">{periodText}</span>
-                <span className="text-slate-500 mx-2 font-normal">•</span>
-                <span className="text-slate-300 font-mono text-xs">{currency}</span>
-              </h2>
+                <span className="text-zinc-400 mx-2 font-normal">•</span>
+                <span className="text-black font-black">{periodText}</span>
+                <span className="text-zinc-400 mx-2 font-normal">•</span>
+                <span className="text-zinc-600 font-mono text-xs">{currency}</span>
+              </h1>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[rgba(184,29,36,0.15)] border border-[rgba(184,29,36,0.3)] text-[#E63946] text-xs font-mono max-w-[240px] truncate">
-              <FileText className="h-3.5 w-3.5 text-[#E63946] shrink-0" />
+            <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 border border-black bg-zinc-100 text-black text-xs font-mono max-w-[240px] truncate font-bold">
               <span className="truncate">{activeDocument.filename}</span>
             </span>
 
             <button
               type="button"
               onClick={() => setShowSuggestions(!showSuggestions)}
-              className="flex items-center gap-1 text-xs text-[#CBD5E1] hover:text-white px-2.5 py-1 rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] transition-colors"
+              className="flex items-center gap-1.5 text-xs font-mono font-bold uppercase text-black px-2.5 py-1 border border-black bg-white hover:bg-black hover:text-white transition-colors shadow-[1px_1px_0px_#000000]"
             >
-              <Sparkles className="h-3 w-3 text-[#E63946]" />
-              <span className="hidden sm:inline">Inquiries</span>
+              <Sparkles className="h-3.5 w-3.5 text-[#FF0000]" />
+              <span className="hidden sm:inline">INQUIRIES</span>
               {showSuggestions ? (
-                <ChevronUp className="h-3.5 w-3.5" />
+                <ChevronUp className="h-3 w-3" />
               ) : (
-                <ChevronDown className="h-3.5 w-3.5" />
+                <ChevronDown className="h-3 w-3" />
               )}
             </button>
           </div>
@@ -240,7 +222,7 @@ export default function ChatPage() {
 
         {/* Collapsible Suggestions Drawer */}
         {showSuggestions && (
-          <div className="mb-4 shrink-0 transition-all">
+          <div className="shrink-0 transition-all">
             <SuggestedInquiries
               onSelect={(query) => handleSendMessage(query)}
               disabled={isGenerating}
@@ -251,16 +233,16 @@ export default function ChatPage() {
         {/* Message Thread Scroll Area */}
         <div className="flex-1 overflow-y-auto pr-1 space-y-6 pb-6">
           {!hasMessages && (
-            <div className="flex flex-col items-center justify-center py-12 text-center text-slate-400 space-y-3">
-              <div className="h-12 w-12 rounded-2xl bg-slate-800/60 border border-slate-700/60 flex items-center justify-center text-blue-400">
-                <Sparkles className="h-6 w-6" />
+            <div className="flex flex-col items-center justify-center py-16 text-center text-black space-y-3 border border-black bg-white p-8 shadow-[4px_4px_0px_#000000]">
+              <div className="h-12 w-12 border border-black bg-black text-white flex items-center justify-center">
+                <Activity className="h-6 w-6 text-[#FF0000]" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-200">
-                  Ready to analyze {activeDocument.company_name || activeDocument.filename}
+                <p className="text-sm font-black uppercase text-black">
+                  CORPUS INDEXED: {activeDocument.company_name || activeDocument.filename}
                 </p>
-                <p className="text-xs text-slate-500 max-w-sm mt-1">
-                  Select an inquiry card above or type your question below. All responses are verified against page citations.
+                <p className="text-xs font-mono text-zinc-600 max-w-sm mt-1 uppercase">
+                  Select a suggested inquiry above or execute custom natural language financial queries below. All statements are grounded with verifiable page citations.
                 </p>
               </div>
             </div>
@@ -276,18 +258,14 @@ export default function ChatPage() {
 
           {/* Thinking / Streaming Bubble */}
           {isGenerating && (
-            <div className="flex justify-start gap-3.5 max-w-2xl mr-auto animate-pulse">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shrink-0 text-white shadow-lg">
-                <Bot className="h-4 w-4" />
+            <div className="flex justify-start gap-3.5 max-w-2xl mr-auto">
+              <div className="h-9 w-9 border border-black bg-black text-white flex items-center justify-center shrink-0">
+                <Activity className="h-4 w-4 text-[#FF0000] animate-pulse" />
               </div>
-              <div className="rounded-2xl rounded-tl-sm bg-slate-900/90 border border-slate-800 p-4 shadow-xl flex items-center gap-3">
-                <div className="flex gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-blue-400 animate-bounce" />
-                  <span className="h-2 w-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:0.2s]" />
-                  <span className="h-2 w-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.4s]" />
-                </div>
-                <span className="text-xs text-slate-300 font-medium">
-                  FinDoc AI is retrieving vector embeddings and grounding disclosures...
+              <div className="border border-black bg-white p-4 shadow-[4px_4px_0px_#000000] flex items-center gap-3">
+                <span className="inline-block w-2.5 h-2.5 bg-[#FF0000] animate-ping" />
+                <span className="text-xs font-mono font-bold uppercase text-black">
+                  RETRIEVING VECTOR EMBEDDINGS &amp; CITING DISCLOSURES...
                 </span>
               </div>
             </div>
@@ -305,7 +283,7 @@ export default function ChatPage() {
             onPrintReport={handlePrintReport}
             isGenerating={isGenerating}
             hasMessages={hasMessages}
-            placeholder={`Ask about revenue drivers, debt, risks, or margins in ${activeDocument.company_name || "this filing"}...`}
+            placeholder={`QUERY REVENUE, DEBT, RATIOS, OR RISKS IN ${activeDocument.company_name?.toUpperCase() || "THIS FILING"}...`}
           />
         </div>
 

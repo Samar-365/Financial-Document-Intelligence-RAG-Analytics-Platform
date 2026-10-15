@@ -15,7 +15,7 @@ interface TelemetryCardsProps {
 export function TelemetryCards({
   health,
   totalDocuments,
-  totalChunks = 0,
+  totalChunks: _totalChunks = 0,
   latencyMs,
 }: TelemetryCardsProps) {
   const isHealthy = health?.status === "healthy" || health?.status === "ok";
@@ -23,84 +23,84 @@ export function TelemetryCards({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* FastAPI Probe */}
-      <Card className="pitch-card bg-[#111017] border-[rgba(196,30,58,0.24)] shadow-xl hover:border-[rgba(230,57,70,0.45)] hover:shadow-[0_4px_20px_rgba(184,29,36,0.18)] transition-all">
-        <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-xs uppercase tracking-wider text-slate-400 font-bold">
-            FastAPI Service
+      <Card className="border border-black bg-white shadow-[4px_4px_0px_#000000] rounded-none hover:shadow-[6px_6px_0px_#000000] transition-shadow">
+        <CardHeader className="border-b border-black pb-2 flex flex-row items-center justify-between">
+          <CardTitle className="text-[10px] uppercase font-mono tracking-widest text-zinc-600 font-bold">
+            FASTAPI GATEWAY
           </CardTitle>
-          <Activity className="h-4 w-4 text-[#E63946]" />
+          <Activity className="h-4 w-4 text-black" />
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-4">
           <div className="flex items-center gap-2">
             {isHealthy ? (
-              <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="h-5 w-5 text-black shrink-0" />
             ) : (
-              <XCircle className="h-5 w-5 text-[#FF6B6B] shrink-0" />
+              <XCircle className="h-5 w-5 text-[#FF0000] shrink-0" />
             )}
             <span
-              className={`text-lg font-bold ${
-                isHealthy ? "text-emerald-400" : "text-[#FF6B6B]"
+              className={`text-lg font-black uppercase ${
+                isHealthy ? "text-black" : "text-[#FF0000]"
               }`}
             >
-              {isHealthy ? "ONLINE (200 OK)" : "DISCONNECTED"}
+              {isHealthy ? "200 OK ONLINE" : "DISCONNECTED"}
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <Clock className="h-3 w-3 text-[#E63946]" />
-            Probe Latency: {latencyMs !== undefined ? `${latencyMs}ms` : "—"}
+          <p className="text-[10px] font-mono text-zinc-600 mt-2 flex items-center gap-1 uppercase">
+            <Clock className="h-3 w-3 text-black" />
+            PROBE LATENCY: {latencyMs !== undefined ? `${latencyMs}MS` : "—"}
           </p>
         </CardContent>
       </Card>
 
       {/* Database Status */}
-      <Card className="pitch-card bg-[#111017] border-[rgba(196,30,58,0.24)] shadow-xl hover:border-[rgba(230,57,70,0.45)] hover:shadow-[0_4px_20px_rgba(184,29,36,0.18)] transition-all">
-        <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-xs uppercase tracking-wider text-slate-400 font-bold">
-            PostgreSQL DB
+      <Card className="border border-black bg-white shadow-[4px_4px_0px_#000000] rounded-none hover:shadow-[6px_6px_0px_#000000] transition-shadow">
+        <CardHeader className="border-b border-black pb-2 flex flex-row items-center justify-between">
+          <CardTitle className="text-[10px] uppercase font-mono tracking-widest text-zinc-600 font-bold">
+            POSTGRESQL 16
           </CardTitle>
-          <Database className="h-4 w-4 text-[#E63946]" />
+          <Database className="h-4 w-4 text-[#FF0000]" />
         </CardHeader>
-        <CardContent>
-          <div className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 inline-block animate-pulse shadow-[0_0_8px_#10B981]" />
-            <span>3NF Alpine Active</span>
+        <CardContent className="pt-4">
+          <div className="text-lg font-black uppercase text-black flex items-center gap-2">
+            <span className="h-2 w-2 bg-black inline-block" />
+            <span>3NF SCHEMAS ACTIVE</span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">
-            Indexed Entities: {totalDocuments} active filings
+          <p className="text-[10px] font-mono text-zinc-600 mt-2 uppercase">
+            CORPUS ENTITIES: {totalDocuments} INDEXED FILINGS
           </p>
         </CardContent>
       </Card>
 
       {/* Vector Index */}
-      <Card className="pitch-card bg-[#111017] border-[rgba(196,30,58,0.24)] shadow-xl hover:border-[rgba(230,57,70,0.45)] hover:shadow-[0_4px_20px_rgba(184,29,36,0.18)] transition-all">
-        <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-xs uppercase tracking-wider text-slate-400 font-bold">
-            pgvector HNSW Index
+      <Card className="border border-black bg-white shadow-[4px_4px_0px_#000000] rounded-none hover:shadow-[6px_6px_0px_#000000] transition-shadow">
+        <CardHeader className="border-b border-black pb-2 flex flex-row items-center justify-between">
+          <CardTitle className="text-[10px] uppercase font-mono tracking-widest text-zinc-600 font-bold">
+            PGVECTOR EMBEDDINGS
           </CardTitle>
-          <Cpu className="h-4 w-4 text-[#E63946]" />
+          <Cpu className="h-4 w-4 text-black" />
         </CardHeader>
-        <CardContent>
-          <div className="text-lg font-bold text-white">384-dim Cosine</div>
-          <p className="text-[11px] text-slate-400 mt-1">
-            all-MiniLM-L6-v2 • m=16, ef=64
+        <CardContent className="pt-4">
+          <div className="text-lg font-black uppercase text-black">1536-DIM COSINE</div>
+          <p className="text-[10px] font-mono text-zinc-600 mt-2 uppercase">
+            HNSW INDEX • M=16, EF=64
           </p>
         </CardContent>
       </Card>
 
       {/* Extraction Guard */}
-      <Card className="pitch-card bg-[#111017] border-[rgba(196,30,58,0.24)] shadow-xl hover:border-[rgba(230,57,70,0.45)] hover:shadow-[0_4px_20px_rgba(184,29,36,0.18)] transition-all">
-        <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-xs uppercase tracking-wider text-slate-400 font-bold">
-            Confidence Guard
+      <Card className="border border-black bg-white shadow-[4px_4px_0px_#000000] rounded-none hover:shadow-[6px_6px_0px_#000000] transition-shadow">
+        <CardHeader className="border-b border-black pb-2 flex flex-row items-center justify-between">
+          <CardTitle className="text-[10px] uppercase font-mono tracking-widest text-zinc-600 font-bold">
+            AUDIT GOVERNANCE
           </CardTitle>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[rgba(184,29,36,0.2)] text-[#E63946] border border-[rgba(230,57,70,0.4)]">
-            Strict
+          <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 border border-black bg-black text-white font-bold">
+            STRICT
           </span>
         </CardHeader>
-        <CardContent>
-          <div className="text-lg font-bold text-white">0.45 Min Cutoff</div>
-          <p className="text-[11px] text-slate-400 mt-1">
-            Rejection filter for low-similarity context
+        <CardContent className="pt-4">
+          <div className="text-lg font-black uppercase text-black">GROUNDED RAG</div>
+          <p className="text-[10px] font-mono text-zinc-600 mt-2 uppercase">
+            REFUSAL RULE ON MISSING SOURCES
           </p>
         </CardContent>
       </Card>

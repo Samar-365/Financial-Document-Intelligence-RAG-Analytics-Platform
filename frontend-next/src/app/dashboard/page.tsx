@@ -28,6 +28,7 @@ import {
   CreditCard,
   FileText,
   Database,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import { FinancialMetricItem } from "@/types/financial";
@@ -46,12 +47,11 @@ function findMetric(
 function formatValue(
   metric: FinancialMetricItem | undefined,
   currencySymbol: string,
-  unitLabel: string
+  _unitLabel: string
 ): string | null {
   if (!metric || metric.value == null) return null;
   const name = metric.metric_name.toLowerCase();
   if (name.includes("eps") || name.includes("ratio") || name.includes("margin")) {
-    // ratio / percentage – no unit label
     if (name.includes("ratio")) return metric.value.toFixed(2) + "x";
     if (name.includes("eps")) return `${currencySymbol}${metric.value.toFixed(2)}`;
     return metric.value.toFixed(2) + "%";
@@ -63,8 +63,6 @@ function deriveYoY(
   _metrics: FinancialMetricItem[],
   _keywords: string[]
 ): number | null {
-  // If backend provides year-over-year data, wire it here.
-  // Currently returning null until multi-year metrics are available.
   return null;
 }
 
@@ -80,7 +78,6 @@ export default function DashboardPage() {
   const {
     data: metricsData,
     isLoading: metricsLoading,
-    isError: metricsError,
   } = useQuery({
     queryKey: ["financialMetrics", activeDocumentId],
     queryFn: () => financialService.getMetrics(activeDocumentId!),
@@ -91,7 +88,6 @@ export default function DashboardPage() {
   const {
     data: healthData,
     isLoading: healthLoading,
-    isError: healthError,
   } = useQuery({
     queryKey: ["healthScore", activeDocumentId],
     queryFn: () => financialService.getHealthScore(activeDocumentId!),
@@ -131,35 +127,32 @@ export default function DashboardPage() {
   if (!activeDocument) {
     return (
       <AppLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
-          <div className="relative">
-            <div className="h-24 w-24 rounded-2xl bg-[rgba(184,29,36,0.15)] border border-[rgba(196,30,58,0.35)] flex items-center justify-center shadow-[0_0_25px_rgba(184,29,36,0.2)]">
-              <BarChart3 className="h-12 w-12 text-[#E63946]" />
+        <div className="flex flex-col items-center justify-center min-h-[65vh] p-8">
+          <div className="max-w-xl w-full border-2 border-black bg-white p-10 shadow-[8px_8px_0px_#000000] text-center">
+            <div className="inline-block border border-black bg-black text-white px-3 py-1 text-xs font-mono font-bold tracking-widest uppercase mb-6">
+              [ STATUS: NO ACTIVE CORPUS ]
             </div>
-            <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-[rgba(184,29,36,0.3)] border border-[rgba(230,57,70,0.6)] flex items-center justify-center">
-              <span className="text-[#FF6B6B] text-xs font-bold">!</span>
-            </div>
-          </div>
-          <div className="text-center max-w-md">
-            <h2 className="text-xl font-bold text-white mb-2">No Filing Selected</h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Select a document from the workspace selector above, or upload a new annual
-              report to unlock the Executive Financial Dashboard.
+            <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter text-black mb-4 leading-none">
+              WORKSPACE <br />
+              <span className="stroke-text-thick">UNINITIALIZED</span>
+            </h2>
+            <p className="text-sm font-mono text-zinc-600 mb-8 max-w-md mx-auto leading-relaxed">
+              Select an ingested filing from the top workspace selector or upload a 10-K, 10-Q, or Annual Report to generate financial intelligence.
             </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/documents">
-              <Button variant="outline" size="sm" className="gap-2 border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] text-slate-200">
-                <FolderUp className="h-4 w-4 text-[#E63946]" />
-                Upload Filing
-              </Button>
-            </Link>
-            <Link href="/chat">
-              <Button variant="gradient" size="sm" className="gap-2">
-                <Bot className="h-4 w-4" />
-                Ask AI Analyst
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/documents" className="w-full sm:w-auto">
+                <Button className="w-full bg-black text-white hover:bg-black/90 font-black uppercase tracking-wider rounded-none border border-black shadow-[3px_3px_0px_#000000] gap-2 px-6">
+                  <FolderUp className="h-4 w-4 text-[#FF0000]" />
+                  Upload Filing
+                </Button>
+              </Link>
+              <Link href="/chat" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full bg-white text-black hover:bg-black hover:text-white font-black uppercase tracking-wider rounded-none border border-black shadow-[3px_3px_0px_#000000] gap-2 px-6">
+                  <Bot className="h-4 w-4" />
+                  RAG Assistant
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </AppLayout>
@@ -169,318 +162,386 @@ export default function DashboardPage() {
   // ─── Active Document Dashboard ────────────────────────────────────────────
   return (
     <AppLayout>
-      {/* ── Hero Banner ── */}
-      <div className="relative overflow-hidden rounded-2xl border border-[rgba(196,30,58,0.28)] bg-[#111017] p-6 backdrop-blur-xl shadow-2xl">
-        {/* Subtle accent glow */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-[rgba(184,29,36,0.12)] blur-3xl" />
-          <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-[rgba(184,29,36,0.08)] blur-2xl" />
-        </div>
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#E63946] mb-1">
-              <Zap className="h-4 w-4 text-[#E63946] animate-pulse" />
-              <span>ACTIVE WORKSPACE</span>
-            </div>
-            <h2 className="text-2xl font-bold tracking-tight text-white">
-              {activeDocument.company_name
-                ? `${activeDocument.company_name} — Financial Intelligence`
-                : "Financial Intelligence Dashboard"}
-            </h2>
-            <div className="text-sm text-slate-400 mt-1 flex flex-wrap items-center gap-4">
-              <span className="flex items-center gap-1.5">
-                <FileText className="h-3.5 w-3.5 text-[#E63946]" />
-                <code className="text-slate-300 text-xs bg-[#14131D] px-2 py-0.5 rounded border border-[rgba(196,30,58,0.25)]">
-                  {activeDocument.filename}
-                </code>
-              </span>
-              {activeDocument.fiscal_year && (
-                <span className="flex items-center gap-1.5 text-slate-300">
-                  <TrendingUp className="h-3.5 w-3.5 text-[#E63946]" />
-                  <span>FY{activeDocument.fiscal_year}</span>
+      <div className="space-y-8">
+        {/* ── Hero Banner ── */}
+        <div className="border border-black bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#000000]">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-block w-2.5 h-2.5 bg-[#FF0000]" />
+                <span className="text-xs font-mono font-bold tracking-widest text-black uppercase">
+                  [ 00 / EXECUTIVE INTELLIGENCE ]
                 </span>
-              )}
-              {activeDocument.fiscal_period && (
-                <span className="flex items-center gap-1.5 text-slate-300">
-                  <Database className="h-3.5 w-3.5 text-[#E63946]" />
-                  <span>{activeDocument.fiscal_period}</span>
-                </span>
-              )}
-              <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                <span>✓</span> {activeDocument.status}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/documents">
-              <Button variant="outline" size="sm" className="gap-2 border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] text-slate-200">
-                <FolderUp className="h-4 w-4 text-[#E63946]" />
-                Upload Filing
-              </Button>
-            </Link>
-            <Link href="/chat">
-              <Button variant="gradient" size="sm" className="gap-2">
-                <Bot className="h-4 w-4" />
-                Ask AI Analyst
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* ── KPI Cards Row ── */}
-      <section>
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="h-4 w-4 text-blue-400" />
-          <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
-            Key Financial Indicators
-          </h3>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <KpiCard
-            title="Revenue"
-            value={kpis?.revenue ?? null}
-            icon={DollarSign}
-            iconColor="text-blue-400"
-            accentColor="hover:border-blue-500/40"
-            isLoading={isDataLoading}
-            yoyChange={deriveYoY(metrics, ["revenue"])}
-            yoyLabel="YoY Growth"
-          />
-          <KpiCard
-            title="EBITDA / EBIT"
-            value={kpis?.ebitda ?? null}
-            icon={Activity}
-            iconColor="text-indigo-400"
-            accentColor="hover:border-indigo-500/40"
-            isLoading={isDataLoading}
-            yoyChange={deriveYoY(metrics, ["ebitda"])}
-          />
-          <KpiCard
-            title="Net Profit (PAT)"
-            value={kpis?.netIncome ?? null}
-            icon={TrendingUp}
-            iconColor="text-emerald-400"
-            accentColor="hover:border-emerald-500/40"
-            isLoading={isDataLoading}
-            yoyChange={deriveYoY(metrics, ["net income"])}
-            yoyLabel="Margin Expansion"
-          />
-          <KpiCard
-            title="Total Debt"
-            value={kpis?.totalDebt ?? null}
-            icon={Layers}
-            iconColor="text-red-400"
-            accentColor="hover:border-red-500/40"
-            isLoading={isDataLoading}
-          />
-          <KpiCard
-            title="Oper. Margin"
-            value={kpis?.opm ?? null}
-            icon={Percent}
-            iconColor="text-cyan-400"
-            accentColor="hover:border-cyan-500/40"
-            isLoading={ratiosLoading}
-            description="Operating Profit Margin"
-          />
-          <KpiCard
-            title="Debt / Equity"
-            value={kpis?.debtEquity ?? null}
-            icon={CreditCard}
-            iconColor="text-amber-400"
-            accentColor="hover:border-amber-500/40"
-            isLoading={ratiosLoading}
-            description="Leverage Ratio"
-          />
-        </div>
-      </section>
-
-      {/* ── Health Gauge + Radar Row ── */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Health Gauge */}
-        <Card className="flex flex-col pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-              <Target className="h-4 w-4 text-[#E63946]" />
-              5-Dimension Corporate Health Score
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center gap-4 pb-6">
-            <HealthGauge
-              score={healthData?.overall_score ?? 0}
-              size={200}
-              isLoading={healthLoading}
-            />
-            {/* Dimension pills */}
-            {!healthLoading && healthData && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full">
-                {[
-                  { label: "Growth", value: healthData.growth_score, color: "text-emerald-400" },
-                  { label: "Profitability", value: healthData.profitability_score, color: "text-[#E63946]" },
-                  { label: "Liquidity", value: healthData.liquidity_score, color: "text-slate-200" },
-                  { label: "Leverage", value: healthData.leverage_score, color: "text-amber-400" },
-                  { label: "Cash Flow", value: healthData.cash_flow_score, color: "text-[#FF4D6D]" },
-                ].map(({ label, value, color }) => (
-                  <div
-                    key={label}
-                    className="flex flex-col items-center rounded-lg border border-[rgba(196,30,58,0.2)] bg-[#14131D] px-3 py-2"
-                  >
-                    <span className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">
-                      {label}
-                    </span>
-                    <span className={`text-sm font-bold ${color}`}>
-                      {value?.toFixed(0) ?? "—"}
-                    </span>
-                  </div>
-                ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tighter text-black leading-none mb-3">
+                {activeDocument.company_name ? activeDocument.company_name : "FINANCIAL"} <span className="stroke-text-thick">INTELLIGENCE</span>
+              </h1>
+              <div className="text-xs font-mono text-black flex flex-wrap items-center gap-3">
+                <span className="border border-black bg-zinc-100 px-2 py-0.5 font-bold">
+                  FILE: {activeDocument.filename}
+                </span>
+                {activeDocument.fiscal_year && (
+                  <span className="border border-black bg-white px-2 py-0.5 font-bold">
+                    FY {activeDocument.fiscal_year}
+                  </span>
+                )}
+                {activeDocument.fiscal_period && (
+                  <span className="border border-black bg-white px-2 py-0.5 font-bold">
+                    PERIOD: {activeDocument.fiscal_period}
+                  </span>
+                )}
+                <span className="border border-black bg-black text-white px-2 py-0.5 font-bold uppercase">
+                  STATUS: {activeDocument.status}
+                </span>
+              </div>
+            </div>
 
-        {/* Radar Chart */}
-        <Card className="flex flex-col pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-              <Activity className="h-4 w-4 text-[#E63946]" />
-              Financial Dimension Radar
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <FinancialRadarChart
-              scores={{
-                growth_score: healthData?.growth_score ?? null,
-                profitability_score: healthData?.profitability_score ?? null,
-                liquidity_score: healthData?.liquidity_score ?? null,
-                leverage_score: healthData?.leverage_score ?? null,
-                cash_flow_score: healthData?.cash_flow_score ?? null,
-              }}
-              isLoading={healthLoading}
-            />
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ── Charts Row ── */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Revenue Trend Chart (takes 2/3 width) */}
-        <Card className="lg:col-span-2 pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-[#E63946]" />
-              Revenue, EBITDA &amp; Net Income Trend
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <RevenueTrendChart
-              metrics={metrics}
-              currencySymbol={currencySymbol}
-              unit={unitLabel}
-              isLoading={metricsLoading}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Capital Structure Donut */}
-        <Card className="pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-              <PieChart className="h-4 w-4 text-[#E63946]" />
-              Capital Structure
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <CapitalDonutChart
-              metrics={metrics}
-              currencySymbol={currencySymbol}
-              unit={unitLabel}
-              isLoading={metricsLoading}
-            />
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ── Risk Flags & Executive Insights ── */}
-      <section>
-        <div className="flex items-center gap-2 mb-3">
-          <Activity className="h-4 w-4 text-[#E63946]" />
-          <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
-            Risk Indicators &amp; Audit Provenance
-          </h3>
+            <div className="flex items-center gap-3 shrink-0">
+              <Link href="/documents">
+                <Button variant="outline" size="sm" className="bg-white text-black hover:bg-black hover:text-white border border-black rounded-none font-black uppercase tracking-wider text-xs shadow-[3px_3px_0px_#000000] gap-2 px-4">
+                  <FolderUp className="h-4 w-4 text-[#FF0000]" />
+                  Upload
+                </Button>
+              </Link>
+              <Link href="/chat">
+                <Button size="sm" className="bg-black text-white hover:bg-black/90 border border-black rounded-none font-black uppercase tracking-wider text-xs shadow-[3px_3px_0px_#000000] gap-2 px-4">
+                  <Bot className="h-4 w-4 text-[#FF0000]" />
+                  Ask AI
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2">
-            <RiskFlagsCard
-              riskFlags={healthData?.risk_flags ?? []}
-              overallScore={healthData?.overall_score ?? null}
-              documentName={activeDocument.filename}
-              isLoading={healthLoading}
-            />
+
+        {/* ── KPI Cards Row ── */}
+        <section>
+          <div className="flex items-center justify-between mb-4 border-b border-black pb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-widest text-black">
+                [ 01 / METRICS ]
+              </span>
+              <h2 className="text-sm font-black uppercase tracking-wider text-black">
+                Key Financial Indicators
+              </h2>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-600 uppercase">
+              STANDARDIZED GAAP / IFRS
+            </span>
           </div>
 
-          {/* Quick Links */}
-          <div className="flex flex-col gap-3">
-            <Card className="p-4 flex flex-col gap-2 pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-1">
-                Deep Dive
-              </h4>
-              <Link href="/analysis" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start gap-2 border-[rgba(196,30,58,0.25)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.18)] hover:border-[#E63946] text-slate-200">
-                  <BarChart3 className="h-4 w-4 text-[#E63946]" />
-                  Financial Statements
-                </Button>
-              </Link>
-              <Link href="/chat" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start gap-2 border-[rgba(196,30,58,0.25)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.18)] hover:border-[#E63946] text-slate-200">
-                  <Bot className="h-4 w-4 text-[#E63946]" />
-                  AI Analyst / Q&amp;A
-                </Button>
-              </Link>
-              <Link href="/compare" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start gap-2 border-[rgba(196,30,58,0.25)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.18)] hover:border-[#E63946] text-slate-200">
-                  <Layers className="h-4 w-4 text-[#E63946]" />
-                  Peer Benchmarking
-                </Button>
-              </Link>
-              <Link href="/audit" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start gap-2 border-[rgba(196,30,58,0.25)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.18)] hover:border-[#E63946] text-slate-200">
-                  <Activity className="h-4 w-4 text-[#E63946]" />
-                  Audit Logs
-                </Button>
-              </Link>
-            </Card>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <KpiCard
+              title="Revenue"
+              value={kpis?.revenue ?? null}
+              icon={DollarSign}
+              isLoading={isDataLoading}
+              yoyChange={deriveYoY(metrics, ["revenue"])}
+              yoyLabel="YoY Growth"
+            />
+            <KpiCard
+              title="EBITDA / EBIT"
+              value={kpis?.ebitda ?? null}
+              icon={Activity}
+              isLoading={isDataLoading}
+              yoyChange={deriveYoY(metrics, ["ebitda"])}
+            />
+            <KpiCard
+              title="Net Profit"
+              value={kpis?.netIncome ?? null}
+              icon={TrendingUp}
+              isLoading={isDataLoading}
+              yoyChange={deriveYoY(metrics, ["net income"])}
+              yoyLabel="Margin Expansion"
+              description="PAT (Profit After Tax)"
+            />
+            <KpiCard
+              title="Total Debt"
+              value={kpis?.totalDebt ?? null}
+              icon={Layers}
+              isLoading={isDataLoading}
+            />
+            <KpiCard
+              title="Oper. Margin"
+              value={kpis?.opm ?? null}
+              icon={Percent}
+              isLoading={ratiosLoading}
+              description="Operating Margin"
+            />
+            <KpiCard
+              title="Debt / Equity"
+              value={kpis?.debtEquity ?? null}
+              icon={CreditCard}
+              isLoading={ratiosLoading}
+              description="Solvency Factor"
+            />
+          </div>
+        </section>
 
-            {/* Ratio Summary Card */}
-            {ratiosData && (
-              <Card className="p-4">
-                <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-2">
-                  Key Ratios
-                </h4>
-                <div className="space-y-2">
-                  {[
-                    { label: "OPM", value: ratiosData.opm, suffix: "%" },
-                    { label: "NPM", value: ratiosData.npm, suffix: "%" },
-                    { label: "ROE", value: ratiosData.roe, suffix: "%" },
-                    { label: "ROCE", value: ratiosData.roce, suffix: "%" },
-                    { label: "Current Ratio", value: ratiosData.current_ratio, suffix: "x" },
-                    { label: "Interest Cov.", value: ratiosData.interest_coverage, suffix: "x" },
-                  ]
-                    .filter((r) => r.value != null)
-                    .map(({ label, value, suffix }) => (
-                      <div key={label} className="flex items-center justify-between text-xs">
-                        <span className="text-slate-400">{label}</span>
-                        <span className="font-semibold text-white">
-                          {value!.toFixed(2)}
-                          {suffix}
+        {/* ── Health Gauge + Radar Row ── */}
+        <section>
+          <div className="flex items-center justify-between mb-4 border-b border-black pb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-widest text-[#FF0000]">
+                [ 02 / ANALYSIS ]
+              </span>
+              <h2 className="text-sm font-black uppercase tracking-wider text-black">
+                Corporate Solvency &amp; Dimension Radar
+              </h2>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-600 uppercase">
+              5-AXIS DIAGNOSTIC
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Health Gauge */}
+            <Card className="flex flex-col border border-black bg-white shadow-[4px_4px_0px_#000000] rounded-none">
+              <CardHeader className="border-b border-black pb-3">
+                <CardTitle className="text-xs font-black uppercase tracking-widest text-black flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-[#FF0000]" />
+                    5-Dimension Health Index
+                  </span>
+                  <span className="text-[10px] font-mono font-normal text-zinc-500 uppercase">
+                    SCALE: 0-100
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center justify-center gap-6 pt-6 pb-6">
+                <HealthGauge
+                  score={healthData?.overall_score ?? 0}
+                  size={200}
+                  isLoading={healthLoading}
+                />
+                {/* Dimension pills */}
+                {!healthLoading && healthData && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full">
+                    {[
+                      { label: "Growth", value: healthData.growth_score },
+                      { label: "Profitability", value: healthData.profitability_score },
+                      { label: "Liquidity", value: healthData.liquidity_score },
+                      { label: "Leverage", value: healthData.leverage_score },
+                      { label: "Cash Flow", value: healthData.cash_flow_score },
+                    ].map(({ label, value }) => (
+                      <div
+                        key={label}
+                        className="flex flex-col items-center border border-black bg-white px-3 py-2 shadow-[2px_2px_0px_#000000]"
+                      >
+                        <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-0.5">
+                          {label}
+                        </span>
+                        <span className="text-lg font-black text-black">
+                          {value != null ? value.toFixed(0) : "—"}
                         </span>
                       </div>
                     ))}
-                </div>
-              </Card>
-            )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Radar Chart */}
+            <Card className="flex flex-col border border-black bg-white shadow-[4px_4px_0px_#000000] rounded-none">
+              <CardHeader className="border-b border-black pb-3">
+                <CardTitle className="text-xs font-black uppercase tracking-widest text-black flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-black" />
+                    Financial Dimension Radar
+                  </span>
+                  <span className="text-[10px] font-mono font-normal text-zinc-500 uppercase">
+                    POLAR PROJECTION
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 pb-4">
+                <FinancialRadarChart
+                  scores={{
+                    growth_score: healthData?.growth_score ?? null,
+                    profitability_score: healthData?.profitability_score ?? null,
+                    liquidity_score: healthData?.liquidity_score ?? null,
+                    leverage_score: healthData?.leverage_score ?? null,
+                    cash_flow_score: healthData?.cash_flow_score ?? null,
+                  }}
+                  isLoading={healthLoading}
+                />
+              </CardContent>
+            </Card>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* ── Charts Row ── */}
+        <section>
+          <div className="flex items-center justify-between mb-4 border-b border-black pb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-widest text-black">
+                [ 03 / TRENDS ]
+              </span>
+              <h2 className="text-sm font-black uppercase tracking-wider text-black">
+                Revenue, Earnings &amp; Capital Structure
+              </h2>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-600 uppercase">
+              BAR &amp; DONUT ANALYSIS
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Revenue Trend Chart (takes 2/3 width) */}
+            <Card className="lg:col-span-2 border border-black bg-white shadow-[4px_4px_0px_#000000] rounded-none">
+              <CardHeader className="border-b border-black pb-3">
+                <CardTitle className="text-xs font-black uppercase tracking-widest text-black flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4 text-black" />
+                    Revenue, EBITDA &amp; Net Income Trend
+                  </span>
+                  <span className="text-[10px] font-mono font-normal text-zinc-500 uppercase">
+                    HISTORICAL / REPORTED
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 pb-4">
+                <RevenueTrendChart
+                  metrics={metrics}
+                  currencySymbol={currencySymbol}
+                  unit={unitLabel}
+                  isLoading={metricsLoading}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Capital Structure Donut */}
+            <Card className="border border-black bg-white shadow-[4px_4px_0px_#000000] rounded-none">
+              <CardHeader className="border-b border-black pb-3">
+                <CardTitle className="text-xs font-black uppercase tracking-widest text-black flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <PieChart className="h-4 w-4 text-[#FF0000]" />
+                    Capital Allocation
+                  </span>
+                  <span className="text-[10px] font-mono font-normal text-zinc-500 uppercase">
+                    EQUITY VS DEBT
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 pb-4">
+                <CapitalDonutChart
+                  metrics={metrics}
+                  currencySymbol={currencySymbol}
+                  unit={unitLabel}
+                  isLoading={metricsLoading}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* ── Risk Flags & Executive Insights ── */}
+        <section>
+          <div className="flex items-center justify-between mb-4 border-b border-black pb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-widest text-[#FF0000]">
+                [ 04 / GOVERNANCE ]
+              </span>
+              <h2 className="text-sm font-black uppercase tracking-wider text-black">
+                Risk Indicators &amp; RAG Navigation
+              </h2>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-600 uppercase">
+              AUDIT PROVENANCE
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+              <RiskFlagsCard
+                riskFlags={healthData?.risk_flags ?? []}
+                overallScore={healthData?.overall_score ?? null}
+                documentName={activeDocument.filename}
+                isLoading={healthLoading}
+              />
+            </div>
+
+            {/* Quick Links */}
+            <div className="flex flex-col gap-4">
+              <div className="border border-black bg-white p-5 shadow-[4px_4px_0px_#000000] rounded-none flex flex-col gap-3">
+                <div className="flex items-center justify-between border-b border-black pb-2">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-black">
+                    EXPLORE PLATFORM
+                  </h3>
+                  <span className="text-[10px] font-mono text-zinc-600 uppercase">DEEP DIVE</span>
+                </div>
+                <Link href="/analysis" className="block">
+                  <Button variant="outline" size="sm" className="w-full justify-between border border-black bg-white hover:bg-black hover:text-white rounded-none font-bold uppercase tracking-wider text-xs shadow-[2px_2px_0px_#000000]">
+                    <span className="flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4" />
+                      Financial Statements
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+                <Link href="/chat" className="block">
+                  <Button variant="outline" size="sm" className="w-full justify-between border border-black bg-white hover:bg-black hover:text-white rounded-none font-bold uppercase tracking-wider text-xs shadow-[2px_2px_0px_#000000]">
+                    <span className="flex items-center gap-2">
+                      <Bot className="h-4 w-4 text-[#FF0000]" />
+                      AI Analyst / Q&amp;A
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+                <Link href="/compare" className="block">
+                  <Button variant="outline" size="sm" className="w-full justify-between border border-black bg-white hover:bg-black hover:text-white rounded-none font-bold uppercase tracking-wider text-xs shadow-[2px_2px_0px_#000000]">
+                    <span className="flex items-center gap-2">
+                      <Layers className="h-4 w-4" />
+                      Peer Benchmarking
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+                <Link href="/audit" className="block">
+                  <Button variant="outline" size="sm" className="w-full justify-between border border-black bg-white hover:bg-black hover:text-white rounded-none font-bold uppercase tracking-wider text-xs shadow-[2px_2px_0px_#000000]">
+                    <span className="flex items-center gap-2">
+                      <Activity className="h-4 w-4" />
+                      Audit Logs
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Ratio Summary Card */}
+              {ratiosData && (
+                <div className="border border-black bg-white p-5 shadow-[4px_4px_0px_#000000] rounded-none">
+                  <div className="flex items-center justify-between border-b border-black pb-2 mb-3">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-black">
+                      KEY RATIOS
+                    </h3>
+                    <span className="text-[10px] font-mono text-zinc-600 uppercase">SUMMARY</span>
+                  </div>
+                  <div className="space-y-2 font-mono text-xs">
+                    {[
+                      { label: "OPM", value: ratiosData.opm, suffix: "%" },
+                      { label: "NPM", value: ratiosData.npm, suffix: "%" },
+                      { label: "ROE", value: ratiosData.roe, suffix: "%" },
+                      { label: "ROCE", value: ratiosData.roce, suffix: "%" },
+                      { label: "Current Ratio", value: ratiosData.current_ratio, suffix: "x" },
+                      { label: "Interest Cov.", value: ratiosData.interest_coverage, suffix: "x" },
+                    ]
+                      .filter((r) => r.value != null)
+                      .map(({ label, value, suffix }) => (
+                        <div key={label} className="flex items-center justify-between border-b border-zinc-200 pb-1">
+                          <span className="text-zinc-600 uppercase">{label}</span>
+                          <span className="font-black text-black">
+                            {value!.toFixed(2)}
+                            {suffix}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      </div>
     </AppLayout>
   );
 }

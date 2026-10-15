@@ -11,7 +11,7 @@ import { ComparativeBarChart } from "@/components/compare/comparative-bar-chart"
 import { DeltaTable } from "@/components/compare/delta-table";
 import { RiskProfileComparison } from "@/components/compare/risk-profile-comparison";
 import { Button } from "@/components/ui/button";
-import { GitCompare, Layers, FolderUp, AlertCircle } from "lucide-react";
+import { FolderUp, AlertCircle } from "lucide-react";
 import { DocumentItem } from "@/types/document";
 import Link from "next/link";
 
@@ -90,58 +90,65 @@ export default function ComparePage() {
 
   const docA = documents.find((d: DocumentItem) => d.id === docAId);
   const docB = documents.find((d: DocumentItem) => d.id === docBId);
-  const docAName = docA ? docA.company_name || docA.filename : "Baseline";
-  const docBName = docB ? docB.company_name || docB.filename : "Target";
+  const docAName = docA ? docA.company_name || docA.filename : "BASELINE";
+  const docBName = docB ? docB.company_name || docB.filename : "TARGET";
 
   const deltas = comparisonData?.deltas || [];
 
   return (
     <AppLayout>
-      <div className="space-y-6 max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(184,29,36,0.18)] text-[#E63946] border border-[rgba(196,30,58,0.4)] shadow-[0_0_15px_rgba(184,29,36,0.25)] shrink-0">
-              <GitCompare className="h-6 w-6" />
-            </div>
+      <div className="space-y-8 max-w-6xl mx-auto">
+        {/* Header Banner */}
+        <div className="border border-black bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#000000]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-white">
-                Peer Benchmarking &amp; Comparison
-              </h2>
-              <p className="text-sm text-slate-400">
-                Cross-company and multi-period variance analysis, delta calculations, and risk trajectory tracking.
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-block w-2.5 h-2.5 bg-[#FF0000]" />
+                <span className="text-xs font-mono font-bold tracking-widest text-black uppercase">
+                  [ 04 / BENCHMARKING ] COMPARATIVE ANALYTICS
+                </span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-black leading-none mb-2">
+                PEER &amp; PERIOD <span className="stroke-text-thick">BENCHMARKING</span>
+              </h1>
+              <p className="text-xs font-mono text-zinc-600 uppercase">
+                CROSS-COMPANY AND MULTI-YEAR VARIANCE ANALYSIS, DELTA MULTIPLES, AND RISK DRIFT
               </p>
             </div>
-          </div>
 
-          <Link href="/documents">
-            <Button variant="outline" size="sm" className="gap-2 border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] text-slate-200">
-              <FolderUp className="h-4 w-4 text-[#E63946]" />
-              Upload Filing
-            </Button>
-          </Link>
+            <Link href="/documents">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border border-black bg-white hover:bg-black hover:text-white rounded-none font-black uppercase tracking-wider text-xs shadow-[3px_3px_0px_#000000] gap-2 px-4"
+              >
+                <FolderUp className="h-3.5 w-3.5 text-[#FF0000]" />
+                <span>UPLOAD</span>
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* If fewer than 2 documents exist */}
         {documents.length < 2 && !docsLoading && (
-          <div className="rounded-2xl border border-[rgba(196,30,58,0.28)] bg-[#111017] p-8 text-center space-y-4 shadow-xl">
-            <div className="flex justify-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[rgba(184,29,36,0.15)] text-[#E63946] border border-[rgba(196,30,58,0.35)] shadow-[0_0_20px_rgba(184,29,36,0.2)]">
-                <Layers className="h-8 w-8" />
-              </div>
+          <div className="border-2 border-black bg-white p-10 text-center space-y-4 shadow-[6px_6px_0px_#000000]">
+            <div className="inline-block border border-black bg-black text-white px-3 py-1 text-xs font-mono font-bold tracking-widest uppercase">
+              [ REQUIREMENT: &ge; 2 FILINGS ]
             </div>
-            <h3 className="text-base font-bold text-white">
-              At Least Two Documents Required for Comparison
-            </h3>
-            <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
-              Currently, only {documents.length} filing is available. Please upload an additional report
-              (e.g., FY2024 and FY2025, or a competitor statement) to run automated delta calculations.
+            <h2 className="text-2xl sm:text-3xl font-black uppercase text-black">
+              INSUFFICIENT FILINGS FOR COMPARISON
+            </h2>
+            <p className="text-xs font-mono text-zinc-600 max-w-md mx-auto leading-relaxed uppercase">
+              Currently, only {documents.length} filing is indexed. Please upload an additional report
+              (e.g., FY2023 vs FY2024, or a peer competitor) to compute variance deltas.
             </p>
-            <Link href="/documents">
-              <Button variant="gradient" size="sm">
-                Upload Additional Filing
-              </Button>
-            </Link>
+            <div className="pt-2">
+              <Link href="/documents">
+                <Button className="bg-black text-white hover:bg-black/90 font-black uppercase text-xs rounded-none border border-black shadow-[3px_3px_0px_#FF0000] px-6">
+                  Upload Additional Filing
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
 
@@ -161,7 +168,7 @@ export default function ComparePage() {
 
         {/* Results Area */}
         {hasCompared && docAId && docBId && docAId !== docBId && (
-          <>
+          <div className="space-y-8">
             {/* Health Score & Risk Drift */}
             <RiskProfileComparison
               healthA={healthA || null}
@@ -172,7 +179,7 @@ export default function ComparePage() {
 
             {/* Error or Empty */}
             {comparisonError && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300 flex items-center gap-2">
+              <div className="border border-black bg-[#FF0000] text-white p-4 text-xs font-mono uppercase shadow-[3px_3px_0px_#000000] flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>
                   Failed to compute comparative metrics. Ensure the backend /compare endpoint is active.
@@ -206,11 +213,11 @@ export default function ComparePage() {
             )}
 
             {deltas.length === 0 && !comparisonLoading && !comparisonError && (
-              <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-8 text-center text-slate-400 text-xs">
-                No overlapping standardized financial metrics were found across these two filings to compute deltas.
+              <div className="border border-black bg-white p-8 text-center text-zinc-500 text-xs font-mono uppercase shadow-[3px_3px_0px_#000000]">
+                NO OVERLAPPING STANDARDIZED FINANCIAL METRICS WERE FOUND ACROSS THESE TWO FILINGS TO COMPUTE DELTAS.
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </AppLayout>

@@ -36,21 +36,32 @@ const CustomTooltip = ({
 }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-xl border border-slate-700/80 bg-slate-900/95 px-4 py-3 text-xs shadow-2xl">
-        <p className="font-semibold text-white mb-2 text-sm">{label}</p>
-        {payload.map((entry) => (
-          <div key={entry.name} className="flex items-center gap-2 mb-1">
-            <span
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ background: entry.color }}
-            />
-            <span className="text-slate-400">{entry.name}:</span>
-            <span className="font-bold text-white">
-              {currencySymbol}
-              {entry.value?.toLocaleString(undefined, { maximumFractionDigits: 1 })} {unit}
-            </span>
-          </div>
-        ))}
+      <div className="border-2 border-black bg-white p-3 text-xs font-mono shadow-[4px_4px_0px_#000000] rounded-none min-w-[200px]">
+        <div className="flex items-center justify-between border-b-2 border-black pb-1 mb-2">
+          <span className="font-black text-black uppercase tracking-wider text-xs">
+            [ {label} ]
+          </span>
+          <span className="text-[10px] text-zinc-500 font-bold uppercase">
+            AUDITED
+          </span>
+        </div>
+        <div className="space-y-1.5">
+          {payload.map((entry) => (
+            <div key={entry.name} className="flex items-center justify-between gap-4">
+              <span className="flex items-center gap-1.5 text-zinc-800 font-bold uppercase text-[11px]">
+                <span
+                  className="inline-block h-2 w-2 border border-black shrink-0"
+                  style={{ background: entry.color }}
+                />
+                {entry.name}:
+              </span>
+              <span className="font-black text-black text-xs">
+                {currencySymbol}
+                {entry.value?.toLocaleString(undefined, { maximumFractionDigits: 1 })} {unit}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -115,28 +126,29 @@ export function RevenueTrendChart({
       >
         <defs>
           <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#E63946" stopOpacity={0.95} />
-            <stop offset="100%" stopColor="#B81424" stopOpacity={0.75} />
+            <stop offset="0%" stopColor="#000000" stopOpacity={1.0} />
+            <stop offset="100%" stopColor="#000000" stopOpacity={0.85} />
           </linearGradient>
           <linearGradient id="ebitdaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#800020" stopOpacity={0.9} />
-            <stop offset="100%" stopColor="#58111A" stopOpacity={0.7} />
+            <stop offset="0%" stopColor="#666666" stopOpacity={1.0} />
+            <stop offset="100%" stopColor="#888888" stopOpacity={0.8} />
           </linearGradient>
         </defs>
         <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="rgba(196,30,58,0.15)"
+          strokeDasharray="2 2"
+          stroke="#000000"
+          strokeOpacity={0.15}
           vertical={false}
         />
         <XAxis
           dataKey="year"
-          tick={{ fill: "rgba(148,163,184,0.7)", fontSize: 11 }}
-          axisLine={{ stroke: "rgba(148,163,184,0.15)" }}
+          tick={{ fill: "#000000", fontSize: 11, fontWeight: 700 }}
+          axisLine={{ stroke: "#000000" }}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: "rgba(148,163,184,0.7)", fontSize: 10 }}
-          axisLine={false}
+          tick={{ fill: "#000000", fontSize: 10, fontWeight: 700 }}
+          axisLine={{ stroke: "#000000" }}
           tickLine={false}
           tickFormatter={(v) =>
             v >= 1000 ? `${(v / 1000).toFixed(0)}K` : `${v}`
@@ -153,31 +165,31 @@ export function RevenueTrendChart({
         />
         <Legend
           formatter={(value) => (
-            <span className="text-xs text-slate-400">{value}</span>
+            <span className="text-xs font-mono font-bold text-black uppercase">{value}</span>
           )}
         />
         <Bar
           dataKey="revenue"
           name="Revenue"
           fill="url(#revenueGrad)"
-          radius={[4, 4, 0, 0]}
+          radius={[0, 0, 0, 0]}
           maxBarSize={52}
         />
         <Bar
           dataKey="ebitda"
           name="EBITDA"
           fill="url(#ebitdaGrad)"
-          radius={[4, 4, 0, 0]}
+          radius={[0, 0, 0, 0]}
           maxBarSize={52}
         />
         <Line
           dataKey="netIncome"
           name="Net Income"
           type="monotone"
-          stroke="#10b981"
-          strokeWidth={2.5}
-          dot={{ fill: "#10b981", r: 4, strokeWidth: 2, stroke: "#064e3b" }}
-          activeDot={{ r: 6 }}
+          stroke="#FF0000"
+          strokeWidth={2}
+          dot={{ fill: "#FF0000", r: 3.5, strokeWidth: 1.5, stroke: "#000000" }}
+          activeDot={{ r: 5 }}
         />
       </ComposedChart>
     </ResponsiveContainer>

@@ -11,7 +11,6 @@ import { RatioGrid } from "@/components/analysis/ratio-grid";
 import { MetricsTable } from "@/components/analysis/metrics-table";
 import { SourceChunkDrawer } from "@/components/analysis/source-chunk-drawer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   FileText,
   BarChart3,
@@ -19,7 +18,7 @@ import {
   FolderUp,
   TrendingUp,
   Database,
-  Zap,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import { FinancialMetricItem } from "@/types/financial";
@@ -58,28 +57,25 @@ export default function AnalysisPage() {
   if (!activeDocument) {
     return (
       <AppLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
-          <div className="relative">
-            <div className="h-24 w-24 rounded-2xl bg-[rgba(184,29,36,0.15)] border border-[rgba(196,30,58,0.35)] flex items-center justify-center shadow-[0_0_25px_rgba(184,29,36,0.2)]">
-              <FileText className="h-12 w-12 text-[#E63946]" />
+        <div className="flex flex-col items-center justify-center min-h-[65vh] p-8">
+          <div className="max-w-xl w-full border-2 border-black bg-white p-10 shadow-[8px_8px_0px_#000000] text-center">
+            <div className="inline-block border border-black bg-black text-white px-3 py-1 text-xs font-mono font-bold tracking-widest uppercase mb-6">
+              [ STATUS: NO ACTIVE CORPUS ]
             </div>
-            <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-[rgba(184,29,36,0.3)] border border-[rgba(230,57,70,0.6)] flex items-center justify-center">
-              <span className="text-[#FF6B6B] text-xs font-bold">!</span>
-            </div>
-          </div>
-          <div className="text-center max-w-md">
-            <h2 className="text-xl font-bold text-white mb-2">No Filing Selected</h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Select a processed financial filing from the workspace selector, or upload
-              a new annual report to start deep-dive statement analysis.
+            <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter text-black mb-4 leading-none">
+              STATEMENTS <br />
+              <span className="stroke-text-thick">UNAVAILABLE</span>
+            </h2>
+            <p className="text-sm font-mono text-zinc-600 mb-8 max-w-md mx-auto leading-relaxed">
+              Select an ingested filing from the workspace selector or upload an annual report to inspect standardized financial statements and ratios.
             </p>
+            <Link href="/documents" className="inline-block">
+              <Button className="bg-black text-white hover:bg-black/90 font-black uppercase tracking-wider rounded-none border border-black shadow-[3px_3px_0px_#000000] gap-2 px-6">
+                <FolderUp className="h-4 w-4 text-[#FF0000]" />
+                Upload Filing
+              </Button>
+            </Link>
           </div>
-          <Link href="/documents">
-            <Button variant="outline" size="sm" className="gap-2 border-[rgba(196,30,58,0.35)] bg-[#111017] hover:border-[#E63946]">
-              <FolderUp className="h-4 w-4 text-[#E63946]" />
-              Upload Filing
-            </Button>
-          </Link>
         </div>
       </AppLayout>
     );
@@ -89,13 +85,18 @@ export default function AnalysisPage() {
   if (metricsError) {
     return (
       <AppLayout>
-        <div className="flex flex-col items-center justify-center min-h-[40vh] gap-4">
-          <p className="text-sm text-[#FF6B6B]">
-            Failed to load financial metrics. Check that the backend is reachable.
-          </p>
-          <Link href="/documents">
-            <Button variant="outline" size="sm">Go to Documents</Button>
-          </Link>
+        <div className="flex flex-col items-center justify-center min-h-[40vh] p-8">
+          <div className="max-w-md w-full border-2 border-black bg-white p-6 shadow-[6px_6px_0px_#FF0000] text-center space-y-4">
+            <h3 className="text-xl font-black uppercase text-black">EXTRACTION ERROR</h3>
+            <p className="text-xs font-mono text-zinc-600 uppercase">
+              Failed to load financial metrics. Verify that backend service is active.
+            </p>
+            <Link href="/documents">
+              <Button className="bg-black text-white rounded-none font-black uppercase text-xs">
+                Back to Documents
+              </Button>
+            </Link>
+          </div>
         </div>
       </AppLayout>
     );
@@ -104,138 +105,156 @@ export default function AnalysisPage() {
   return (
     <>
       <AppLayout>
-        {/* ── Hero Banner ── */}
-        <div className="relative overflow-hidden rounded-2xl border border-[rgba(196,30,58,0.28)] bg-[#111017] p-6 backdrop-blur-xl shadow-2xl">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-[rgba(184,29,36,0.12)] blur-3xl" />
-            <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-[rgba(184,29,36,0.08)] blur-2xl" />
-          </div>
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-[#E63946] mb-1">
-                <Zap className="h-4 w-4 text-[#E63946] animate-pulse" />
-                <span>FINANCIAL STATEMENT ANALYSIS</span>
-              </div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">
-                {activeDocument.company_name ?? "Financial Statement Deep-Dive"}
-              </h2>
-              <div className="text-sm text-slate-400 mt-1 flex flex-wrap items-center gap-4">
-                <span className="flex items-center gap-1.5">
-                  <FileText className="h-3.5 w-3.5 text-[#E63946]" />
-                  <code className="text-slate-300 text-xs bg-[#14131D] px-2 py-0.5 rounded border border-[rgba(196,30,58,0.25)]">
-                    {activeDocument.filename}
-                  </code>
-                </span>
-                {activeDocument.fiscal_year && (
-                  <span className="flex items-center gap-1.5 text-slate-300">
-                    <TrendingUp className="h-3.5 w-3.5 text-[#E63946]" />
-                    <span>FY{activeDocument.fiscal_year}</span>
-                  </span>
-                )}
-                {activeDocument.fiscal_period && (
-                  <span className="flex items-center gap-1.5 text-slate-300">
-                    <Database className="h-3.5 w-3.5 text-[#E63946]" />
-                    <span>{activeDocument.fiscal_period}</span>
-                  </span>
-                )}
-              </div>
-            </div>
-            <UnitCurrencyControls />
-          </div>
-        </div>
-
-        {/* ── Section 1: Financial Statements (Tabs) ── */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <TableProperties className="h-4 w-4 text-[#E63946]" />
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
-              Financial Statements
-            </h3>
-            {!metricsLoading && (
-              <span className="ml-auto text-xs text-slate-500">
-                {metrics.length} line items extracted
-                <span
-                  className="ml-2 text-slate-500 text-[10px] cursor-help"
-                  title="Click any row to inspect its extraction source and confidence score."
-                >
-                  (click a row to inspect source)
-                </span>
-              </span>
-            )}
-          </div>
-          <StatementTabs
-            metrics={metrics}
-            currencySymbol={currencySymbol}
-            unit={unit}
-            isLoading={metricsLoading}
-            onChunkClick={setSelectedMetric}
-          />
-        </section>
-
-        {/* ── Section 2: Ratio Analysis Grid ── */}
-        <section>
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="h-4 w-4 text-[#E63946]" />
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
-              Key Financial Ratios &amp; Benchmark Comparison
-            </h3>
-          </div>
-          <RatioGrid ratios={ratiosData} isLoading={ratiosLoading} />
-        </section>
-
-        {/* ── Section 3: Margin Visualization ── */}
-        {!ratiosLoading && ratiosData && (
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <BarChart3 className="h-4 w-4 text-[#E63946]" />
-              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                Margin &amp; Returns Overview
-              </h3>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {[
-                { label: "Oper. Margin (OPM)", value: ratiosData.opm, suffix: "%", color: "text-[#E63946]" },
-                { label: "Net Margin (NPM)", value: ratiosData.npm, suffix: "%", color: "text-emerald-400" },
-                { label: "ROE", value: ratiosData.roe, suffix: "%", color: "text-[#FF4D6D]" },
-                { label: "ROCE", value: ratiosData.roce, suffix: "%", color: "text-amber-400" },
-                { label: "Current Ratio", value: ratiosData.current_ratio, suffix: "x", color: "text-slate-200" },
-                { label: "Interest Coverage", value: ratiosData.interest_coverage, suffix: "x", color: "text-rose-400" },
-              ].map(({ label, value, suffix, color }) => (
-                <div
-                  key={label}
-                  className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-4 flex flex-col gap-1 hover:border-[rgba(230,57,70,0.45)] hover:shadow-[0_4px_16px_rgba(184,29,36,0.15)] transition-all"
-                >
-                  <span className="text-[10px] uppercase tracking-widest font-semibold text-slate-400">
-                    {label}
-                  </span>
-                  <span className={`text-xl font-bold ${color}`}>
-                    {value != null ? `${value.toFixed(2)}${suffix}` : "—"}
+        <div className="space-y-8">
+          {/* ── Hero Banner ── */}
+          <div className="border border-black bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#000000]">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="inline-block w-2.5 h-2.5 bg-[#FF0000]" />
+                  <span className="text-xs font-mono font-bold tracking-widest text-black uppercase">
+                    [ 02 / STATEMENTS ] FINANCIAL STATEMENT AUDIT
                   </span>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tighter text-black leading-none mb-3">
+                  {activeDocument.company_name ?? "COMPANY"} <span className="stroke-text-thick">STATEMENTS</span>
+                </h1>
+                <div className="text-xs font-mono text-black flex flex-wrap items-center gap-3">
+                  <span className="border border-black bg-zinc-100 px-2 py-0.5 font-bold">
+                    FILE: {activeDocument.filename}
+                  </span>
+                  {activeDocument.fiscal_year && (
+                    <span className="border border-black bg-white px-2 py-0.5 font-bold">
+                      FY {activeDocument.fiscal_year}
+                    </span>
+                  )}
+                  {activeDocument.fiscal_period && (
+                    <span className="border border-black bg-white px-2 py-0.5 font-bold">
+                      PERIOD: {activeDocument.fiscal_period}
+                    </span>
+                  )}
+                  <span className="border border-black bg-black text-white px-2 py-0.5 font-bold uppercase">
+                    CORPUS READY
+                  </span>
+                </div>
+              </div>
 
-        {/* ── Section 4: All Extracted Metrics Table ── */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <Database className="h-4 w-4 text-slate-400" />
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
-              All Extracted Line Items
-            </h3>
+              <UnitCurrencyControls />
+            </div>
           </div>
-          <MetricsTable
-            metrics={metrics}
-            currencySymbol={currencySymbol}
-            unit={unit}
-            isLoading={metricsLoading}
-            onRowClick={setSelectedMetric}
-          />
-        </section>
+
+          {/* ── Section 1: Financial Statements (Tabs) ── */}
+          <section>
+            <div className="flex items-center justify-between mb-4 border-b border-black pb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-widest text-black">
+                  [ 01 / STATEMENTS ]
+                </span>
+                <h2 className="text-sm font-black uppercase tracking-wider text-black">
+                  STANDARDIZED GAAP / IFRS FINANCIAL STATEMENTS
+                </h2>
+              </div>
+              {!metricsLoading && (
+                <span className="text-[11px] font-mono text-zinc-600 uppercase">
+                  {metrics.length} EXTRACTED LINE ITEMS (CLICK ROW TO INSPECT CHUNK)
+                </span>
+              )}
+            </div>
+            <StatementTabs
+              metrics={metrics}
+              currencySymbol={currencySymbol}
+              unit={unit}
+              isLoading={metricsLoading}
+              onChunkClick={setSelectedMetric}
+            />
+          </section>
+
+          {/* ── Section 2: Margin Visualization ── */}
+          {!ratiosLoading && ratiosData && (
+            <section>
+              <div className="flex items-center justify-between mb-4 border-b border-black pb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black uppercase tracking-widest text-[#FF0000]">
+                    [ 02 / MARGINS ]
+                  </span>
+                  <h2 className="text-sm font-black uppercase tracking-wider text-black">
+                    MARGIN EXPANSION &amp; RETURN PROFILES
+                  </h2>
+                </div>
+                <span className="text-[11px] font-mono text-zinc-600 uppercase">
+                  PROFITABILITY METRICS
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {[
+                  { label: "Oper. Margin (OPM)", value: ratiosData.opm, suffix: "%" },
+                  { label: "Net Margin (NPM)", value: ratiosData.npm, suffix: "%" },
+                  { label: "ROE", value: ratiosData.roe, suffix: "%" },
+                  { label: "ROCE", value: ratiosData.roce, suffix: "%" },
+                  { label: "Current Ratio", value: ratiosData.current_ratio, suffix: "x" },
+                  { label: "Interest Coverage", value: ratiosData.interest_coverage, suffix: "x" },
+                ].map(({ label, value, suffix }) => (
+                  <div
+                    key={label}
+                    className="border border-black bg-white p-4 flex flex-col gap-1 shadow-[3px_3px_0px_#000000] hover:shadow-[5px_5px_0px_#000000] transition-shadow"
+                  >
+                    <span className="text-[10px] uppercase font-mono font-bold text-zinc-600">
+                      {label}
+                    </span>
+                    <span className="text-2xl font-black text-black">
+                      {value != null ? `${value.toFixed(2)}${suffix}` : "—"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ── Section 3: Ratio Analysis Grid ── */}
+          <section>
+            <div className="flex items-center justify-between mb-4 border-b border-black pb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-widest text-black">
+                  [ 03 / DIAGNOSTICS ]
+                </span>
+                <h2 className="text-sm font-black uppercase tracking-wider text-black">
+                  FINANCIAL RATIOS &amp; BENCHMARK STATUS
+                </h2>
+              </div>
+              <span className="text-[11px] font-mono text-zinc-600 uppercase">
+                FORMULA EVALUATION
+              </span>
+            </div>
+            <RatioGrid ratios={ratiosData} isLoading={ratiosLoading} />
+          </section>
+
+          {/* ── Section 4: All Extracted Metrics Table ── */}
+          <section>
+            <div className="flex items-center justify-between mb-4 border-b border-black pb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-widest text-[#FF0000]">
+                  [ 04 / PROVENANCE ]
+                </span>
+                <h2 className="text-sm font-black uppercase tracking-wider text-black">
+                  ALL EXTRACTED FINANCIAL LINE ITEMS
+                </h2>
+              </div>
+              <span className="text-[11px] font-mono text-zinc-600 uppercase">
+                SEARCHABLE INVENTORY
+              </span>
+            </div>
+            <MetricsTable
+              metrics={metrics}
+              currencySymbol={currencySymbol}
+              unit={unit}
+              isLoading={metricsLoading}
+              onRowClick={setSelectedMetric}
+            />
+          </section>
+        </div>
       </AppLayout>
 
-      {/* Source Chunk Drawer — rendered outside AppLayout to cover full viewport */}
+      {/* Source Chunk Drawer */}
       <SourceChunkDrawer
         metric={selectedMetric}
         onClose={() => setSelectedMetric(null)}

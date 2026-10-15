@@ -3,10 +3,10 @@
 import React, { useState } from "react";
 import { DeltaItem } from "@/types/comparison";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Download, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DeltaTableProps {
   deltas: DeltaItem[];
@@ -37,35 +37,35 @@ export function DeltaTable({
     const isDebt = metricName.toLowerCase().includes("debt");
     if (pct === 0) {
       return {
-        label: "Neutral",
-        variant: "secondary" as const,
+        label: "NEUTRAL",
+        badge: "border-black bg-white text-black",
         icon: Minus,
       };
     }
     if (isDebt) {
       if (pct < 0) {
         return {
-          label: "Deleveraging",
-          variant: "success" as const,
+          label: "DELEVERAGING",
+          badge: "border-black bg-black text-white",
           icon: TrendingDown,
         };
       }
       return {
-        label: "Leverage Increase",
-        variant: "destructive" as const,
+        label: "LEVERAGE INCREASE",
+        badge: "border-black bg-[#FF0000] text-white",
         icon: TrendingUp,
       };
     }
     if (pct > 0) {
       return {
-        label: "Expansion",
-        variant: "success" as const,
+        label: "EXPANSION",
+        badge: "border-black bg-black text-white",
         icon: TrendingUp,
       };
     }
     return {
-      label: "Contraction",
-      variant: "destructive" as const,
+      label: "CONTRACTION",
+      badge: "border-black bg-[#FF0000] text-white",
       icon: TrendingDown,
     };
   };
@@ -93,23 +93,25 @@ export function DeltaTable({
   };
 
   return (
-    <div className="rounded-2xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-5 shadow-xl backdrop-blur-md space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="border border-black bg-white p-6 shadow-[4px_4px_0px_#000000] space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black pb-3">
         <div>
-          <h4 className="text-sm font-bold text-white">Detailed Line-Item Variance Table</h4>
-          <p className="text-xs text-slate-400">
-            Absolute and percentage variance with directional financial classification
+          <h4 className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-2">
+            <span className="text-[#FF0000]">[ 02 / DELTAS ]</span> DETAILED LINE-ITEM VARIANCE INVENTORY
+          </h4>
+          <p className="text-[10px] font-mono text-zinc-600 uppercase mt-0.5">
+            ABSOLUTE AND PERCENTAGE VARIANCE WITH DIRECTIONAL STATUS
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <div className="relative w-48 sm:w-60">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-500" />
             <Input
-              placeholder="Search line item..."
+              placeholder="SEARCH LINE ITEM..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-8 pl-8 text-xs bg-[#14131D] border-[rgba(184,29,36,0.35)] focus:border-[#E63946]"
+              className="h-8 pl-8 text-xs font-mono uppercase rounded-none border border-black bg-white text-black placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:border-black shadow-[1px_1px_0px_#000000]"
             />
           </div>
 
@@ -117,43 +119,42 @@ export function DeltaTable({
             onClick={handleExportCSV}
             variant="outline"
             size="sm"
-            className="h-8 gap-1.5 text-xs border-[rgba(196,30,58,0.3)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.2)] hover:border-[#E63946] text-slate-200"
+            className="h-8 gap-1.5 text-[10px] font-mono font-bold uppercase border border-black bg-white hover:bg-black hover:text-white rounded-none shadow-[2px_2px_0px_#000000]"
           >
-            <Download className="h-3.5 w-3.5 text-[#E63946]" />
-            <span>Export CSV</span>
+            <Download className="h-3.5 w-3.5" />
+            <span>EXPORT CSV</span>
           </Button>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-[rgba(196,30,58,0.25)] bg-[#0D0C12]">
-        <Table>
-          <TableHeader className="bg-[#0D0C12] text-slate-300">
-            <TableRow className="border-b border-[rgba(196,30,58,0.25)] hover:bg-transparent">
-              <TableHead className="font-semibold text-slate-300 text-xs">
-                Financial Metric
+      <Table>
+          <TableHeader className="bg-black text-white border-b-2 border-black">
+            <TableRow className="bg-black text-white hover:bg-black border-b-2 border-black">
+              <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider">
+                FINANCIAL METRIC
               </TableHead>
-              <TableHead className="font-semibold text-[#E63946] text-xs text-right">
-                {docAName} (Baseline)
+              <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider text-right">
+                {docAName} (BASELINE)
               </TableHead>
-              <TableHead className="font-semibold text-[#FF4D6D] text-xs text-right">
-                {docBName} (Target)
+              <TableHead className="bg-black text-[#FF0000] font-mono font-black text-[11px] uppercase tracking-wider text-right">
+                {docBName} (TARGET)
               </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs text-right">
-                Absolute Change
+              <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider text-right">
+                ABSOLUTE CHANGE
               </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs text-center">
-                % Change
+              <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider text-center">
+                % CHANGE
               </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs text-right">
-                Variance Interpretation
+              <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider text-right">
+                VARIANCE INTERPRETATION
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="divide-y divide-[rgba(196,30,58,0.15)] font-mono text-xs">
+          <TableBody className="divide-y divide-zinc-200 font-mono text-xs">
             {filteredDeltas.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-slate-500 font-sans">
-                  No matching line items found.
+                <TableCell colSpan={6} className="text-center py-8 text-zinc-500 uppercase">
+                  NO MATCHING LINE ITEMS FOUND.
                 </TableCell>
               </TableRow>
             ) : (
@@ -165,44 +166,45 @@ export function DeltaTable({
                 const Icon = meta.icon;
 
                 return (
-                  <TableRow key={idx} className="hover:bg-[rgba(184,29,36,0.12)] transition-colors">
-                    <TableCell className="font-sans font-medium text-slate-200">
+                  <TableRow key={idx} className="hover:bg-zinc-100 transition-colors">
+                    <TableCell className="font-mono font-bold text-black uppercase">
                       {d.metric_name}
                     </TableCell>
-                    <TableCell className="text-right text-slate-300">
+                    <TableCell className="text-right text-black font-mono">
                       {valA !== undefined && valA !== null
                         ? `${currencySymbol}${valA.toLocaleString(undefined, { maximumFractionDigits: 1 })} ${unit}`
                         : "—"}
                     </TableCell>
-                    <TableCell className="text-right text-slate-200 font-semibold">
+                    <TableCell className="text-right text-black font-black font-mono">
                       {valB !== undefined && valB !== null
                         ? `${currencySymbol}${valB.toLocaleString(undefined, { maximumFractionDigits: 1 })} ${unit}`
                         : "—"}
                     </TableCell>
-                    <TableCell className="text-right text-slate-400">
+                    <TableCell className="text-right text-zinc-700 font-mono">
                       {d.absolute_delta !== undefined && d.absolute_delta !== null
                         ? `${d.absolute_delta > 0 ? "+" : ""}${currencySymbol}${d.absolute_delta.toLocaleString(undefined, { maximumFractionDigits: 1 })} ${unit}`
                         : "—"}
                     </TableCell>
                     <TableCell className="text-center">
                       <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold ${
+                        className={cn(
+                          "inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono font-black uppercase border border-black",
                           pct > 0
-                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                            ? "bg-black text-white"
                             : pct < 0
-                            ? "bg-rose-500/15 text-rose-400 border border-rose-500/20"
-                            : "bg-slate-800 text-slate-400"
-                        }`}
+                            ? "bg-[#FF0000] text-white"
+                            : "bg-zinc-100 text-black"
+                        )}
                       >
                         {pct > 0 ? "+" : ""}
                         {pct.toFixed(2)}%
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Badge variant={meta.variant} className="gap-1 font-sans text-[10px]">
+                      <span className={cn("inline-flex items-center gap-1 border px-2 py-0.5 text-[9px] font-mono font-black uppercase", meta.badge)}>
                         <Icon className="h-3 w-3" />
                         <span>{meta.label}</span>
-                      </Badge>
+                      </span>
                     </TableCell>
                   </TableRow>
                 );
@@ -210,7 +212,6 @@ export function DeltaTable({
             )}
           </TableBody>
         </Table>
-      </div>
     </div>
   );
 }

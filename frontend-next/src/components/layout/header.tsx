@@ -2,8 +2,6 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { WorkspaceSelector } from "@/components/shared/workspace-selector";
-import { SystemHealth } from "@/components/shared/system-health";
 import {
   LayoutDashboard,
   FolderUp,
@@ -63,28 +61,22 @@ export function Header() {
   const Icon = currentRoute.icon;
 
   return (
-    <header className="sticky top-0 z-20 flex h-20 w-full items-center justify-between border-b border-[rgba(184,29,36,0.25)] bg-[#0D0C12]/95 px-6 backdrop-blur-xl">
-      {/* Route Title & Subtitle with Wine Red Icon Badge */}
-      <div className="flex items-center gap-3.5 min-w-0">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[rgba(184,29,36,0.15)] border border-[rgba(196,30,58,0.4)] shadow-[0_0_15px_rgba(184,29,36,0.2)] text-[#E63946]">
-          <Icon className="h-5 w-5" />
+    <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between border-b border-black bg-white px-6 md:px-8">
+      {/* Route Title & Subtitle with Minimalist Black/White Badge */}
+      <div className="flex items-center gap-4 min-w-0">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center border border-black bg-black text-white">
+          <Icon className="h-4.5 w-4.5" />
         </div>
         <div className="flex flex-col min-w-0">
-          <h1 className="text-lg font-bold tracking-tight text-white truncate leading-tight">
+          <h1 className="text-base font-black uppercase tracking-tight text-black truncate leading-tight">
             {currentRoute.title}
           </h1>
-          <p className="text-xs text-[#94A3B8] hidden lg:block truncate max-w-xl mt-0.5">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 hidden lg:block truncate max-w-xl">
             {currentRoute.subtitle}
           </p>
         </div>
       </div>
 
-      {/* Global Controls */}
-      <div className="flex items-center gap-3 shrink-0">
-        <WorkspaceSelector />
-        <div className="h-4 w-[1px] bg-slate-800 hidden sm:block" />
-        <SystemHealth />
-      </div>
     </header>
   );
 }

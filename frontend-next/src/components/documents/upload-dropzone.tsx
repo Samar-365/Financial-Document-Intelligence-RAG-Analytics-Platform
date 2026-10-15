@@ -29,7 +29,7 @@ export function UploadDropzone({
 
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
       setErrorMessage(
-        `Invalid file type (${ext}). Please upload a PDF, Excel, or CSV document.`
+        `Invalid file type (${ext}). Please upload a PDF, Excel (.xlsx/.xls), or CSV filing.`
       );
       return;
     }
@@ -71,7 +71,7 @@ export function UploadDropzone({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <input
         ref={fileInputRef}
         type="file"
@@ -88,56 +88,81 @@ export function UploadDropzone({
           onDrop={handleDrop}
           onClick={() => !disabled && fileInputRef.current?.click()}
           className={cn(
-            "group relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center transition-all cursor-pointer",
+            "group relative flex flex-col items-center justify-center border-2 border-black p-10 sm:p-14 text-center transition-all cursor-pointer bg-white",
             isDragging
-              ? "border-[#E63946] bg-[rgba(184,29,36,0.18)] scale-[1.01]"
-              : "border-[rgba(184,29,36,0.45)] bg-[#111018] hover:border-[#E63946] hover:bg-[#171522]",
+              ? "bg-zinc-100 shadow-[6px_6px_0px_#FF0000]"
+              : "hover:shadow-[6px_6px_0px_#000000]",
             disabled && "opacity-50 pointer-events-none"
           )}
         >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[rgba(184,29,36,0.18)] text-[#E63946] mb-3 border border-[rgba(196,30,58,0.4)] shadow-[0_0_15px_rgba(184,29,36,0.25)] group-hover:scale-110 transition-transform">
-            <FolderUp className="h-7 w-7" />
+          <div className="flex h-14 w-14 items-center justify-center border-2 border-black bg-black text-white mb-4 group-hover:scale-105 transition-transform shadow-[3px_3px_0px_#FF0000]">
+            <FolderUp className="h-7 w-7 text-white" />
           </div>
-          <h3 className="text-sm font-semibold text-white">
-            Click to upload or drag and drop financial reports
-          </h3>
-          <p className="text-xs text-slate-400 mt-1 max-w-sm">
-            Supports Annual Reports, 10-K, 10-Q, and Ind AS statements (.pdf, .xlsx, .csv up to 50MB)
-          </p>
+
+          <div className="space-y-2 max-w-md">
+            <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-black">
+              DRAG &amp; DROP FILING <span className="stroke-text-thick">HERE</span>
+            </h3>
+            <p className="text-xs font-mono text-zinc-600 uppercase">
+              OR CLICK TO BROWSE LOCAL FILESYSTEM
+            </p>
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+            {["PDF (ANNUAL REPORTS & 10-K)", "EXCEL (.XLSX)", "CSV DATASETS"].map((tag) => (
+              <span
+                key={tag}
+                className="border border-black bg-white px-2 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-black shadow-[1px_1px_0px_#000000]"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+            [ MAX INGESTION CAPACITY: 50 MB / DOCUMENT ]
+          </div>
         </div>
       ) : (
-        <div className="flex items-center justify-between rounded-xl border border-[rgba(196,30,58,0.4)] bg-[rgba(184,29,36,0.12)] p-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[rgba(184,29,36,0.2)] text-[#E63946] border border-[rgba(196,30,58,0.4)]">
-              <FileText className="h-5 w-5" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-2 border-black bg-white p-5 shadow-[4px_4px_0px_#000000] gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center border border-black bg-black text-white shrink-0">
+              <FileText className="h-6 w-6 text-[#FF0000]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white truncate max-w-[280px] sm:max-w-md">
-                {selectedFile.name}
-              </p>
-              <p className="text-xs text-slate-400">
-                {formatBytes(selectedFile.size)} • Ready for ingestion
-              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-black uppercase tracking-tight text-black truncate max-w-[260px] sm:max-w-md">
+                  {selectedFile.name}
+                </span>
+                <span className="border border-black bg-black text-white px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase">
+                  READY
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-xs font-mono text-zinc-600 mt-1">
+                <span>SIZE: {formatBytes(selectedFile.size)}</span>
+                <span>•</span>
+                <span>TYPE: {selectedFile.name.split(".").pop()?.toUpperCase()}</span>
+              </div>
             </div>
           </div>
 
           <Button
             type="button"
-            variant="ghost"
-            size="icon"
+            variant="outline"
+            size="sm"
             onClick={() => onFileSelect(null)}
             disabled={disabled}
-            className="text-slate-400 hover:text-[#E63946] hover:bg-[rgba(184,29,36,0.15)]"
-            title="Remove file"
+            className="border border-black bg-white hover:bg-[#FF0000] hover:text-white rounded-none font-black uppercase tracking-wider text-xs gap-1.5 shadow-[2px_2px_0px_#000000]"
           >
             <X className="h-4 w-4" />
+            <span>REMOVE</span>
           </Button>
         </div>
       )}
 
       {errorMessage && (
-        <div className="flex items-center gap-2 rounded-lg border border-[rgba(230,57,70,0.4)] bg-[rgba(184,29,36,0.15)] p-3 text-xs text-[#FF6B6B]">
-          <AlertCircle className="h-4 w-4 shrink-0 text-[#E63946]" />
+        <div className="flex items-center gap-2 border border-black bg-[#FF0000] text-white p-3 text-xs font-mono uppercase tracking-wider shadow-[3px_3px_0px_#000000]">
+          <AlertCircle className="h-4 w-4 shrink-0 text-white" />
           <span>{errorMessage}</span>
         </div>
       )}

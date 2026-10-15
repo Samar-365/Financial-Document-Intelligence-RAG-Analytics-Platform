@@ -18,7 +18,7 @@ export function SystemHealth() {
 
   return (
     <div
-      className="flex items-center gap-2 px-2.5 py-1 rounded-full text-xs border border-slate-800 bg-slate-900/60 backdrop-blur-md transition-all"
+      className="flex items-center gap-2 px-2.5 py-1 border border-black bg-white text-xs font-mono font-bold text-black transition-all"
       title={`Backend: ${
         isLoading
           ? "Checking..."
@@ -49,7 +49,7 @@ export function SystemHealth() {
           }`}
         />
       </span>
-      <span className="font-medium text-slate-300 hidden sm:inline">
+      <span className="font-bold text-black hidden sm:inline">
         {isLoading
           ? "Connecting..."
           : isHealthy

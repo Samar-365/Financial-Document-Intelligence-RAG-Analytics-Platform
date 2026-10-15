@@ -2,7 +2,7 @@
 
 import React from "react";
 import { DocumentItem } from "@/types/document";
-import { ArrowLeftRight, Check, ChevronDown, FileText } from "lucide-react";
+import { ArrowLeftRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ComparisonSelectorProps {
@@ -34,48 +34,48 @@ export function ComparisonSelector({
   };
 
   return (
-    <div className="rounded-2xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-5 shadow-xl backdrop-blur-md space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="border border-black bg-white p-6 shadow-[4px_4px_0px_#000000] space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black pb-3">
         <div>
-          <h3 className="text-sm font-bold text-white">Select Comparison Pair</h3>
-          <p className="text-xs text-slate-400">
-            Compare baseline entity against a target fiscal year or peer competitor
+          <h3 className="text-xs font-black uppercase tracking-widest text-black flex items-center gap-2">
+            <span className="text-[#FF0000]">[ 01 / SELECTION ]</span> COMPARATIVE PAIR CONFIGURATION
+          </h3>
+          <p className="text-[10px] font-mono text-zinc-600 uppercase mt-0.5">
+            BENCHMARK BASELINE ENTITY AGAINST PEER OR HISTORICAL FILING
           </p>
         </div>
         <Button
           onClick={onCompare}
           disabled={!docAId || !docBId || docAId === docBId || isComparing}
-          variant="gradient"
-          size="sm"
-          className="font-semibold"
+          className="rounded-none border border-black bg-black text-white hover:bg-black/90 font-black uppercase tracking-wider text-xs px-5 py-2.5 shadow-[3px_3px_0px_#FF0000]"
         >
-          {isComparing ? "Analyzing..." : "Run Comparative Delta"}
+          {isComparing ? "CALCULATING DELTAS..." : "EXECUTE VARIANCE ANALYSIS"}
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-11 gap-3 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-center">
         {/* Document A (Baseline) */}
         <div className="md:col-span-5 space-y-1.5">
-          <label className="text-[11px] uppercase tracking-wider font-bold text-[#E63946] flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#E63946] inline-block shadow-[0_0_8px_#E63946]" />
-            Document A (Baseline Reference)
+          <label className="text-[10px] uppercase font-mono font-black tracking-wider text-black flex items-center gap-1.5">
+            <span className="h-2 w-2 bg-black inline-block" />
+            DOCUMENT A (BASELINE REFERENCE)
           </label>
           <div className="relative">
             <select
               value={docAId || ""}
               onChange={(e) => onSelectDocA(e.target.value)}
-              className="w-full appearance-none rounded-xl border border-[rgba(184,29,36,0.35)] bg-[#14131D] px-3.5 py-2.5 text-xs font-medium text-white shadow-inner focus:border-[#E63946] focus:outline-none"
+              className="w-full appearance-none rounded-none border border-black bg-white px-3.5 py-2.5 text-xs font-mono font-bold text-black shadow-[2px_2px_0px_#000000] focus:outline-none cursor-pointer"
             >
-              <option value="" disabled className="bg-[#14131D]">
-                Select baseline filing...
+              <option value="" disabled className="bg-white">
+                SELECT BASELINE FILING...
               </option>
               {documents.map((doc) => (
-                <option key={doc.id} value={doc.id} className="bg-[#14131D]">
+                <option key={doc.id} value={doc.id} className="bg-white text-black font-mono">
                   {formatLabel(doc)} ({doc.filename})
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-3 h-4 w-4 text-slate-400" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-3 h-4 w-4 text-black" />
           </div>
         </div>
 
@@ -85,7 +85,7 @@ export function ComparisonSelector({
             type="button"
             onClick={onSwap}
             title="Swap Baseline and Target"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[rgba(196,30,58,0.3)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.2)] text-slate-300 hover:text-white hover:border-[#E63946] transition-all shadow-md hover:scale-105"
+            className="flex h-9 w-9 items-center justify-center border border-black bg-white hover:bg-black hover:text-white text-black transition-colors shadow-[2px_2px_0px_#000000]"
           >
             <ArrowLeftRight className="h-4 w-4" />
           </button>
@@ -93,35 +93,29 @@ export function ComparisonSelector({
 
         {/* Document B (Comparison) */}
         <div className="md:col-span-5 space-y-1.5">
-          <label className="text-[11px] uppercase tracking-wider font-bold text-[#FF4D6D] flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#FF4D6D] inline-block shadow-[0_0_8px_#FF4D6D]" />
-            Document B (Target / Comparison)
+          <label className="text-[10px] uppercase font-mono font-black tracking-wider text-black flex items-center gap-1.5">
+            <span className="h-2 w-2 bg-[#FF0000] inline-block" />
+            DOCUMENT B (TARGET / COMPARISON)
           </label>
           <div className="relative">
             <select
               value={docBId || ""}
               onChange={(e) => onSelectDocB(e.target.value)}
-              className="w-full appearance-none rounded-xl border border-[rgba(184,29,36,0.35)] bg-[#14131D] px-3.5 py-2.5 text-xs font-medium text-white shadow-inner focus:border-[#E63946] focus:outline-none"
+              className="w-full appearance-none rounded-none border border-black bg-white px-3.5 py-2.5 text-xs font-mono font-bold text-black shadow-[2px_2px_0px_#000000] focus:outline-none cursor-pointer"
             >
-              <option value="" disabled className="bg-[#14131D]">
-                Select target filing...
+              <option value="" disabled className="bg-white">
+                SELECT TARGET FILING...
               </option>
               {documents.map((doc) => (
-                <option key={doc.id} value={doc.id} className="bg-[#14131D]">
+                <option key={doc.id} value={doc.id} className="bg-white text-black font-mono">
                   {formatLabel(doc)} ({doc.filename})
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-3 h-4 w-4 text-slate-400" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-3 h-4 w-4 text-black" />
           </div>
         </div>
       </div>
-
-      {docAId && docBId && docAId === docBId && (
-        <p className="text-xs text-amber-400 font-medium">
-          ⚠️ Please select two different documents to perform comparative delta calculations.
-        </p>
-      )}
     </div>
   );
 }

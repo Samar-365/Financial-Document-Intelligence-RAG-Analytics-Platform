@@ -34,9 +34,21 @@ const CustomTooltip = ({
   if (active && payload && payload.length) {
     const d = payload[0].payload;
     return (
-      <div className="rounded-lg border border-slate-700/80 bg-slate-900/95 px-3 py-2 text-xs shadow-2xl">
-        <p className="font-semibold text-white mb-0.5">{d.subject}</p>
-        <p className="text-blue-400 font-bold">{d.value.toFixed(1)} / 100</p>
+      <div className="border-2 border-black bg-white p-3 text-xs font-mono shadow-[4px_4px_0px_#000000] rounded-none min-w-[160px]">
+        <div className="flex items-center justify-between border-b-2 border-black pb-1 mb-1.5">
+          <span className="font-black text-black uppercase tracking-wider text-xs">
+            [ {d.subject} ]
+          </span>
+          <span className="text-[10px] text-zinc-500 font-bold uppercase">
+            DIMENSION
+          </span>
+        </div>
+        <div className="flex items-baseline justify-between gap-3 pt-0.5">
+          <span className="text-[11px] text-zinc-700 font-bold uppercase">SCORE:</span>
+          <span className="font-black text-black text-sm">
+            {d.value.toFixed(1)} <span className="text-[10px] text-zinc-500 font-bold">/ 100</span>
+          </span>
+        </div>
       </div>
     );
   }
@@ -88,23 +100,23 @@ export function FinancialRadarChart({
       <RadarChart cx="50%" cy="50%" outerRadius="72%" data={data}>
         <defs>
           <radialGradient id="radarFill" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#E63946" stopOpacity={0.4} />
-            <stop offset="100%" stopColor="#800020" stopOpacity={0.1} />
+            <stop offset="0%" stopColor="#000000" stopOpacity={0.2} />
+            <stop offset="100%" stopColor="#000000" stopOpacity={0.05} />
           </radialGradient>
         </defs>
-        <PolarGrid stroke="rgba(196,30,58,0.25)" />
+        <PolarGrid stroke="#000000" strokeOpacity={0.2} />
         <PolarAngleAxis
           dataKey="subject"
-          tick={{ fill: "#CBD5E1", fontSize: 11, fontWeight: 700 }}
+          tick={{ fill: "#000000", fontSize: 11, fontWeight: 900 }}
         />
         <Tooltip content={<CustomTooltip />} />
         <Radar
           name="Score"
           dataKey="value"
-          stroke="#E63946"
-          strokeWidth={2.5}
+          stroke="#000000"
+          strokeWidth={2}
           fill="url(#radarFill)"
-          dot={{ r: 4, fill: "#E63946", strokeWidth: 2, stroke: "#FFFFFF" }}
+          dot={{ r: 4, fill: "#FF0000", strokeWidth: 1.5, stroke: "#000000" }}
         />
       </RadarChart>
     </ResponsiveContainer>

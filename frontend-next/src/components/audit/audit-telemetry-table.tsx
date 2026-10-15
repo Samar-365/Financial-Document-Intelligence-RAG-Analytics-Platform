@@ -3,20 +3,16 @@
 import React, { useState } from "react";
 import { DocumentItem } from "@/types/document";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Download,
   Search,
-  Filter,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
   ChevronRight,
   X,
   ShieldCheck,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface AuditLogEntry {
   id: string;
@@ -38,7 +34,6 @@ export function AuditTelemetryTable({ documents }: AuditTelemetryTableProps) {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
 
-  // Generate audit logs dynamically based on documents
   const auditLogs: AuditLogEntry[] = React.useMemo(() => {
     const logs: AuditLogEntry[] = [];
 
@@ -71,11 +66,11 @@ export function AuditTelemetryTable({ documents }: AuditTelemetryTableProps) {
         entity: company,
         status: isCompleted ? "SUCCESS" : "PROCESSING",
         latencyMs: 680 + (idx * 80) % 400,
-        tokensOrChunks: "384-dim Dense Chunks",
+        tokensOrChunks: "1536-dim Dense Chunks",
         timestamp: new Date(doc.created_at || Date.now() - idx * 3600000).toLocaleString(),
         details: {
           documentId: doc.id,
-          model: "all-MiniLM-L6-v2",
+          model: "all-MiniLM-L6-v2 / text-embedding",
           index: "document_chunks_embedding_idx (m=16, ef=64)",
           similarityMetric: "Cosine Distance (<=>)",
         },
@@ -99,7 +94,6 @@ export function AuditTelemetryTable({ documents }: AuditTelemetryTableProps) {
       });
     });
 
-    // Add sample RAG retrieval logs
     if (documents.length > 0) {
       const firstDoc = documents[0];
       logs.unshift({
@@ -150,15 +144,15 @@ export function AuditTelemetryTable({ documents }: AuditTelemetryTableProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-5 shadow-xl backdrop-blur-md space-y-4">
+    <div className="border border-black bg-white p-6 shadow-[4px_4px_0px_#000000] space-y-4">
       {/* Header and Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black pb-3">
         <div>
-          <h4 className="text-sm font-bold text-white">
-            Telemetry &amp; Execution Trace Log
+          <h4 className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-2">
+            <span className="text-[#FF0000]">[ 02 / TRACES ]</span> TELEMETRY &amp; EXECUTION TRACE LOG
           </h4>
-          <p className="text-xs text-slate-400">
-            Real-time pipeline lifecycle events, chunk indexation, and RAG retrieval latency
+          <p className="text-[10px] font-mono text-zinc-600 uppercase mt-0.5">
+            PIPELINE LIFECYCLE EVENTS, CHUNK VECTORIZATION, AND RAG LATENCIES
           </p>
         </div>
 
@@ -167,22 +161,22 @@ export function AuditTelemetryTable({ documents }: AuditTelemetryTableProps) {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-8 rounded-lg border border-[rgba(184,29,36,0.35)] bg-[#14131D] px-2.5 text-xs text-slate-300 focus:outline-none focus:border-[#E63946]"
+            className="h-8 rounded-none border border-black bg-white px-2.5 text-xs font-mono font-bold uppercase text-black focus:outline-none shadow-[1px_1px_0px_#000000] cursor-pointer"
           >
-            <option value="ALL" className="bg-[#14131D]">All Statuses</option>
-            <option value="SUCCESS" className="bg-[#14131D]">Success</option>
-            <option value="PROCESSING" className="bg-[#14131D]">Processing</option>
-            <option value="FAILED" className="bg-[#14131D]">Failed</option>
+            <option value="ALL">ALL STATUSES</option>
+            <option value="SUCCESS">SUCCESS</option>
+            <option value="PROCESSING">PROCESSING</option>
+            <option value="FAILED">FAILED</option>
           </select>
 
           {/* Search */}
           <div className="relative w-44 sm:w-56">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-500" />
             <Input
-              placeholder="Filter by event or entity..."
+              placeholder="FILTER BY EVENT OR ENTITY..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-8 pl-8 text-xs bg-[#14131D] border-[rgba(184,29,36,0.35)] focus:border-[#E63946]"
+              className="h-8 pl-8 text-xs font-mono uppercase rounded-none border border-black bg-white text-black placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:border-black shadow-[1px_1px_0px_#000000]"
             />
           </div>
 
@@ -191,45 +185,44 @@ export function AuditTelemetryTable({ documents }: AuditTelemetryTableProps) {
             onClick={handleExportCSV}
             variant="outline"
             size="sm"
-            className="h-8 gap-1.5 text-xs border-[rgba(196,30,58,0.3)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.2)] hover:border-[#E63946] text-slate-200"
+            className="h-8 gap-1.5 text-[10px] font-mono font-bold uppercase border border-black bg-white hover:bg-black hover:text-white rounded-none shadow-[2px_2px_0px_#000000]"
           >
-            <Download className="h-3.5 w-3.5 text-[#E63946]" />
-            <span>Export CSV</span>
+            <Download className="h-3.5 w-3.5" />
+            <span>EXPORT CSV</span>
           </Button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-[rgba(196,30,58,0.25)] bg-[#0D0C12]">
-        <Table>
-          <TableHeader className="bg-[#0D0C12] text-slate-300">
-            <TableRow className="border-b border-[rgba(196,30,58,0.25)] hover:bg-transparent">
-              <TableHead className="font-semibold text-slate-300 text-xs">
-                Pipeline Lifecycle Event
+      <Table>
+        <TableHeader className="bg-black text-white border-b-2 border-black">
+          <TableRow className="bg-black text-white hover:bg-black border-b-2 border-black">
+            <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider">
+                PIPELINE EVENT
               </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs">
-                Target Entity
+              <TableHead className="font-mono font-black text-white text-[10px] uppercase">
+                TARGET ENTITY
               </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs text-center">
-                Status
+              <TableHead className="font-mono font-black text-white text-[10px] uppercase text-center">
+                STATUS
               </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs text-right">
-                Execution Latency
+              <TableHead className="font-mono font-black text-white text-[10px] uppercase text-right">
+                LATENCY
               </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs">
-                Payload / Units
+              <TableHead className="font-mono font-black text-white text-[10px] uppercase">
+                PAYLOAD / UNITS
               </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs text-right">
-                Timestamp
+              <TableHead className="font-mono font-black text-white text-[10px] uppercase text-right">
+                TIMESTAMP
               </TableHead>
               <TableHead className="w-10"></TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="divide-y divide-[rgba(196,30,58,0.15)] text-xs">
+          <TableBody className="divide-y divide-zinc-200 font-mono text-xs">
             {filteredLogs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-slate-500">
-                  No telemetry traces matching criteria.
+                <TableCell colSpan={7} className="text-center py-8 text-zinc-500 uppercase">
+                  NO TELEMETRY TRACES MATCHING CRITERIA.
                 </TableCell>
               </TableRow>
             ) : (
@@ -239,39 +232,39 @@ export function AuditTelemetryTable({ documents }: AuditTelemetryTableProps) {
                   <TableRow
                     key={log.id}
                     onClick={() => setSelectedLog(log)}
-                    className="hover:bg-[rgba(184,29,36,0.12)] cursor-pointer transition-colors"
+                    className="hover:bg-zinc-100 cursor-pointer transition-colors"
                   >
-                    <TableCell className="font-medium text-slate-200">
+                    <TableCell className="font-mono font-bold text-black uppercase">
                       {log.eventType}
                     </TableCell>
-                    <TableCell className="text-slate-300 font-medium">
+                    <TableCell className="font-mono text-zinc-800 uppercase">
                       {log.entity}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge
-                        variant={
+                      <span
+                        className={cn(
+                          "inline-flex items-center px-1.5 py-0.5 text-[9px] font-mono font-black uppercase border border-black",
                           isSuccess
-                            ? "success"
+                            ? "bg-black text-white"
                             : log.status === "FAILED"
-                            ? "destructive"
-                            : "secondary"
-                        }
-                        className="text-[10px]"
+                            ? "bg-[#FF0000] text-white"
+                            : "bg-zinc-200 text-black"
+                        )}
                       >
                         {log.status}
-                      </Badge>
+                      </span>
                     </TableCell>
-                    <TableCell className="text-right font-mono text-slate-300">
-                      {log.latencyMs}ms
+                    <TableCell className="text-right font-mono font-bold text-black">
+                      {log.latencyMs}MS
                     </TableCell>
-                    <TableCell className="font-mono text-[11px] text-slate-400">
+                    <TableCell className="font-mono text-[11px] text-zinc-600 uppercase">
                       {log.tokensOrChunks}
                     </TableCell>
-                    <TableCell className="text-right text-slate-400 font-mono text-[11px]">
+                    <TableCell className="text-right text-zinc-600 font-mono text-[11px]">
                       {log.timestamp}
                     </TableCell>
                     <TableCell>
-                      <ChevronRight className="h-4 w-4 text-slate-500 hover:text-white" />
+                      <ChevronRight className="h-4 w-4 text-black hover:text-[#FF0000]" />
                     </TableCell>
                   </TableRow>
                 );
@@ -279,78 +272,77 @@ export function AuditTelemetryTable({ documents }: AuditTelemetryTableProps) {
             )}
           </TableBody>
         </Table>
-      </div>
 
-      {/* Slide-over Detail Modal / Sheet */}
+      {/* Slide-over Detail Modal */}
       {selectedLog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
-          <div className="relative w-full max-w-lg rounded-2xl border border-[rgba(196,30,58,0.35)] bg-[#0D0C12] p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[rgba(196,30,58,0.25)] pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+          <div className="relative w-full max-w-lg border-2 border-black bg-white p-6 shadow-[8px_8px_0px_#000000] space-y-4">
+            <div className="flex items-center justify-between border-b border-black pb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-[#E63946]" />
-                <h3 className="text-sm font-bold text-white">Execution Trace Inspector</h3>
+                <ShieldCheck className="h-5 w-5 text-black" />
+                <h3 className="text-sm font-black uppercase text-black">EXECUTION TRACE INSPECTOR</h3>
               </div>
               <button
                 onClick={() => setSelectedLog(null)}
-                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-[rgba(184,29,36,0.2)]"
+                className="border border-black bg-black text-white px-2 py-0.5 text-xs font-mono font-bold"
               >
-                <X className="h-4 w-4" />
+                ✕
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-3 text-xs font-mono">
               <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-3">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                    Event Type
+                <div className="border border-black bg-zinc-50 p-3">
+                  <span className="text-[10px] uppercase font-bold text-zinc-600 block">
+                    EVENT TYPE
                   </span>
-                  <p className="font-semibold text-white mt-0.5">{selectedLog.eventType}</p>
+                  <p className="font-bold text-black mt-0.5">{selectedLog.eventType}</p>
                 </div>
-                <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-3">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                    Target Entity
+                <div className="border border-black bg-zinc-50 p-3">
+                  <span className="text-[10px] uppercase font-bold text-zinc-600 block">
+                    TARGET ENTITY
                   </span>
-                  <p className="font-semibold text-white mt-0.5">{selectedLog.entity}</p>
+                  <p className="font-bold text-black mt-0.5">{selectedLog.entity}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-3">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                    Latency &amp; Runtime
+                <div className="border border-black bg-zinc-50 p-3">
+                  <span className="text-[10px] uppercase font-bold text-zinc-600 block">
+                    LATENCY &amp; RUNTIME
                   </span>
-                  <p className="font-mono text-emerald-400 font-bold mt-0.5">
-                    {selectedLog.latencyMs}ms
+                  <p className="font-black text-black mt-0.5">
+                    {selectedLog.latencyMs}MS
                   </p>
                 </div>
-                <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-3">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                    Status
+                <div className="border border-black bg-zinc-50 p-3">
+                  <span className="text-[10px] uppercase font-bold text-zinc-600 block">
+                    STATUS
                   </span>
-                  <p className="font-bold text-white mt-0.5">{selectedLog.status}</p>
+                  <p className="font-black text-black mt-0.5">{selectedLog.status}</p>
                 </div>
               </div>
 
               {selectedLog.details && (
-                <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-3 space-y-1">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
-                    Telemetry Parameters
+                <div className="border border-black bg-zinc-50 p-3 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-zinc-600 block mb-1">
+                    TELEMETRY PARAMETERS
                   </span>
-                  <pre className="p-2.5 rounded-lg bg-[#08080A] font-mono text-[11px] text-slate-300 overflow-x-auto border border-[rgba(196,30,58,0.18)]">
+                  <pre className="p-2.5 bg-white font-mono text-[10px] text-black overflow-x-auto border border-black">
                     {JSON.stringify(selectedLog.details, null, 2)}
                   </pre>
                 </div>
               )}
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-[rgba(196,30,58,0.25)]">
+            <div className="flex justify-end pt-2 border-t border-black">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setSelectedLog(null)}
-                className="text-xs border-[rgba(196,30,58,0.3)] bg-[#14131D] hover:bg-[rgba(184,29,36,0.18)] hover:border-[#E63946] text-slate-200"
+                className="text-xs font-black uppercase rounded-none border border-black bg-white hover:bg-black hover:text-white"
               >
-                Close Trace
+                CLOSE TRACE
               </Button>
             </div>
           </div>

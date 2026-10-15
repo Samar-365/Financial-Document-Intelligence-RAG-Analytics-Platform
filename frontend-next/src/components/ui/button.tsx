@@ -3,28 +3,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E63946] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] cursor-pointer",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-none text-xs font-black uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF0000] disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
         default:
-          "btn-primary-wine",
+          "btn-statement-black",
         primary:
-          "btn-primary-wine",
+          "btn-statement-black",
         destructive:
-          "bg-red-700 text-white hover:bg-red-800 shadow-md shadow-red-500/20",
+          "bg-[#FF0000] text-white hover:bg-black border border-[#FF0000]",
         outline:
-          "btn-secondary-wine",
+          "btn-statement-outline",
         secondary:
-          "btn-secondary-wine",
+          "btn-statement-outline",
         ghost:
-          "hover:bg-[rgba(184,29,36,0.15)] text-slate-300 hover:text-white",
+          "hover:bg-black hover:text-white text-black",
         link:
-          "text-[#E63946] underline-offset-4 hover:underline",
+          "text-black underline-offset-4 hover:underline hover:text-[#FF0000]",
         gradient:
-          "btn-primary-wine",
+          "btn-statement-black",
         emerald:
-          "bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-500/20",
+          "bg-black text-white hover:bg-[#FF0000] border border-black",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -10,9 +10,8 @@ import {
   AlertCircle,
   Loader2,
   Sparkles,
+  X,
 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { documentService } from "@/lib/services/document-service";
@@ -26,11 +25,11 @@ interface IngestionStepperProps {
 }
 
 const PIPELINE_STEPS = [
-  { id: "upload", label: "File Validation", icon: FileCheck, desc: "SHA-256 integrity & format check" },
-  { id: "ocr", label: "Text Extraction & OCR", icon: Search, desc: "PyPDF & OCR text parsing" },
-  { id: "chunk", label: "Semantic Chunking", icon: Scissors, desc: "Table-aware hierarchical split" },
-  { id: "embed", label: "Vector Embeddings", icon: Cpu, desc: "1536-dim pgvector indexing" },
-  { id: "metrics", label: "LLM Metric Extraction", icon: Sparkles, desc: "Ind AS ratios & KPI extraction" },
+  { id: "upload", label: "01. VALIDATION", desc: "SHA-256 integrity" },
+  { id: "ocr", label: "02. PARSING & OCR", desc: "Text & table extract" },
+  { id: "chunk", label: "03. CHUNKING", desc: "Hierarchical split" },
+  { id: "embed", label: "04. VECTORIZING", desc: "pgvector embeddings" },
+  { id: "metrics", label: "05. LLM RATIOS", desc: "Ind AS metric extraction" },
 ];
 
 export function IngestionStepper({
@@ -42,7 +41,7 @@ export function IngestionStepper({
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   // Poll the single document status every 2.5s
-  const { data: document, isError } = useQuery({
+  const { data: document } = useQuery({
     queryKey: ["document-status", documentId],
     queryFn: () => documentService.getDocument(documentId),
     refetchInterval: (query) => {
@@ -70,7 +69,6 @@ export function IngestionStepper({
     }
   }, [isCompleted, onComplete]);
 
-  // Calculate current active step index
   let activeStepIndex = 1;
   let progressPercent = 25;
 
@@ -89,112 +87,81 @@ export function IngestionStepper({
   }
 
   return (
-    <div className="rounded-xl border border-[rgba(196,30,58,0.35)] bg-[#111017] p-6 backdrop-blur-xl shadow-2xl space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="border-2 border-black bg-white p-6 shadow-[6px_6px_0px_#000000] space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black pb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#E63946]">
-              Live Ingestion Pipeline
+            <span className="inline-block w-2.5 h-2.5 bg-[#FF0000]" />
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-black">
+              [ PIPELINE: INGESTION IN PROGRESS ]
             </span>
-            <Badge
-              variant={
-                isCompleted
-                  ? "success"
-                  : isFailed
-                  ? "destructive"
-                  : "default"
-              }
-            >
-              {isCompleted ? "Ingestion Completed" : isFailed ? "Failed" : "Processing"}
-            </Badge>
           </div>
-          <h3 className="text-base font-bold text-white truncate max-w-lg">
-            {filename}
+          <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-black">
+            PROCESSING: <span className="stroke-text-thick">{filename}</span>
           </h3>
+          <p className="text-xs font-mono text-zinc-600 mt-1">
+            ELAPSED TIME: {elapsedSeconds}s • TARGET: POSTGRESQL PGVECTOR
+          </p>
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-slate-400">
-          <span>Elapsed: {elapsedSeconds}s</span>
+        <div className="flex items-center gap-3">
+          <span className="border border-black bg-black text-white px-3 py-1 text-xs font-mono font-bold uppercase shadow-[2px_2px_0px_#000000]">
+            {status} ({progressPercent}%)
+          </span>
           {onDismiss && (
             <Button
               variant="outline"
               size="sm"
               onClick={onDismiss}
-              className="text-xs h-7 border-[rgba(196,30,58,0.35)] hover:border-[#E63946]"
+              className="border border-black bg-white hover:bg-black hover:text-white rounded-none p-0 h-8 w-8 inline-flex items-center justify-center cursor-pointer"
             >
-              Close
+              <X size={14} strokeWidth={2} className="shrink-0" />
             </Button>
           )}
         </div>
       </div>
 
-      {/* Main Progress Bar */}
-      <div className="space-y-1.5">
-        <div className="flex justify-between text-xs text-slate-400 font-medium">
-          <span>Pipeline Progress</span>
-          <span className="text-[#E63946] font-bold">{progressPercent}%</span>
-        </div>
-        <Progress value={progressPercent} className="h-2 bg-[#1C1A27]" />
+      {/* Minimal Progress Bar */}
+      <div className="w-full h-3 border border-black bg-zinc-100 p-0.5">
+        <div
+          className="h-full bg-black transition-all duration-300"
+          style={{ width: `${progressPercent}%` }}
+        />
       </div>
 
-      {/* Stepper Cards */}
+      {/* Step Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
         {PIPELINE_STEPS.map((step, idx) => {
           const stepNum = idx + 1;
-          const isDone = isCompleted || activeStepIndex > stepNum;
-          const isCurrent = !isCompleted && !isFailed && activeStepIndex === stepNum;
-          const StepIcon = step.icon;
+          const isDone = stepNum < activeStepIndex || isCompleted;
+          const isCurrent = stepNum === activeStepIndex && !isCompleted && !isFailed;
 
           return (
             <div
               key={step.id}
               className={cn(
-                "flex flex-col p-3 rounded-lg border text-xs transition-all",
-                isDone
-                  ? "border-emerald-500/30 bg-emerald-950/20 text-emerald-300"
-                  : isCurrent
-                  ? "border-[rgba(230,57,70,0.6)] bg-[rgba(184,29,36,0.18)] text-white shadow-md shadow-[rgba(230,57,70,0.2)] scale-[1.02]"
-                  : "border-slate-800 bg-[#14131D] text-slate-500"
+                "p-3 border transition-all",
+                isCurrent
+                  ? "border-2 border-black bg-zinc-100 shadow-[3px_3px_0px_#FF0000]"
+                  : isDone
+                  ? "border-black bg-white text-black"
+                  : "border-zinc-300 bg-white opacity-40 text-zinc-400"
               )}
             >
-              <div className="flex items-center justify-between mb-2">
-                <StepIcon
-                  className={cn(
-                    "h-4 w-4",
-                    isDone
-                      ? "text-emerald-400"
-                      : isCurrent
-                      ? "text-[#E63946]"
-                      : "text-slate-500"
-                  )}
-                />
-                {isDone ? (
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                ) : isCurrent ? (
-                  <Loader2 className="h-4 w-4 text-[#E63946] animate-spin" />
-                ) : (
-                  <span className="text-[10px] text-slate-600 font-mono">
-                    #{stepNum}
-                  </span>
-                )}
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-mono font-black uppercase text-black">
+                  {step.label}
+                </span>
+                {isCurrent && <Loader2 className="h-3 w-3 animate-spin text-[#FF0000]" />}
+                {isDone && <span className="text-[10px] font-black text-black">✓</span>}
               </div>
-              <p className="font-semibold text-white">{step.label}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5 leading-tight">
+              <p className="text-[10px] font-mono text-zinc-600 uppercase">
                 {step.desc}
               </p>
             </div>
           );
         })}
       </div>
-
-      {isFailed && (
-        <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          <span>
-            {document?.error_message || "Document processing failed. Please check file format and retry."}
-          </span>
-        </div>
-      )}
     </div>
   );
 }

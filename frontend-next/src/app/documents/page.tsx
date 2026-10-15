@@ -2,15 +2,13 @@
 
 import React, { useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { UploadDropzone } from "@/components/documents/upload-dropzone";
 import { MetadataForm } from "@/components/documents/metadata-form";
 import { IngestionStepper } from "@/components/documents/ingestion-stepper";
 import { DocumentTable } from "@/components/documents/document-table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { documentService } from "@/lib/services/document-service";
-import { useWorkspaceStore } from "@/stores/workspace-store";
-import { FolderUp, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
+import { FolderUp, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function DocumentsPage() {
@@ -20,7 +18,6 @@ export default function DocumentsPage() {
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
-  const { setActiveDocument } = useWorkspaceStore();
 
   // Query all documents
   const {
@@ -87,58 +84,61 @@ export default function DocumentsPage() {
 
   return (
     <AppLayout>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(184,29,36,0.18)] text-[#E63946] border border-[rgba(196,30,58,0.4)] shadow-[0_0_15px_rgba(184,29,36,0.25)] shrink-0">
-            <FolderUp className="h-6 w-6" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-white">
-              Document &amp; Dataset Ingestion
-            </h2>
-            <p className="text-sm text-slate-400">
-              Upload corporate filings and spreadsheet datasets across PDF, CSV, and Excel (.xlsx) formats for vector indexing and financial intelligence.
-            </p>
+      <div className="space-y-8">
+        {/* Header Banner */}
+        <div className="border border-black bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#000000]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-block w-2.5 h-2.5 bg-[#FF0000]" />
+                <span className="text-xs font-mono font-bold tracking-widest text-black uppercase">
+                  [ 01 / REPOSITORY ] INGESTION MODULE
+                </span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-black leading-none mb-2">
+                DOCUMENT <span className="stroke-text-thick">INGESTION</span>
+              </h1>
+              <p className="text-xs font-mono text-zinc-600 uppercase">
+                VECTOR EXTRACTION &amp; CORPUS NORMALIZATION ACROSS PDF, CSV, AND SPREADSHEETS
+              </p>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              className="border border-black bg-white hover:bg-black hover:text-white rounded-none font-black uppercase tracking-wider text-xs shadow-[3px_3px_0px_#000000] gap-2 px-4 self-start sm:self-auto"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>REFRESH</span>
+            </Button>
           </div>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => refetch()}
-          className="gap-1.5 self-start sm:self-auto border-[rgba(196,30,58,0.3)] bg-[#111017] hover:border-[#E63946] hover:bg-[rgba(184,29,36,0.15)] text-slate-200"
-        >
-          <RefreshCw className="h-3.5 w-3.5 text-[#E63946]" />
-          <span>Refresh</span>
-        </Button>
-      </div>
+        {/* Live Ingestion Stepper Banner */}
+        {activeUploadId && (
+          <IngestionStepper
+            documentId={activeUploadId}
+            filename={activeUploadFilename}
+            onComplete={() => {
+              queryClient.invalidateQueries({ queryKey: ["documents-list"] });
+            }}
+            onDismiss={() => setActiveUploadId(null)}
+          />
+        )}
 
-      {/* Live Ingestion Stepper Banner (shown during or right after upload) */}
-      {activeUploadId && (
-        <IngestionStepper
-          documentId={activeUploadId}
-          filename={activeUploadFilename}
-          onComplete={() => {
-            queryClient.invalidateQueries({ queryKey: ["documents-list"] });
-          }}
-          onDismiss={() => setActiveUploadId(null)}
-        />
-      )}
+        {/* Upload Section */}
+        <div className="border border-black bg-white p-6 shadow-[4px_4px_0px_#000000] space-y-6">
+          <div className="flex items-center justify-between border-b border-black pb-3">
+            <h2 className="text-sm font-black uppercase tracking-wider text-black flex items-center gap-2">
+              <FolderUp className="h-4 w-4 text-[#FF0000]" />
+              UPLOAD NEW CORPORATE FILING OR SPREADSHEET
+            </h2>
+            <span className="text-[10px] font-mono text-zinc-600 uppercase">
+              LOCAL FILE INGESTION
+            </span>
+          </div>
 
-      {/* Upload Section */}
-      <Card className="pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-[#E63946]" />
-            Upload New Filing or Spreadsheet
-          </CardTitle>
-          <CardDescription>
-            Select an Annual Report, 10-K, CSV balance sheet, or Excel workbook (.xlsx) up to 50MB.
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="space-y-6">
           <UploadDropzone
             selectedFile={selectedFile}
             onFileSelect={setSelectedFile}
@@ -146,7 +146,7 @@ export default function DocumentsPage() {
           />
 
           {selectedFile && (
-            <div className="pt-2 border-t border-[rgba(196,30,58,0.2)]">
+            <div className="pt-4 border-t border-black">
               <MetadataForm
                 selectedFile={selectedFile}
                 onSubmit={handleMetadataSubmit}
@@ -156,33 +156,37 @@ export default function DocumentsPage() {
           )}
 
           {uploadError && (
-            <div className="flex items-center gap-2 rounded-lg border border-[rgba(230,57,70,0.4)] bg-[rgba(184,29,36,0.15)] p-3 text-xs text-[#FF6B6B]">
-              <AlertCircle className="h-4 w-4 shrink-0 text-[#E63946]" />
+            <div className="flex items-center gap-2 border border-black bg-[#FF0000] text-white p-3 text-xs font-mono uppercase tracking-wider shadow-[3px_3px_0px_#000000]">
+              <AlertCircle className="h-4 w-4 shrink-0 text-white" />
               <span>{uploadError}</span>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Document Catalog */}
-      <Card className="pitch-card border-[rgba(196,30,58,0.24)] bg-[#111017] shadow-xl">
-        <CardHeader>
-          <CardTitle className="text-base">
-            Indexed Filings ({documents.length})
-          </CardTitle>
-          <CardDescription>
-            Manage ingested documents, set active analytics workspace, or inspect extraction status.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        {/* Document Catalog */}
+        <div className="border border-black bg-white p-6 shadow-[4px_4px_0px_#000000] space-y-4">
+          <div className="flex items-center justify-between border-b border-black pb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-widest text-[#FF0000]">
+                [ 02 / CATALOG ]
+              </span>
+              <h2 className="text-sm font-black uppercase tracking-wider text-black">
+                INDEXED FILINGS ({documents.length})
+              </h2>
+            </div>
+            <span className="text-[10px] font-mono text-zinc-600 uppercase">
+              MANAGEMENT &amp; PROVENANCE
+            </span>
+          </div>
+
           <DocumentTable
             documents={documents}
             isLoading={isLoading}
             onDelete={handleDeleteDocument}
             onRefresh={() => refetch()}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </AppLayout>
   );
 }

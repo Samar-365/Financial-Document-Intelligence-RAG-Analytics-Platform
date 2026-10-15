@@ -54,14 +54,14 @@ export function WorkspaceSelector() {
     <div className="flex items-center gap-2">
       {/* Active Document Selector */}
       <div className="relative flex items-center">
-        <div className="absolute left-3 pointer-events-none text-[#E63946]">
-          <Building2 className="h-4 w-4" />
+        <div className="absolute left-2.5 pointer-events-none text-black">
+          <Building2 className="h-3.5 w-3.5" />
         </div>
         <select
           value={activeDocumentId || ""}
           onChange={handleDocumentChange}
           disabled={isLoading || documents.length === 0}
-          className="h-9 pl-9 pr-8 bg-[#111017] hover:bg-[#161522] border border-[rgba(196,30,58,0.3)] rounded-lg text-xs font-semibold text-white appearance-none focus:outline-none focus:border-[#E63946] focus:ring-1 focus:ring-[#E63946] cursor-pointer min-w-[200px] max-w-[280px] truncate shadow-sm transition-all"
+          className="h-8 pl-8 pr-7 bg-white hover:bg-neutral-50 border border-black rounded-none text-xs font-mono font-bold text-black appearance-none focus:outline-none focus:ring-1 focus:ring-black cursor-pointer min-w-[190px] max-w-[270px] truncate transition-all"
         >
           {isLoading ? (
             <option value="">Loading filings...</option>
@@ -76,27 +76,27 @@ export function WorkspaceSelector() {
             ))
           )}
         </select>
-        <ChevronDown className="absolute right-2.5 h-3.5 w-3.5 pointer-events-none text-[#E63946]" />
+        <ChevronDown className="absolute right-2 h-3.5 w-3.5 pointer-events-none text-black" />
       </div>
 
       {/* Currency Toggle */}
-      <div className="hidden md:flex items-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] p-0.5 text-xs">
+      <div className="hidden md:flex items-center rounded-none border border-black bg-white p-0.5 text-xs">
         <button
           onClick={() => setCurrency("INR")}
-          className={`px-2.5 py-1 rounded-md transition-all font-bold text-[11px] ${
+          className={`px-2 py-0.5 rounded-none transition-all font-mono font-bold text-[10px] ${
             currency === "INR"
-              ? "bg-[#E63946] text-white shadow-sm shadow-[rgba(230,57,70,0.3)]"
-              : "text-slate-400 hover:text-slate-200"
+              ? "bg-black text-white"
+              : "text-black hover:bg-neutral-100"
           }`}
         >
           ₹ INR
         </button>
         <button
           onClick={() => setCurrency("USD")}
-          className={`px-2.5 py-1 rounded-md transition-all font-bold text-[11px] ${
+          className={`px-2 py-0.5 rounded-none transition-all font-mono font-bold text-[10px] ${
             currency === "USD"
-              ? "bg-[#E63946] text-white shadow-sm shadow-[rgba(230,57,70,0.3)]"
-              : "text-slate-400 hover:text-slate-200"
+              ? "bg-black text-white"
+              : "text-black hover:bg-neutral-100"
           }`}
         >
           $ USD
@@ -104,15 +104,15 @@ export function WorkspaceSelector() {
       </div>
 
       {/* Unit Scale Selector */}
-      <div className="hidden lg:flex items-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] p-0.5 text-xs">
+      <div className="hidden lg:flex items-center rounded-none border border-black bg-white p-0.5 text-xs">
         {(["Cr", "Mn", "Bn", "K"] as const).map((scale) => (
           <button
             key={scale}
             onClick={() => setUnit(scale)}
-            className={`px-2 py-1 rounded-md transition-all font-semibold text-[11px] ${
+            className={`px-1.5 py-0.5 rounded-none transition-all font-mono font-bold text-[10px] ${
               unit === scale
-                ? "bg-[rgba(184,29,36,0.35)] border border-[rgba(230,57,70,0.5)] text-white shadow-sm"
-                : "text-slate-400 hover:text-slate-200"
+                ? "bg-black text-white"
+                : "text-black hover:bg-neutral-100"
             }`}
           >
             {scale}

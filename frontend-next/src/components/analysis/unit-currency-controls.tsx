@@ -19,17 +19,17 @@ export function UnitCurrencyControls() {
   const { currency, unit, setCurrency, setUnit } = useWorkspaceStore();
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-2">
       {/* Currency Toggle */}
-      <div className="flex items-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] p-0.5">
+      <div className="flex items-center border border-black bg-white p-0.5 shadow-[2px_2px_0px_#000000]">
         <button
           id="currency-inr"
           onClick={() => setCurrency("INR")}
           className={cn(
-            "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
+            "flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono font-black uppercase transition-all",
             currency === "INR"
-              ? "bg-[#E63946] text-white shadow-md shadow-[rgba(230,57,70,0.35)]"
-              : "text-slate-400 hover:text-white hover:bg-[rgba(184,29,36,0.12)]"
+              ? "bg-black text-white"
+              : "text-black hover:bg-zinc-100"
           )}
         >
           <IndianRupee className="h-3 w-3" />
@@ -39,10 +39,10 @@ export function UnitCurrencyControls() {
           id="currency-usd"
           onClick={() => setCurrency("USD")}
           className={cn(
-            "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
+            "flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono font-black uppercase transition-all",
             currency === "USD"
-              ? "bg-[#E63946] text-white shadow-md shadow-[rgba(230,57,70,0.35)]"
-              : "text-slate-400 hover:text-white hover:bg-[rgba(184,29,36,0.12)]"
+              ? "bg-black text-white"
+              : "text-black hover:bg-zinc-100"
           )}
         >
           <DollarSign className="h-3 w-3" />
@@ -51,7 +51,7 @@ export function UnitCurrencyControls() {
       </div>
 
       {/* Unit Toggle */}
-      <div className="flex items-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] p-0.5">
+      <div className="flex items-center border border-black bg-white p-0.5 shadow-[2px_2px_0px_#000000]">
         {UNITS.map((u) => (
           <button
             key={u}
@@ -59,24 +59,16 @@ export function UnitCurrencyControls() {
             onClick={() => setUnit(u)}
             title={UNIT_LABELS[u]}
             className={cn(
-              "rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
+              "px-2.5 py-1 text-[11px] font-mono font-black uppercase transition-all",
               unit === u
-                ? "bg-[#E63946] text-white shadow-md shadow-[rgba(230,57,70,0.35)]"
-                : "text-slate-400 hover:text-white hover:bg-[rgba(184,29,36,0.12)]"
+                ? "bg-black text-white"
+                : "text-black hover:bg-zinc-100"
             )}
           >
             {u}
           </button>
         ))}
       </div>
-
-      {/* Current label */}
-      <span className="text-xs text-slate-500 hidden sm:block">
-        Displaying in{" "}
-        <span className="text-slate-300 font-medium">
-          {currency === "INR" ? "₹" : "$"} {UNIT_LABELS[unit as Unit] ?? unit}
-        </span>
-      </span>
     </div>
   );
 }

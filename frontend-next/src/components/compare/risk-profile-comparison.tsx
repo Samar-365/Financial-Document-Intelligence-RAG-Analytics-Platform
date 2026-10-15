@@ -2,7 +2,7 @@
 
 import React from "react";
 import { HealthScoreResponse } from "@/types/financial";
-import { AlertTriangle, ShieldCheck, CheckCircle2, TrendingUp, AlertCircle } from "lucide-react";
+import { AlertTriangle, ShieldCheck, CheckCircle2, AlertCircle } from "lucide-react";
 
 interface RiskProfileComparisonProps {
   healthA: HealthScoreResponse | null;
@@ -14,11 +14,11 @@ interface RiskProfileComparisonProps {
 function getScoreRating(score: number | null, rating?: string): string {
   if (rating) return rating;
   if (score === null) return "—";
-  if (score >= 80) return "Strong";
-  if (score >= 65) return "Stable";
-  if (score >= 50) return "Moderate";
-  if (score >= 35) return "Fragile";
-  return "Distressed";
+  if (score >= 80) return "STRONG";
+  if (score >= 65) return "STABLE";
+  if (score >= 50) return "MODERATE";
+  if (score >= 35) return "FRAGILE";
+  return "DISTRESSED";
 }
 
 export function RiskProfileComparison({
@@ -53,87 +53,87 @@ export function RiskProfileComparison({
   const ratingB = getScoreRating(scoreB, healthB?.rating);
 
   return (
-    <div className="rounded-2xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-5 shadow-xl backdrop-blur-md space-y-5">
-      <div className="flex items-center justify-between">
+    <div className="border border-black bg-white p-6 shadow-[4px_4px_0px_#000000] space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-black pb-3">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-[#E63946]" />
-          <h4 className="text-sm font-bold text-white">
-            Health Trajectory &amp; Risk Factor Comparison
+          <ShieldCheck className="h-4 w-4 text-[#FF0000]" />
+          <h4 className="text-xs font-black uppercase tracking-wider text-black">
+            <span className="text-[#FF0000]">[ 03 / RISK ]</span> HEALTH TRAJECTORY &amp; RISK DRIFT
           </h4>
         </div>
-        <span className="text-xs text-slate-400">
-          Composite 5D Health Scoring &amp; Risk Flag Drift
+        <span className="text-[10px] font-mono text-zinc-500 uppercase">
+          COMPOSITE 5D HEALTH SCORING &amp; DISCLOSURE DRIFT
         </span>
       </div>
 
       {/* Health Score Comparison Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Baseline Card */}
-        <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#14131D] p-4 space-y-1">
-          <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
-            Baseline Health ({docAName})
+        <div className="border border-black bg-white p-4 space-y-1 shadow-[2px_2px_0px_#000000]">
+          <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-zinc-600">
+            BASELINE ({docAName})
           </span>
-          <div className="text-2xl font-bold text-white">
+          <div className="text-3xl font-black text-black">
             {scoreA !== null ? `${scoreA.toFixed(1)}/100` : "N/A"}
           </div>
-          <p className="text-xs text-slate-400 font-medium">
-            Rating: <span className="text-[#E63946] font-semibold">{ratingA}</span>
+          <p className="text-xs font-mono text-zinc-600 uppercase">
+            RATING: <span className="text-black font-bold">{ratingA}</span>
           </p>
         </div>
 
         {/* Target Card */}
-        <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#14131D] p-4 space-y-1">
-          <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
-            Target Health ({docBName})
+        <div className="border border-black bg-white p-4 space-y-1 shadow-[2px_2px_0px_#000000]">
+          <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-zinc-600">
+            TARGET ({docBName})
           </span>
-          <div className="text-2xl font-bold text-white flex items-center justify-between">
+          <div className="text-3xl font-black text-black flex items-center justify-between">
             <span>{scoreB !== null ? `${scoreB.toFixed(1)}/100` : "N/A"}</span>
             {deltaScore !== null && (
               <span
-                className={`text-xs font-mono font-bold px-2 py-0.5 rounded-full ${
+                className={`text-xs font-mono font-bold px-2 py-0.5 border border-black ${
                   deltaScore >= 0
-                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                    : "bg-[rgba(184,29,36,0.2)] text-[#FF6B6B] border border-[rgba(230,57,70,0.4)]"
+                    ? "bg-black text-white"
+                    : "bg-[#FF0000] text-white"
                 }`}
               >
                 {deltaScore >= 0 ? "+" : ""}
-                {deltaScore.toFixed(1)} pts
+                {deltaScore.toFixed(1)} PTS
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-400 font-medium">
-            Rating: <span className="text-[#FF4D6D] font-semibold">{ratingB}</span>
+          <p className="text-xs font-mono text-zinc-600 uppercase">
+            RATING: <span className="text-[#FF0000] font-bold">{ratingB}</span>
           </p>
         </div>
 
         {/* Risk Drift Summary Card */}
-        <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#14131D] p-4 space-y-1">
-          <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
-            Risk Factor Drift
+        <div className="border border-black bg-white p-4 space-y-1 shadow-[2px_2px_0px_#000000]">
+          <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-zinc-600">
+            DISCLOSURE DRIFT DELTA
           </span>
-          <div className="text-2xl font-bold text-amber-400">
-            {newlyEmergedRisks.length} New
+          <div className="text-3xl font-black text-black">
+            {newlyEmergedRisks.length} NEW
           </div>
-          <p className="text-xs text-slate-400">
-            {resolvedRisks.length} mitigated • {persistentRisks.length} recurring
+          <p className="text-xs font-mono text-zinc-600 uppercase">
+            {resolvedRisks.length} RESOLVED • {persistentRisks.length} RECURRING
           </p>
         </div>
       </div>
 
       {/* Risk Items Breakdown */}
-      <div className="space-y-3 pt-2">
+      <div className="space-y-4 pt-2">
         {/* Newly Emerged Risks */}
         {newlyEmergedRisks.length > 0 && (
-          <div className="space-y-1.5">
-            <span className="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+          <div className="space-y-2">
+            <span className="text-xs font-black uppercase text-[#FF0000] flex items-center gap-1.5">
               <AlertTriangle className="h-3.5 w-3.5" />
-              Newly Emerged Risk Disclosures ({newlyEmergedRisks.length})
+              NEWLY EMERGED RISK DISCLOSURES ({newlyEmergedRisks.length})
             </span>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {newlyEmergedRisks.map((risk, idx) => (
                 <div
                   key={`new-risk-${idx}`}
-                  className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-xs text-slate-200 leading-relaxed"
+                  className="border border-black bg-white p-3 text-xs font-mono uppercase text-black leading-relaxed shadow-[2px_2px_0px_#FF0000]"
                 >
                   {risk}
                 </div>
@@ -144,16 +144,16 @@ export function RiskProfileComparison({
 
         {/* Mitigated Risks */}
         {resolvedRisks.length > 0 && (
-          <div className="space-y-1.5 pt-2">
-            <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+          <div className="space-y-2 pt-2">
+            <span className="text-xs font-black uppercase text-black flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              Resolved / Mitigated Risk Factors ({resolvedRisks.length})
+              RESOLVED / MITIGATED RISK FACTORS ({resolvedRisks.length})
             </span>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {resolvedRisks.map((risk, idx) => (
                 <div
                   key={`res-risk-${idx}`}
-                  className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs text-slate-300 leading-relaxed"
+                  className="border border-black bg-zinc-50 p-3 text-xs font-mono uppercase text-zinc-800 leading-relaxed"
                 >
                   {risk}
                 </div>
@@ -164,16 +164,16 @@ export function RiskProfileComparison({
 
         {/* Persistent Risks */}
         {persistentRisks.length > 0 && (
-          <div className="space-y-1.5 pt-2">
-            <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-              <AlertCircle className="h-3.5 w-3.5 text-slate-500" />
-              Persistent Disclosures Across Both Filings ({persistentRisks.length})
+          <div className="space-y-2 pt-2">
+            <span className="text-xs font-black uppercase text-zinc-600 flex items-center gap-1.5">
+              <AlertCircle className="h-3.5 w-3.5" />
+              PERSISTENT DISCLOSURES ACROSS BOTH FILINGS ({persistentRisks.length})
             </span>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {persistentRisks.map((risk, idx) => (
                 <div
                   key={`pers-risk-${idx}`}
-                  className="rounded-lg border border-slate-800 bg-slate-950/60 px-3.5 py-2 text-xs text-slate-400 leading-relaxed"
+                  className="border border-zinc-300 bg-white p-3 text-xs font-mono uppercase text-zinc-600 leading-relaxed"
                 >
                   {risk}
                 </div>
@@ -183,8 +183,8 @@ export function RiskProfileComparison({
         )}
 
         {newlyEmergedRisks.length === 0 && resolvedRisks.length === 0 && persistentRisks.length === 0 && (
-          <p className="text-xs text-slate-500 italic">
-            No specific risk flags cataloged for these filings.
+          <p className="text-xs font-mono uppercase text-zinc-500">
+            NO SPECIFIC RISK FLAGS CATALOGED FOR THESE ENTITY FILINGS.
           </p>
         )}
       </div>

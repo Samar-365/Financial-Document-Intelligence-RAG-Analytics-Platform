@@ -7,12 +7,9 @@ import {
   DollarSign,
   Layers,
   Activity,
-  TrendingUp,
   FileText,
   ChevronRight,
 } from "lucide-react";
-
-// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface StatementTabsProps {
   metrics: FinancialMetricItem[];
@@ -23,8 +20,6 @@ interface StatementTabsProps {
 }
 
 type StatementType = "pl" | "balance" | "cashflow";
-
-// ── Statement category definitions ───────────────────────────────────────────
 
 const PL_KEYWORDS = [
   { label: "Revenue / Net Sales", keys: ["revenue", "net sales", "turnover", "total income"] },
@@ -61,8 +56,6 @@ const CASHFLOW_KEYWORDS = [
   { label: "Net Change in Cash", keys: ["net change in cash", "net cash increase", "cash and cash equivalents at end"] },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function findMetricForRow(
   metrics: FinancialMetricItem[],
   keywords: string[]
@@ -90,14 +83,6 @@ function formatValue(
   return `${currencySymbol}${metric.value.toLocaleString(undefined, { maximumFractionDigits: 1 })} ${unit}`;
 }
 
-function confidenceColor(conf: number): string {
-  if (conf >= 0.85) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
-  if (conf >= 0.6) return "text-amber-400 bg-amber-500/10 border-amber-500/30";
-  return "text-red-400 bg-red-500/10 border-red-500/30";
-}
-
-// ── Statement Row ─────────────────────────────────────────────────────────────
-
 function StatementRow({
   label,
   metric,
@@ -121,75 +106,69 @@ function StatementRow({
   return (
     <tr
       className={cn(
-        "group border-b border-[rgba(196,30,58,0.16)] transition-colors",
-        hasValue ? "hover:bg-[rgba(184,29,36,0.12)] cursor-pointer" : "opacity-50"
+        "group border-b border-zinc-200 transition-colors",
+        hasValue ? "hover:bg-zinc-100 cursor-pointer" : "opacity-40"
       )}
       onClick={() => hasValue && metric && onChunkClick?.(metric)}
     >
-      <td className={cn("py-2.5 pl-4 pr-2 text-sm", isSubItem ? "pl-8 text-slate-400" : "text-slate-200 font-medium")}>
-        {isSubItem && <span className="mr-1.5 text-slate-600">└</span>}
+      <td className={cn("py-3 pl-4 pr-2 font-mono text-xs", isSubItem ? "pl-8 text-zinc-600" : "text-black font-bold")}>
+        {isSubItem && <span className="mr-1.5 text-zinc-400">└</span>}
         {label}
       </td>
-      <td className="py-2.5 px-3 text-right text-sm font-semibold text-white">
+      <td className="py-3 px-3 text-right font-mono text-xs font-black text-black">
         {valueStr}
       </td>
-      <td className="py-2.5 px-3 text-center hidden sm:table-cell">
+      <td className="py-3 px-3 text-center hidden sm:table-cell">
         {hasValue ? (
           <span
             className={cn(
-              "inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-bold",
-              confidenceColor(conf)
+              "inline-flex items-center px-2 py-0.5 text-[9px] font-mono font-black uppercase border border-black",
+              conf >= 0.85
+                ? "bg-black text-white"
+                : conf >= 0.6
+                ? "bg-zinc-200 text-black"
+                : "bg-[#FF0000] text-white"
             )}
           >
-            {confPct}%
+            {confPct}% CONF
           </span>
         ) : (
-          <span className="text-slate-600 text-xs">—</span>
+          <span className="text-zinc-400 text-xs font-mono">—</span>
         )}
       </td>
-      <td className="py-2.5 pr-4 text-center hidden md:table-cell">
-        {metric?.source_page ? (
-          <span className="text-xs text-slate-500">p.{metric.source_page}</span>
-        ) : (
-          <span className="text-slate-700 text-xs">—</span>
-        )}
+      <td className="py-3 pr-4 text-center hidden md:table-cell font-mono text-xs text-zinc-600">
+        {metric?.source_page ? `PAGE ${metric.source_page}` : "—"}
       </td>
-      <td className="py-2.5 pr-4 text-right hidden lg:table-cell">
+      <td className="py-3 pr-4 text-right hidden lg:table-cell">
         {hasValue && onChunkClick && (
-          <ChevronRight className="ml-auto h-4 w-4 text-slate-600 group-hover:text-[#E63946] transition-colors" />
+          <ChevronRight className="ml-auto h-4 w-4 text-black group-hover:text-[#FF0000] transition-colors" />
         )}
       </td>
     </tr>
   );
 }
 
-// ── Loading skeleton ──────────────────────────────────────────────────────────
-
 function TableSkeleton({ rows = 8 }: { rows?: number }) {
   return (
-    <div className="space-y-1 p-4">
+    <div className="space-y-2 p-4">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex items-center justify-between">
           <div
-            className="h-4 rounded bg-slate-800 animate-pulse"
+            className="h-4 bg-zinc-200 animate-pulse"
             style={{ width: `${30 + (i % 4) * 15}%` }}
           />
-          <div className="h-4 w-20 rounded bg-slate-800 animate-pulse" />
+          <div className="h-4 w-20 bg-zinc-200 animate-pulse" />
         </div>
       ))}
     </div>
   );
 }
 
-// ── Tab definitions ───────────────────────────────────────────────────────────
-
 const TABS: { id: StatementType; label: string; icon: React.ElementType }[] = [
-  { id: "pl", label: "Income Statement (P&L)", icon: DollarSign },
-  { id: "balance", label: "Balance Sheet", icon: Layers },
-  { id: "cashflow", label: "Cash Flow", icon: Activity },
+  { id: "pl", label: "01. INCOME STATEMENT (P&L)", icon: DollarSign },
+  { id: "balance", label: "02. BALANCE SHEET", icon: Layers },
+  { id: "cashflow", label: "03. CASH FLOW STATEMENT", icon: Activity },
 ];
-
-// ── Main Component ────────────────────────────────────────────────────────────
 
 export function StatementTabs({
   metrics,
@@ -224,22 +203,22 @@ export function StatementTabs({
   ];
 
   return (
-    <div className="flex flex-col gap-0 rounded-xl border border-[rgba(196,30,58,0.24)] overflow-hidden bg-[#111017] shadow-xl backdrop-blur-md">
+    <div className="border border-black bg-white shadow-[4px_4px_0px_#000000]">
       {/* Tab Bar */}
-      <div className="flex border-b border-[rgba(196,30,58,0.25)] bg-[#0D0C12] overflow-x-auto">
+      <div className="flex border-b border-black bg-zinc-100 overflow-x-auto">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             id={`tab-${id}`}
             onClick={() => setActiveTab(id)}
             className={cn(
-              "flex items-center gap-2 whitespace-nowrap px-5 py-3.5 text-xs font-semibold transition-all border-b-2",
+              "flex items-center gap-2 whitespace-nowrap px-6 py-3.5 text-xs font-mono font-black uppercase tracking-wider transition-all border-r border-black",
               activeTab === id
-                ? "border-[#E63946] text-white bg-[rgba(184,29,36,0.18)] font-bold shadow-[inset_0_-2px_0_#E63946]"
-                : "border-transparent text-slate-400 hover:text-white hover:bg-[rgba(184,29,36,0.1)]"
+                ? "bg-black text-white"
+                : "bg-white text-black hover:bg-zinc-50"
             )}
           >
-            <Icon className={cn("h-3.5 w-3.5", activeTab === id ? "text-[#E63946]" : "text-slate-400")} />
+            <Icon className={cn("h-3.5 w-3.5", activeTab === id ? "text-[#FF0000]" : "text-black")} />
             {label}
           </button>
         ))}
@@ -250,27 +229,27 @@ export function StatementTabs({
         <TableSkeleton rows={10} />
       ) : metrics.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-3">
-          <FileText className="h-10 w-10 text-slate-700" />
-          <p className="text-sm text-slate-500">
-            No metrics extracted for this filing yet.
+          <FileText className="h-10 w-10 text-zinc-400" />
+          <p className="text-xs font-mono uppercase text-zinc-500">
+            NO LINE ITEMS EXTRACTED FOR ACTIVE FILING YET.
           </p>
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-800/60 bg-slate-950/30">
-                <th className="py-2.5 pl-4 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-500">
-                  Line Item
+              <tr className="border-b border-black bg-black text-white">
+                <th className="py-2.5 pl-4 text-left text-[10px] font-mono font-black uppercase tracking-widest text-white">
+                  STANDARDIZED LINE ITEM
                 </th>
-                <th className="py-2.5 px-3 text-right text-[10px] font-semibold uppercase tracking-widest text-slate-500">
-                  Value
+                <th className="py-2.5 px-3 text-right text-[10px] font-mono font-black uppercase tracking-widest text-white">
+                  REPORTED VALUE
                 </th>
-                <th className="py-2.5 px-3 text-center text-[10px] font-semibold uppercase tracking-widest text-slate-500 hidden sm:table-cell">
-                  Confidence
+                <th className="py-2.5 px-3 text-center text-[10px] font-mono font-black uppercase tracking-widest text-white hidden sm:table-cell">
+                  CONFIDENCE
                 </th>
-                <th className="py-2.5 pr-4 text-center text-[10px] font-semibold uppercase tracking-widest text-slate-500 hidden md:table-cell">
-                  Source Page
+                <th className="py-2.5 pr-4 text-center text-[10px] font-mono font-black uppercase tracking-widest text-white hidden md:table-cell">
+                  PROVENANCE PAGE
                 </th>
                 <th className="py-2.5 pr-4 hidden lg:table-cell" />
               </tr>

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { BookOpen, Search } from "lucide-react";
 
@@ -69,71 +68,67 @@ export function ErrorCatalogTable() {
   );
 
   return (
-    <div className="rounded-2xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-5 shadow-xl backdrop-blur-md space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="border border-black bg-white p-6 shadow-[4px_4px_0px_#000000] space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black pb-3">
         <div className="flex items-center gap-2">
-          <BookOpen className="h-4 w-4 text-[#E63946]" />
+          <BookOpen className="h-4 w-4 text-[#FF0000]" />
           <div>
-            <h4 className="text-sm font-bold text-white">
-              Platform Error &amp; Exception Reference Catalog
+            <h4 className="text-xs font-black uppercase tracking-wider text-black">
+              <span className="text-[#FF0000]">[ 03 / CATALOG ]</span> ERROR &amp; FAULT ISOLATION SPECIFICATION
             </h4>
-            <p className="text-xs text-slate-400">
-              Standardized error codes, fault isolation domains, and auditor remediation steps
+            <p className="text-[10px] font-mono text-zinc-600 uppercase mt-0.5">
+              STANDARDIZED ERROR CODES, FAILURE DOMAINS, AND REMEDIATION ACTIONS
             </p>
           </div>
         </div>
 
         <div className="relative w-48 sm:w-64">
-          <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+          <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-500" />
           <Input
-            placeholder="Search error code or domain..."
+            placeholder="SEARCH ERROR CODE OR DOMAIN..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-8 pl-8 text-xs bg-[#14131D] border-[rgba(184,29,36,0.35)] focus:border-[#E63946]"
+            className="h-8 pl-8 text-xs font-mono uppercase rounded-none border border-black bg-white text-black placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:border-black shadow-[1px_1px_0px_#000000]"
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-[rgba(196,30,58,0.25)] bg-[#0D0C12]">
-        <Table>
-          <TableHeader className="bg-[#0D0C12] text-slate-300">
-            <TableRow className="border-b border-[rgba(196,30,58,0.25)] hover:bg-transparent">
-              <TableHead className="font-semibold text-slate-300 text-xs w-28">
-                Error Code
-              </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs w-44">
-                Domain
-              </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs">
-                Description &amp; Root Cause
-              </TableHead>
-              <TableHead className="font-semibold text-slate-300 text-xs">
-                Remediation Action
-              </TableHead>
+      <Table>
+        <TableHeader className="bg-black text-white border-b-2 border-black">
+          <TableRow className="bg-black text-white hover:bg-black border-b-2 border-black">
+            <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider w-28">
+              CODE
+            </TableHead>
+            <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider w-48">
+              DOMAIN
+            </TableHead>
+            <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider">
+              DESCRIPTION &amp; ROOT CAUSE
+            </TableHead>
+            <TableHead className="bg-black text-white font-mono font-black text-[11px] uppercase tracking-wider">
+              AUDITOR REMEDIATION ACTION
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="divide-y divide-zinc-200 text-xs font-mono">
+          {filteredErrors.map((item) => (
+            <TableRow key={item.code} className="hover:bg-zinc-100 transition-colors">
+              <TableCell className="font-mono font-black text-[#FF0000]">
+                {item.code}
+              </TableCell>
+              <TableCell className="font-bold text-black uppercase">
+                {item.domain}
+              </TableCell>
+              <TableCell className="text-black uppercase leading-relaxed">
+                {item.description}
+              </TableCell>
+              <TableCell className="text-zinc-600 uppercase text-[11px] leading-relaxed">
+                {item.remediation}
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody className="divide-y divide-[rgba(196,30,58,0.15)] text-xs">
-            {filteredErrors.map((item) => (
-              <TableRow key={item.code} className="hover:bg-[rgba(184,29,36,0.12)] transition-colors">
-                <TableCell className="font-mono font-bold text-[#E63946]">
-                  {item.code}
-                </TableCell>
-                <TableCell>
-                  <span className="font-semibold text-slate-300">
-                    {item.domain}
-                  </span>
-                </TableCell>
-                <TableCell className="text-slate-300 leading-relaxed">
-                  {item.description}
-                </TableCell>
-                <TableCell className="text-slate-400 font-mono text-[11px] leading-relaxed">
-                  {item.remediation}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

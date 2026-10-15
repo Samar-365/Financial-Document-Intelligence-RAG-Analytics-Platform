@@ -12,7 +12,6 @@ import {
   Copy,
   Check,
   BookOpen,
-  Sparkles,
   ExternalLink,
 } from "lucide-react";
 
@@ -42,17 +41,17 @@ export function ChatMessageItem({
   if (isUser) {
     return (
       <div className="flex justify-end gap-3 max-w-3xl ml-auto">
-        <div className="flex flex-col items-end space-y-1 max-w-[85%]">
-          <div className="flex items-center gap-2 text-[11px] text-slate-400">
+        <div className="flex flex-col items-end space-y-1.5 max-w-[85%]">
+          <div className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase text-black">
             <span>{formattedTime}</span>
-            <span className="font-bold text-[#E63946] uppercase tracking-wider text-[10px]">You</span>
+            <span className="bg-black text-white px-1.5 py-0.2">YOU</span>
           </div>
-          <div className="rounded-[14px_14px_2px_14px] bg-[#18121A] text-white px-5 py-3.5 text-sm shadow-[0_4px_16px_rgba(0,0,0,0.4)] border border-[rgba(230,57,70,0.4)] leading-relaxed whitespace-pre-wrap">
+          <div className="border border-black bg-black text-white p-4 text-xs font-mono shadow-[3px_3px_0px_#FF0000] leading-relaxed whitespace-pre-wrap">
             {message.content}
           </div>
         </div>
-        <div className="h-8 w-8 rounded-full bg-[rgba(184,29,36,0.2)] border border-[rgba(230,57,70,0.4)] flex items-center justify-center shrink-0 text-[#E63946] mt-5">
-          <User className="h-4 w-4" />
+        <div className="h-8 w-8 border border-black bg-black text-white flex items-center justify-center shrink-0 mt-5">
+          <User className="h-4 w-4 text-white" />
         </div>
       </div>
     );
@@ -61,41 +60,39 @@ export function ChatMessageItem({
   return (
     <div className="flex justify-start gap-3.5 max-w-4xl mr-auto group">
       {/* AI Avatar */}
-      <div className="h-9 w-9 rounded-xl bg-[rgba(184,29,36,0.2)] border border-[rgba(230,57,70,0.55)] flex items-center justify-center shrink-0 text-[#E63946] shadow-[0_0_14px_rgba(230,57,70,0.3)]">
-        <Activity className="h-4 w-4 text-[#E63946]" />
+      <div className="h-9 w-9 border border-black bg-white flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#000000]">
+        <Activity className="h-4 w-4 text-[#FF0000]" />
       </div>
 
       {/* Message Body */}
-      <div className="flex-1 space-y-2.5 overflow-hidden">
+      <div className="flex-1 space-y-2 overflow-hidden">
         {/* Assistant Header & Telemetry */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-extrabold text-white flex items-center gap-1.5 tracking-wide">
-              FinDoc AI Analyst
+            <span className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+              FINANCIAL RAG ENGINE
             </span>
-            <span className="text-[10px] text-[#94A3B8] bg-white/5 border border-white/10 px-2 py-0.5 rounded">
-              Verified Audit Grounding
+            <span className="text-[9px] font-mono font-bold uppercase border border-black bg-black text-white px-1.5 py-0.5">
+              GROUNDED AUDIT
             </span>
             {message.model_used && (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#111017] text-slate-400 border border-[rgba(196,30,58,0.28)]">
+              <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 border border-black bg-white text-black">
                 {message.model_used}
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-3 text-[11px] text-slate-400">
+          <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-600">
             {message.latency_ms !== undefined && (
               <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3 text-slate-500" />
-                <span>{message.latency_ms}ms</span>
+                <Clock className="h-3 w-3 text-black" />
+                <span>{message.latency_ms}MS</span>
               </span>
             )}
             {message.citations && message.citations.length > 0 && (
-              <span className="flex items-center gap-1">
-                <Layers className="h-3 w-3 text-[#E63946]" />
-                <span className="text-[#FFA8B2] font-semibold">
-                  {message.citations.length} sources
-                </span>
+              <span className="flex items-center gap-1 font-bold text-black">
+                <Layers className="h-3 w-3 text-[#FF0000]" />
+                <span>{message.citations.length} SOURCES</span>
               </span>
             )}
             <span>{formattedTime}</span>
@@ -103,20 +100,20 @@ export function ChatMessageItem({
             {/* Copy Button */}
             <button
               onClick={handleCopy}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white"
+              className="border border-black bg-white p-1 hover:bg-black hover:text-white transition-colors"
               title="Copy answer"
             >
               {copied ? (
-                <Check className="h-3.5 w-3.5 text-emerald-400" />
+                <Check className="h-3 w-3 text-black" />
               ) : (
-                <Copy className="h-3.5 w-3.5" />
+                <Copy className="h-3 w-3" />
               )}
             </button>
           </div>
         </div>
 
         {/* Content Box */}
-        <div className="rounded-[2px_14px_14px_14px] bg-[#111017] border border-white/10 border-l-[3px] border-l-[#E63946] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+        <div className="border border-black bg-white p-6 shadow-[5px_5px_0px_#000000]">
           <MarkdownRenderer
             content={message.content}
             citations={message.citations}
@@ -125,14 +122,14 @@ export function ChatMessageItem({
 
           {/* Citations Row / Chips */}
           {message.citations && message.citations.length > 0 && (
-            <div className="mt-5 pt-4 border-t border-[rgba(196,30,58,0.24)] space-y-2">
-              <div className="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider">
-                <span className="flex items-center gap-1.5 text-slate-300 text-[11px]">
-                  <BookOpen className="h-3.5 w-3.5 text-[#E63946]" />
-                  Grounded Evidence Sources ({message.citations.length})
+            <div className="mt-6 pt-4 border-t border-black space-y-3">
+              <div className="flex items-center justify-between text-xs font-mono font-bold uppercase tracking-wider text-black">
+                <span className="flex items-center gap-1.5 text-xs">
+                  <BookOpen className="h-3.5 w-3.5 text-[#FF0000]" />
+                  GROUNDED EVIDENCE SOURCES ({message.citations.length})
                 </span>
-                <span className="text-[10px] text-slate-500 font-normal lowercase">
-                  click to inspect verbatim extract
+                <span className="text-[10px] text-zinc-500">
+                  [ CLICK TO INSPECT CHUNK ]
                 </span>
               </div>
 
@@ -144,26 +141,22 @@ export function ChatMessageItem({
                       key={`cite-pill-${idx}`}
                       type="button"
                       onClick={() => onCitationClick(cite)}
-                      className={cn(
-                        "flex items-start justify-between gap-2 text-left p-2.5 rounded-lg border transition-all text-xs",
-                        "bg-[rgba(184,29,36,0.08)] border-[rgba(184,29,36,0.25)] hover:border-[#E63946] hover:bg-[rgba(184,29,36,0.18)] group/pill"
-                      )}
+                      className="flex items-start justify-between gap-2 text-left p-3 border border-black bg-white hover:bg-zinc-100 hover:shadow-[3px_3px_0px_#000000] transition-all group/pill cursor-pointer"
                     >
                       <div className="space-y-1 overflow-hidden">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-[#E63946]">
-                            Page {cite.page_number}
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-black uppercase text-black">
+                            PAGE {cite.page_number}
                           </span>
-                          <span className="text-slate-500">•</span>
-                          <span className="text-[10px] font-mono text-[#FFA8B2]">
-                            {pct}% match
+                          <span className="text-[9px] font-mono border border-black bg-zinc-100 px-1 py-0.2 font-bold">
+                            {pct}% MATCH
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-300 line-clamp-1 italic font-serif">
+                        <p className="text-[11px] font-mono text-zinc-700 line-clamp-2 uppercase">
                           &ldquo;{cite.snippet}&rdquo;
                         </p>
                       </div>
-                      <ExternalLink className="h-3.5 w-3.5 text-slate-500 group-hover/pill:text-[#E63946] shrink-0 mt-0.5" />
+                      <ExternalLink className="h-3.5 w-3.5 text-black group-hover/pill:text-[#FF0000] shrink-0 mt-0.5" />
                     </button>
                   );
                 })}

@@ -13,38 +13,13 @@ import {
   ShieldCheck,
   Quote,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface CitationDrawerProps {
   citation: Citation | null;
   isOpen: boolean;
   onClose: () => void;
   documentName?: string;
-}
-
-function getRelevanceMeta(score: number) {
-  const pct = Math.round(score * 100);
-  if (score >= 0.8) {
-    return {
-      label: "High Match",
-      textClass: "text-emerald-400",
-      bgClass: "bg-emerald-500",
-      borderClass: "border-emerald-500/30",
-    };
-  }
-  if (score >= 0.6) {
-    return {
-      label: "Moderate Match",
-      textClass: "text-[#FFA8B2]",
-      bgClass: "bg-[#E63946]",
-      borderClass: "border-[rgba(230,57,70,0.4)]",
-    };
-  }
-  return {
-    label: "Low Match",
-    textClass: "text-amber-400",
-    bgClass: "bg-amber-500",
-    borderClass: "border-amber-500/30",
-  };
 }
 
 export function CitationDrawer({
@@ -78,7 +53,6 @@ export function CitationDrawer({
 
   if (!isOpen && !citation) return null;
 
-  const relevance = citation ? getRelevanceMeta(citation.relevance_score) : null;
   const pct = citation ? Math.min(100, Math.max(0, Math.round(citation.relevance_score * 100))) : 0;
 
   return (
@@ -86,7 +60,7 @@ export function CitationDrawer({
       {/* Backdrop */}
       <div
         className={cn(
-          "fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity duration-300",
+          "fixed inset-0 z-40 bg-black/60 transition-opacity duration-200",
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
         onClick={onClose}
@@ -100,29 +74,29 @@ export function CitationDrawer({
         aria-label="Citation Source Inspector"
         className={cn(
           "fixed right-0 top-0 z-50 h-full w-full max-w-md md:max-w-lg",
-          "border-l border-[rgba(184,29,36,0.28)] bg-[#0D0C12] shadow-2xl backdrop-blur-2xl",
-          "flex flex-col transition-transform duration-300 ease-in-out",
+          "border-l-2 border-black bg-white shadow-[-8px_0px_0px_#000000]",
+          "flex flex-col transition-transform duration-200 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[rgba(184,29,36,0.25)] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-black p-5 bg-white">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[rgba(184,29,36,0.2)] border border-[rgba(230,57,70,0.45)] text-[#E63946]">
-              <Quote className="h-4 w-4" />
+            <div className="flex h-8 w-8 items-center justify-center border border-black bg-black text-white shrink-0">
+              <Quote className="h-4 w-4 text-[#FF0000]" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                Grounding Source Citation
+              <h3 className="text-xs font-black uppercase tracking-wider text-black">
+                GROUNDING SOURCE CITATION
               </h3>
-              <p className="text-xs text-[#94A3B8]">
-                Verifiable extraction chunk from source filing
+              <p className="text-[10px] font-mono text-zinc-600 uppercase">
+                VERIFIABLE EXTRACT FROM FILING CORPUS
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[rgba(196,30,58,0.3)] bg-[#111017] text-slate-400 hover:text-white hover:border-[#E63946] transition-colors"
+            className="flex h-8 w-8 items-center justify-center border border-black bg-white text-black hover:bg-black hover:text-white transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -132,28 +106,26 @@ export function CitationDrawer({
         {citation && (
           <div className="flex-1 overflow-y-auto p-6 space-y-5">
             {/* Filing provenance badge */}
-            <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-4 shadow-md">
-              <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-2">
-                <FileText className="h-3.5 w-3.5 text-[#E63946]" />
-                <span className="font-bold uppercase tracking-wider text-[11px] text-slate-300">
-                  Source Document
-                </span>
+            <div className="border border-black bg-white p-5 shadow-[4px_4px_0px_#000000]">
+              <div className="flex items-center gap-2 text-xs font-mono text-zinc-600 mb-2 border-b border-black pb-1.5">
+                <FileText className="h-3.5 w-3.5 text-black" />
+                <span className="font-bold uppercase tracking-wider">SOURCE DOCUMENT</span>
               </div>
-              <p className="text-sm font-semibold text-white truncate">
+              <p className="text-sm font-black uppercase text-black truncate">
                 {documentName || citation.doc_title || "Financial Annual Report"}
               </p>
-              <div className="mt-3 flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[rgba(184,29,36,0.2)] border border-[rgba(230,57,70,0.45)] text-[#FFA8B2] text-xs font-bold">
-                  <BookOpen className="h-3 w-3" />
-                  Page {citation.page_number}
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1 border border-black bg-black text-white px-2.5 py-1 text-xs font-mono font-bold uppercase">
+                  <BookOpen className="h-3 w-3 text-[#FF0000]" />
+                  PAGE {citation.page_number}
                 </span>
                 {citation.chunk_index !== undefined && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#161522] border border-white/5 text-slate-300 text-xs font-mono">
-                    Chunk #{citation.chunk_index}
+                  <span className="inline-flex items-center border border-black bg-white text-black px-2 py-1 text-xs font-mono font-bold uppercase">
+                    CHUNK #{citation.chunk_index}
                   </span>
                 )}
                 {citation.section && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#161522] text-slate-400 text-xs truncate max-w-[180px]">
+                  <span className="inline-flex items-center border border-black bg-zinc-100 text-black px-2 py-1 text-xs font-mono uppercase truncate max-w-[200px]">
                     {citation.section}
                   </span>
                 )}
@@ -161,68 +133,64 @@ export function CitationDrawer({
             </div>
 
             {/* Relevance Score Card */}
-            {relevance && (
-              <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-4 shadow-md">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-1.5 text-xs text-[#94A3B8]">
-                    <Percent className="h-3.5 w-3.5 text-[#E63946]" />
-                    <span className="font-bold uppercase tracking-wider text-[11px] text-slate-300">
-                      Vector Similarity Match
-                    </span>
-                  </div>
-                  <span className={cn("text-xs font-bold px-2 py-0.5 rounded-full border", relevance.borderClass, relevance.textClass)}>
-                    {pct}% • {relevance.label}
-                  </span>
+            <div className="border border-black bg-white p-5 shadow-[4px_4px_0px_#000000]">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-black uppercase">
+                  <Percent className="h-3.5 w-3.5 text-black" />
+                  <span>VECTOR SIMILARITY COSINE MATCH</span>
                 </div>
-                <div className="h-2 w-full rounded-full bg-[#181622] overflow-hidden">
-                  <div
-                    className={cn("h-full rounded-full transition-all duration-500", relevance.bgClass)}
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-                <p className="text-[11px] text-slate-400 mt-2">
-                  Calculated using dense 384-dimensional cosine distance against the pgvector HNSW index.
-                </p>
+                <span className="text-xs font-mono font-black uppercase border border-black bg-black text-white px-2 py-0.5">
+                  {pct}% MATCH
+                </span>
               </div>
-            )}
+              <div className="h-2 w-full border border-black bg-zinc-100 p-0.5">
+                <div
+                  className="h-full bg-black transition-all duration-500"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              <p className="text-[10px] font-mono text-zinc-600 mt-2 uppercase">
+                CALCULATED VIA DENSE 1536-DIMENSIONAL COSINE PROXIMITY AGAINST POSTGRESQL PGVECTOR.
+              </p>
+            </div>
 
             {/* Verbatim Excerpt */}
-            <div className="rounded-xl border border-[rgba(196,30,58,0.24)] bg-[#111017] p-4 space-y-3 shadow-md">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                  <Quote className="h-3.5 w-3.5 text-[#E63946]" />
-                  Verbatim Filing Snippet
+            <div className="border border-black bg-white p-5 space-y-3 shadow-[4px_4px_0px_#000000]">
+              <div className="flex items-center justify-between border-b border-black pb-2">
+                <span className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+                  <Quote className="h-3.5 w-3.5 text-[#FF0000]" />
+                  VERBATIM FILING SNIPPET
                 </span>
                 <button
                   onClick={copySnippet}
-                  className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white px-2.5 py-1 rounded-md bg-[#181622] border border-[rgba(196,30,58,0.3)] hover:border-[#E63946] transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-mono font-bold uppercase text-black border border-black bg-white hover:bg-black hover:text-white px-2.5 py-1 transition-colors"
                 >
                   {copied ? (
                     <>
-                      <Check className="h-3.5 w-3.5 text-emerald-400" />
-                      <span className="text-emerald-400 font-bold">Copied</span>
+                      <Check className="h-3.5 w-3.5 text-black" />
+                      <span>COPIED</span>
                     </>
                   ) : (
                     <>
                       <Copy className="h-3.5 w-3.5" />
-                      <span>Copy</span>
+                      <span>COPY</span>
                     </>
                   )}
                 </button>
               </div>
 
-              <div className="rounded-lg border border-[rgba(184,29,36,0.25)] bg-[rgba(184,29,36,0.08)] p-4 text-sm leading-relaxed text-[#F1F5F9] font-serif italic selection:bg-[#E63946]/40">
+              <div className="border border-black bg-zinc-100 p-4 text-xs font-mono leading-relaxed text-black uppercase">
                 &ldquo;{citation.snippet}&rdquo;
               </div>
             </div>
 
             {/* Ind AS & Audit Grounding Notice */}
-            <div className="rounded-xl border border-[rgba(196,30,58,0.28)] bg-[rgba(184,29,36,0.1)] p-4 flex gap-3">
-              <ShieldCheck className="h-5 w-5 text-[#E63946] shrink-0 mt-0.5" />
-              <div className="text-xs space-y-1">
-                <p className="font-bold text-white">Auditable Evidence Trail</p>
-                <p className="text-[#94A3B8] leading-relaxed">
-                  FinDoc groundings are deterministic extracts tagged with document and page provenance. The AI analyst is strictly constrained by negative prompt formulation to prevent numeric hallucination.
+            <div className="border border-black bg-white p-4 flex gap-3 shadow-[2px_2px_0px_#000000]">
+              <ShieldCheck className="h-5 w-5 text-black shrink-0 mt-0.5" />
+              <div className="text-xs font-mono uppercase space-y-1">
+                <p className="font-bold text-black">AUDITABLE EVIDENCE GROUNDING</p>
+                <p className="text-zinc-600 leading-relaxed text-[10px]">
+                  FINDOC GROUNDINGS ARE DETERMINISTIC EXTRACTS TAGGED WITH DOCUMENT AND PAGE PROVENANCE. THE INFERENCE PROMPT IS ENFORCED WITH STRICT REFUSAL RULES TO ELIMINATE NUMERIC HALLUCINATIONS.
                 </p>
               </div>
             </div>
@@ -230,14 +198,15 @@ export function CitationDrawer({
         )}
 
         {/* Footer */}
-        <div className="border-t border-[rgba(184,29,36,0.25)] px-6 py-3 flex items-center justify-between bg-[#08080A]">
-          <p className="text-xs text-slate-500">Press ESC to dismiss</p>
-          <button
+        <div className="border-t border-black p-4 flex items-center justify-between bg-zinc-50">
+          <p className="text-[10px] font-mono text-zinc-600 uppercase">PRESS ESC TO DISMISS</p>
+          <Button
+            size="sm"
             onClick={onClose}
-            className="text-xs text-slate-400 hover:text-[#E63946] font-semibold"
+            className="bg-black text-white hover:bg-black/90 rounded-none border border-black font-black uppercase text-xs px-4"
           >
-            Close esc
-          </button>
+            CLOSE
+          </Button>
         </div>
       </div>
     </>

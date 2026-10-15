@@ -13,44 +13,50 @@ import {
   ChevronLeft,
   ChevronRight,
   Activity,
-  Sparkles,
+  ArrowUpRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   {
-    name: "Executive Dashboard",
+    name: "Dashboard",
+    code: "01",
     href: "/dashboard",
     icon: LayoutDashboard,
     badge: null,
   },
   {
-    name: "Document Ingestion",
+    name: "Ingestion",
+    code: "02",
     href: "/documents",
     icon: FolderUp,
-    badge: "Upload",
+    badge: "UPLOAD",
   },
   {
-    name: "Financial Analysis",
+    name: "Analysis",
+    code: "03",
     href: "/analysis",
     icon: LineChart,
-    badge: "Ind AS",
+    badge: "IND AS",
   },
   {
-    name: "AI Analyst (RAG)",
+    name: "AI Analyst",
+    code: "04",
     href: "/chat",
     icon: Bot,
-    badge: "AI",
+    badge: "RAG",
     isGlowing: true,
   },
   {
-    name: "Peer Benchmarking",
+    name: "Compare",
+    code: "05",
     href: "/compare",
     icon: GitCompare,
     badge: null,
   },
   {
-    name: "Audit & Governance",
+    name: "Audit Logs",
+    code: "06",
     href: "/audit",
     icon: ShieldCheck,
     badge: null,
@@ -64,50 +70,50 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "relative flex flex-col border-r border-[rgba(184,29,36,0.25)] bg-[#0D0C12] transition-all duration-300 z-30 select-none",
+        "relative flex flex-col border-r border-black bg-white transition-all duration-200 z-30 select-none",
         collapsed ? "w-20" : "w-64"
       )}
     >
       {/* Brand Header */}
-      <div className="flex h-18 items-center justify-between px-4 border-b border-[rgba(184,29,36,0.25)]">
+      <div className="flex h-16 items-center justify-between px-4 border-b border-black">
         <Link
           href="/"
           className="flex items-center gap-3 overflow-hidden group py-1"
           title="FinDoc AI Financial Intelligence"
         >
-          {/* Official Vector Brand Badge */}
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(184,29,36,0.2)] border border-[rgba(230,57,70,0.55)] shadow-[0_0_14px_rgba(230,57,70,0.3)] group-hover:scale-105 transition-all">
-            <Activity className="h-5 w-5 text-[#E63946]" />
+          {/* Minimalist Black Box Brand Mark */}
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-black text-white transition-all group-hover:bg-[#FF0000]">
+            <span className="font-black text-xs tracking-tighter">FD</span>
           </div>
           {!collapsed && (
             <div className="flex flex-col text-left">
-              <span className="font-extrabold text-lg tracking-tight text-white leading-tight">
-                Fin<span className="text-[#E63946]">Doc</span>
+              <span className="font-black text-lg tracking-tighter text-black leading-none">
+                FINDOC
               </span>
-              <span className="text-[9px] uppercase font-bold tracking-[0.08em] text-[#94A3B8] leading-none mt-0.5">
-                Financial Intelligence
+              <span className="text-[8px] uppercase font-mono tracking-[0.16em] text-neutral-500 mt-1">
+                INTELLIGENCE
               </span>
             </div>
           )}
         </Link>
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-[rgba(184,29,36,0.3)] bg-[#111017] text-slate-400 hover:text-[#E63946] hover:border-[#E63946] transition-all"
+          className="flex h-7 w-7 items-center justify-center border border-black bg-white text-black hover:bg-black hover:text-white transition-colors cursor-pointer"
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5" />
           ) : (
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3.5 w-3.5" />
           )}
         </button>
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 py-4 px-3 space-y-1.5 overflow-y-auto">
+      <div className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
         {!collapsed && (
-          <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">
-            Workspace Modules
+          <p className="px-3 pb-2 text-[9px] font-mono font-bold uppercase tracking-[0.14em] text-neutral-400">
+            [ NAVIGATION ]
           </p>
         )}
         {NAV_ITEMS.map((item) => {
@@ -121,19 +127,25 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                "group relative flex items-center gap-3 px-3 py-2 text-xs font-black uppercase tracking-wider transition-all duration-100",
                 isActive
-                  ? "bg-[rgba(184,29,36,0.28)] border-l-[3px] border-l-[#E63946] text-white font-semibold shadow-sm"
-                  : "text-[#CBD5E1] hover:bg-[rgba(184,29,36,0.15)] hover:text-white"
+                  ? "bg-black text-white border-l-4 border-l-[#FF0000]"
+                  : "text-black hover:bg-neutral-100"
               )}
               title={collapsed ? item.name : undefined}
             >
+              <span
+                className={cn(
+                  "font-mono text-[10px] w-4",
+                  isActive ? "text-[#FF0000]" : "text-neutral-400"
+                )}
+              >
+                {item.code}
+              </span>
               <Icon
                 className={cn(
-                  "h-4 w-4 shrink-0 transition-transform group-hover:scale-110",
-                  isActive
-                    ? "text-[#E63946]"
-                    : "text-[#94A3B8] group-hover:text-[#E63946]"
+                  "h-4 w-4 shrink-0",
+                  isActive ? "text-white" : "text-black"
                 )}
               />
               {!collapsed && (
@@ -142,10 +154,10 @@ export function Sidebar() {
               {!collapsed && item.badge && (
                 <span
                   className={cn(
-                    "text-[10px] font-bold px-2 py-0.5 rounded-full border",
+                    "text-[8px] font-mono font-bold px-1 py-0.5 border",
                     isActive
-                      ? "border-[rgba(230,57,70,0.5)] bg-[rgba(184,29,36,0.35)] text-white"
-                      : "border-[rgba(196,30,58,0.3)] bg-[rgba(184,29,36,0.15)] text-[#FFA8B2]"
+                      ? "border-[#FF0000] text-[#FF0000]"
+                      : "border-black text-black"
                   )}
                 >
                   {item.badge}
@@ -158,14 +170,14 @@ export function Sidebar() {
 
       {/* Footer Info Card */}
       {!collapsed && (
-        <div className="p-3 border-t border-[rgba(184,29,36,0.25)]">
-          <div className="rounded-xl border border-[rgba(184,29,36,0.28)] bg-[#111017] p-3 text-xs shadow-md">
-            <div className="flex items-center gap-2 text-white font-bold mb-1">
-              <Sparkles className="h-3.5 w-3.5 text-[#E63946]" />
-              <span>Pitch Dark & Wine Red</span>
+        <div className="p-3 border-t border-black">
+          <div className="border border-black p-3 bg-neutral-50 text-xs">
+            <div className="flex items-center justify-between text-black font-black uppercase tracking-wider text-[10px] mb-1">
+              <span>SYSTEM ONLINE</span>
+              <span className="h-2 w-2 rounded-full bg-[#FF0000] animate-pulse" />
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed">
-              Autonomous extraction & vector retrieval powered by pgvector.
+            <p className="text-[10px] font-mono text-neutral-600 leading-tight">
+              Pgvector • HNSW Ind AS 116 Compliant
             </p>
           </div>
         </div>

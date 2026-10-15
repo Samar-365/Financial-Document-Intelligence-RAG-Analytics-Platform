@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Info } from "lucide-react";
+import { ShieldCheck, ShieldAlert, AlertTriangle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RiskFlag {
@@ -53,25 +53,22 @@ function parseRiskFlag(flag: RiskFlag | string): {
 
 const severityConfig = {
   HIGH: {
-    icon: ShieldX,
-    color: "text-red-400",
-    border: "border-red-500/20",
-    bg: "bg-red-500/5",
-    badge: "bg-red-500/10 text-red-400 border-red-500/30",
+    icon: AlertTriangle,
+    color: "text-[#FF0000]",
+    border: "border-black bg-white hover:shadow-[3px_3px_0px_#FF0000]",
+    badge: "bg-[#FF0000] text-white border-black",
   },
   MEDIUM: {
     icon: AlertTriangle,
-    color: "text-amber-400",
-    border: "border-amber-500/20",
-    bg: "bg-amber-500/5",
-    badge: "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    color: "text-black",
+    border: "border-black bg-white hover:shadow-[3px_3px_0px_#000000]",
+    badge: "bg-black text-white border-black",
   },
   INFO: {
     icon: Info,
-    color: "text-blue-400",
-    border: "border-blue-500/20",
-    bg: "bg-blue-500/5",
-    badge: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+    color: "text-black",
+    border: "border-black bg-white hover:shadow-[3px_3px_0px_#000000]",
+    badge: "bg-white text-black border-black",
   },
 };
 
@@ -85,66 +82,72 @@ export function RiskFlagsCard({
   const noRisks = !isLoading && parsed.length === 0;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {/* Score Summary */}
-      <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-4 backdrop-blur-md">
-        <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">
-          Audit Provenance
-        </h4>
+      <div className="rounded-none border border-black bg-white p-5 shadow-[4px_4px_0px_#000000]">
+        <div className="flex items-center justify-between mb-3 border-b border-black pb-2">
+          <h4 className="text-xs font-black uppercase tracking-widest text-black flex items-center gap-2">
+            <span className="text-[#FF0000]">[ 01 ]</span> AUDIT PROVENANCE
+          </h4>
+          <span className="text-[10px] font-mono text-zinc-600 uppercase">SYSTEM TRACE</span>
+        </div>
         {isLoading ? (
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-4 w-full rounded bg-slate-800 animate-pulse" />
+              <div key={i} className="h-4 w-full bg-zinc-200 animate-pulse" />
             ))}
           </div>
         ) : (
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2.5 text-xs font-mono">
             {documentName && (
-              <li className="flex justify-between gap-4">
-                <span className="text-slate-400">Filing:</span>
-                <code className="text-xs text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded truncate max-w-[180px]">
+              <li className="flex justify-between items-center gap-4">
+                <span className="text-zinc-600 uppercase">FILING:</span>
+                <code className="text-black bg-zinc-100 px-2 py-0.5 border border-black truncate max-w-[220px]">
                   {documentName}
                 </code>
               </li>
             )}
-            <li className="flex justify-between">
-              <span className="text-slate-400">Health Score:</span>
-              <span className="font-bold text-white">
+            <li className="flex justify-between items-center">
+              <span className="text-zinc-600 uppercase">HEALTH SCORE:</span>
+              <span className="font-black text-black text-sm">
                 {overallScore !== null ? `${overallScore.toFixed(1)} / 100` : "N/A"}
               </span>
             </li>
-            <li className="flex justify-between">
-              <span className="text-slate-400">DB Engine:</span>
-              <span className="text-slate-300 text-xs">PostgreSQL 16 + pgvector</span>
+            <li className="flex justify-between items-center">
+              <span className="text-zinc-600 uppercase">DATABASE:</span>
+              <span className="text-black font-bold">PostgreSQL 16 + pgvector</span>
             </li>
-            <li className="flex justify-between">
-              <span className="text-slate-400">AI Model:</span>
-              <span className="text-slate-300 text-xs">Google Gemini</span>
+            <li className="flex justify-between items-center">
+              <span className="text-zinc-600 uppercase">INFERENCE ENGINE:</span>
+              <span className="text-black font-bold">Google Gemini 1.5</span>
             </li>
           </ul>
         )}
       </div>
 
       {/* Risk Flags */}
-      <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-4 backdrop-blur-md flex-1">
-        <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">
-          Risk Indicators
-        </h4>
+      <div className="rounded-none border border-black bg-white p-5 shadow-[4px_4px_0px_#000000] flex-1">
+        <div className="flex items-center justify-between mb-3 border-b border-black pb-2">
+          <h4 className="text-xs font-black uppercase tracking-widest text-black flex items-center gap-2">
+            <span className="text-[#FF0000]">[ 02 ]</span> RISK INDICATORS
+          </h4>
+          <span className="text-[10px] font-mono text-zinc-600 uppercase">EXCEPTIONS</span>
+        </div>
         {isLoading ? (
           <div className="space-y-2">
             {[1, 2].map((i) => (
-              <div key={i} className="h-12 rounded-lg bg-slate-800 animate-pulse" />
+              <div key={i} className="h-12 bg-zinc-200 animate-pulse" />
             ))}
           </div>
         ) : noRisks ? (
-          <div className="flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-            <ShieldCheck className="h-5 w-5 text-emerald-400 shrink-0" />
-            <p className="text-sm text-emerald-300 font-medium">
-              No material solvency or financial distress flags detected.
+          <div className="flex items-center gap-3 border border-black bg-white p-4">
+            <ShieldCheck className="h-5 w-5 text-black shrink-0" />
+            <p className="text-xs font-mono uppercase tracking-wider text-black">
+              No material solvency or financial distress flags detected in corpus.
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {parsed.map((flag, idx) => {
               const cfg = severityConfig[flag.severity];
               const SeverityIcon = cfg.icon;
@@ -152,27 +155,26 @@ export function RiskFlagsCard({
                 <div
                   key={idx}
                   className={cn(
-                    "flex items-start gap-3 rounded-lg border p-3",
-                    cfg.border,
-                    cfg.bg
+                    "flex items-start gap-3 border p-3 transition-shadow duration-150",
+                    cfg.border
                   )}
                 >
                   <SeverityIcon className={cn("h-4 w-4 mt-0.5 shrink-0", cfg.color)} />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
+                    <div className="flex items-center gap-2 mb-1">
                       <span
                         className={cn(
-                          "inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+                          "inline-flex items-center border px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider",
                           cfg.badge
                         )}
                       >
                         {flag.severity}
                       </span>
-                      <span className="text-xs font-semibold text-slate-300">
+                      <span className="text-xs font-black uppercase text-black">
                         {flag.category}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">
+                    <p className="text-xs font-mono text-zinc-700 leading-relaxed">
                       {flag.description}
                     </p>
                   </div>

@@ -11,10 +11,10 @@ interface HealthGaugeProps {
 }
 
 function getScoreColor(score: number): { stroke: string; text: string; label: string } {
-  if (score >= 85) return { stroke: "#10b981", text: "text-emerald-400", label: "Prime (Low Risk)" };
-  if (score >= 70) return { stroke: "#E63946", text: "text-[#E63946]", label: "Good (Stable)" };
-  if (score >= 45) return { stroke: "#B81D24", text: "text-[#FFA8B2]", label: "Moderate" };
-  return { stroke: "#800020", text: "text-rose-400", label: "High Risk / Distress" };
+  if (score >= 85) return { stroke: "#000000", text: "text-black", label: "PRIME / OPTIMAL" };
+  if (score >= 70) return { stroke: "#000000", text: "text-black", label: "STABLE" };
+  if (score >= 45) return { stroke: "#FF0000", text: "text-[#FF0000]", label: "MODERATE RISK" };
+  return { stroke: "#FF0000", text: "text-[#FF0000]", label: "CRITICAL DISTRESS" };
 }
 
 export function HealthGauge({
@@ -81,9 +81,9 @@ export function HealthGauge({
           <path
             d={describeArc(startAngle, endAngle, radius)}
             fill="none"
-            stroke="rgba(148,163,184,0.12)"
+            stroke="#E5E5E5"
             strokeWidth={strokeWidth}
-            strokeLinecap="round"
+            strokeLinecap="square"
           />
 
           {/* Colored fill arc */}
@@ -93,8 +93,7 @@ export function HealthGauge({
               fill="none"
               stroke={stroke}
               strokeWidth={strokeWidth}
-              strokeLinecap="round"
-              filter="url(#gauge-glow)"
+              strokeLinecap="square"
               style={{ transition: "all 0.8s ease-out" }}
             />
           )}
@@ -111,9 +110,8 @@ export function HealthGauge({
                 y1={inner.y}
                 x2={outer.x}
                 y2={outer.y}
-                stroke="rgba(148,163,184,0.3)"
+                stroke="#000000"
                 strokeWidth={1.5}
-                strokeLinecap="round"
               />
             );
           })}

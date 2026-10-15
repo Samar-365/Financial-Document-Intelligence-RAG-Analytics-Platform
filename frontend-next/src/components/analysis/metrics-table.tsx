@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { FinancialMetricItem } from "@/types/financial";
-import { Search, ChevronUp, ChevronDown, Database, FileSearch } from "lucide-react";
+import { Search, ChevronUp, ChevronDown, Database, ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface MetricsTableProps {
   metrics: FinancialMetricItem[];
@@ -25,17 +26,11 @@ function formatValue(m: FinancialMetricItem, sym: string, unit: string): string 
   return `${sym}${m.value.toLocaleString(undefined, { maximumFractionDigits: 1 })} ${unit}`;
 }
 
-function confidenceBadge(conf: number) {
-  if (conf >= 0.85) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
-  if (conf >= 0.6) return "text-amber-400 bg-amber-500/10 border-amber-500/30";
-  return "text-red-400 bg-red-500/10 border-red-500/30";
-}
-
 function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; sortDir: SortDir }) {
-  if (col !== sortKey) return <ChevronUp className="h-3 w-3 text-slate-700" />;
+  if (col !== sortKey) return <ChevronUp className="h-3 w-3 text-zinc-400" />;
   return sortDir === "asc"
-    ? <ChevronUp className="h-3 w-3 text-blue-400" />
-    : <ChevronDown className="h-3 w-3 text-blue-400" />;
+    ? <ChevronUp className="h-3 w-3 text-black" />
+    : <ChevronDown className="h-3 w-3 text-black" />;
 }
 
 export function MetricsTable({
@@ -72,21 +67,21 @@ export function MetricsTable({
     });
 
   const COLS: { key: SortKey; label: string; align?: string }[] = [
-    { key: "metric_name", label: "Metric Line Item" },
-    { key: "value", label: "Value", align: "text-right" },
-    { key: "confidence", label: "Confidence", align: "text-center" },
+    { key: "metric_name", label: "METRIC LINE ITEM" },
+    { key: "value", label: "VALUE", align: "text-right" },
+    { key: "confidence", label: "CONFIDENCE", align: "text-center" },
     { key: "fiscal_year", label: "FY", align: "text-center" },
-    { key: "source_page", label: "Page", align: "text-center" },
+    { key: "source_page", label: "PAGE", align: "text-center" },
   ];
 
   if (isLoading) {
     return (
-      <div className="space-y-1.5 p-4">
+      <div className="space-y-2 p-4 border border-black bg-white">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="flex gap-4">
-            <div className="h-4 rounded bg-slate-800 animate-pulse" style={{ width: "35%" }} />
-            <div className="h-4 w-20 rounded bg-slate-800 animate-pulse ml-auto" />
-            <div className="h-4 w-12 rounded bg-slate-800 animate-pulse" />
+            <div className="h-4 bg-zinc-200 animate-pulse" style={{ width: "35%" }} />
+            <div className="h-4 w-20 bg-zinc-200 animate-pulse ml-auto" />
+            <div className="h-4 w-12 bg-zinc-200 animate-pulse" />
           </div>
         ))}
       </div>
@@ -94,92 +89,101 @@ export function MetricsTable({
   }
 
   return (
-    <div className="flex flex-col gap-0 rounded-xl border border-[rgba(196,30,58,0.24)] overflow-hidden bg-[#111017] shadow-xl backdrop-blur-md">
+    <div className="border border-black bg-white shadow-[4px_4px_0px_#000000]">
       {/* Search bar */}
-      <div className="flex items-center gap-3 border-b border-[rgba(196,30,58,0.25)] px-4 py-3 bg-[#0D0C12]">
-        <Database className="h-4 w-4 text-[#E63946] shrink-0" />
-        <span className="text-xs font-semibold uppercase tracking-widest text-slate-300">
-          All Extracted Metrics
-        </span>
-        <span className="ml-auto text-xs text-slate-500">{filtered.length} items</span>
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
-          <input
-            id="metrics-search"
-            type="text"
-            placeholder="Search metrics..."
+      <div className="flex items-center gap-3 border-b border-black p-3 bg-zinc-50">
+        <Database className="h-4 w-4 text-black shrink-0" />
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+          <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-8 w-48 rounded-lg border border-[rgba(184,29,36,0.35)] bg-[#14131D] pl-8 pr-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#E63946] transition-colors"
+            placeholder="FILTER EXTRACTED LINE ITEMS..."
+            className="pl-8 h-8 text-xs font-mono rounded-none border border-black bg-white text-black placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:border-black shadow-[1px_1px_0px_#000000]"
           />
         </div>
+        <span className="ml-auto text-[10px] font-mono text-zinc-500 uppercase">
+          SHOWING {filtered.length} OF {metrics.length} ITEMS
+        </span>
       </div>
 
       {/* Table */}
-      {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 gap-2">
-          <FileSearch className="h-8 w-8 text-slate-700" />
-          <p className="text-sm text-slate-500">
-            {search ? `No metrics matching "${search}"` : "No metrics extracted yet."}
-          </p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[rgba(196,30,58,0.25)] bg-[#0D0C12]">
-                {COLS.map(({ key, label, align }) => (
-                  <th
-                    key={key}
-                    className={cn(
-                      "py-2.5 px-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 cursor-pointer select-none hover:text-[#E63946] transition-colors",
-                      align ?? "text-left"
-                    )}
-                    onClick={() => handleSort(key)}
-                  >
-                    <span className="inline-flex items-center gap-1">
-                      {label}
-                      <SortIcon col={key} sortKey={sortKey} sortDir={sortDir} />
-                    </span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((m, idx) => (
-                <tr
-                  key={`${m.metric_name}-${idx}`}
-                  className="group border-b border-[rgba(196,30,58,0.16)] hover:bg-[rgba(184,29,36,0.12)] cursor-pointer transition-colors"
-                  onClick={() => onRowClick?.(m)}
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-black bg-black text-white">
+              {COLS.map(({ key, label, align = "text-left" }) => (
+                <th
+                  key={key}
+                  onClick={() => handleSort(key)}
+                  className={cn(
+                    "py-2.5 px-3 text-[10px] font-mono font-black uppercase tracking-wider text-white cursor-pointer hover:bg-zinc-900 select-none",
+                    align
+                  )}
                 >
-                  <td className="py-2.5 pl-4 pr-3 text-sm text-slate-200 font-medium">
-                    {m.metric_name}
-                  </td>
-                  <td className="py-2.5 px-4 text-right text-sm font-semibold text-white">
-                    {formatValue(m, currencySymbol, unit)}
-                  </td>
-                  <td className="py-2.5 px-4 text-center">
-                    <span
-                      className={cn(
-                        "inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-bold",
-                        confidenceBadge(m.confidence)
-                      )}
-                    >
-                      {Math.round(m.confidence * 100)}%
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-4 text-center text-xs text-slate-400">
-                    {m.fiscal_year ? `FY${m.fiscal_year}` : "—"}
-                  </td>
-                  <td className="py-2.5 px-4 text-center text-xs text-slate-500">
-                    {m.source_page ? `p.${m.source_page}` : "—"}
-                  </td>
-                </tr>
+                  <span className="inline-flex items-center gap-1">
+                    {label}
+                    <SortIcon col={key} sortKey={sortKey} sortDir={sortDir} />
+                  </span>
+                </th>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              <th className="py-2.5 pr-3 text-right text-[10px] font-mono font-black uppercase text-white">
+                TRACE
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-xs font-mono uppercase text-zinc-500">
+                  NO METRICS MATCH SEARCH QUERY
+                </td>
+              </tr>
+            ) : (
+              filtered.map((m, idx) => {
+                const confPct = Math.round((m.confidence ?? 0) * 100);
+                return (
+                  <tr
+                    key={`${m.metric_name}-${idx}`}
+                    onClick={() => onRowClick?.(m)}
+                    className="border-b border-zinc-200 hover:bg-zinc-100 cursor-pointer transition-colors"
+                  >
+                    <td className="py-2.5 px-3 font-mono text-xs font-bold text-black">
+                      {m.metric_name}
+                    </td>
+                    <td className="py-2.5 px-3 font-mono text-xs font-black text-right text-black">
+                      {formatValue(m, currencySymbol, unit)}
+                    </td>
+                    <td className="py-2.5 px-3 text-center">
+                      <span
+                        className={cn(
+                          "inline-flex items-center px-1.5 py-0.5 text-[9px] font-mono font-black uppercase border border-black",
+                          m.confidence >= 0.85
+                            ? "bg-black text-white"
+                            : m.confidence >= 0.6
+                            ? "bg-zinc-200 text-black"
+                            : "bg-[#FF0000] text-white"
+                        )}
+                      >
+                        {confPct}%
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 font-mono text-xs text-center text-zinc-600">
+                      {m.fiscal_year ? `FY${m.fiscal_year}` : "—"}
+                    </td>
+                    <td className="py-2.5 px-3 font-mono text-xs text-center text-zinc-600">
+                      {m.source_page ? `p.${m.source_page}` : "—"}
+                    </td>
+                    <td className="py-2.5 pr-3 text-right">
+                      <ChevronRight className="ml-auto h-4 w-4 text-black hover:text-[#FF0000] transition-colors" />
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

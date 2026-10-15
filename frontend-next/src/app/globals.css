@@ -2,171 +2,226 @@
 
 @layer base {
   :root {
-    --background: 240 11% 4%;
-    --foreground: 210 40% 98%;
-    --card: 250 17% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 250 17% 8%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 355 78% 56%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 250 17% 10%;
-    --secondary-foreground: 215 20% 85%;
-    --muted: 250 17% 10%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 355 78% 56%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 100% 50%; /* #FF0000 Statement Red */
     --accent-foreground: 0 0% 100%;
-    --destructive: 355 78% 56%;
+    --destructive: 0 100% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 355 45% 22%;
-    --input: 250 17% 10%;
-    --ring: 355 78% 56%;
-    --radius: 0.75rem;
+    --border: 0 0% 0%; /* Pure 1px Black Border */
+    --input: 0 0% 0%;
+    --ring: 0 100% 50%;
+    --radius: 0px;
 
-    --brand-wine-red: #E63946;
-    --brand-dark-burgundy: #B81D24;
-    --brand-pitch-dark: #08080A;
-    --brand-card-dark: #111017;
-    --brand-sidebar-dark: #0D0C12;
+    /* Exaggerated Minimalism Palette */
+    --em-black: #000000;
+    --em-white: #FFFFFF;
+    --em-red: #FF0000;
+    --em-gray-light: #F8F8F8;
+    --em-gray-border: #E5E5E5;
+    --em-gray-muted: #666666;
   }
 
   .dark {
-    --background: 240 11% 4%;
-    --foreground: 210 40% 98%;
-    --card: 250 17% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 250 17% 8%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 355 78% 56%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 250 17% 10%;
-    --secondary-foreground: 215 20% 85%;
-    --muted: 250 17% 10%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 355 78% 56%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 0 100% 50%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 355 78% 56%;
+    --destructive: 0 100% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 355 45% 22%;
-    --input: 250 17% 10%;
-    --ring: 355 78% 56%;
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
+    --ring: 0 100% 50%;
   }
 }
 
 * {
-  border-color: rgba(196, 30, 58, 0.24);
+  border-color: #000000;
+  box-sizing: border-box;
 }
 
 html, body {
-  background-color: #08080A !important;
-  color: #F1F5F9 !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Plus Jakarta Sans", Inter, sans-serif;
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
   overflow-x: hidden;
-  selection-background-color: rgba(230, 57, 70, 0.4);
+  letter-spacing: -0.02em;
 }
 
+/* Statement Selection (Vibrant Red) */
 ::selection {
-  background: rgba(230, 57, 70, 0.4);
-  color: #FFFFFF;
-}
-
-/* Luxury Pitch Dark & Wine Red Custom Components */
-.pitch-card {
-  background-color: #111017 !important;
-  border: 1px solid rgba(196, 30, 58, 0.24) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
-  transition: all 0.2s ease-in-out;
-}
-
-.pitch-card:hover {
-  border-color: rgba(230, 57, 70, 0.45) !important;
-  box-shadow: 0 6px 24px rgba(184, 29, 36, 0.22) !important;
-}
-
-/* Primary Button with Metallic Flare Finish */
-.btn-primary-wine {
-  background: linear-gradient(180deg, #E62538 0%, #B81424 45%, #850B17 100%) !important;
+  background: #FF0000 !important;
   color: #FFFFFF !important;
-  border: 1px solid rgba(255, 175, 190, 0.75) !important;
-  border-radius: 9px !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.01em !important;
-  box-shadow: 
-    inset 0 1px 2px rgba(255, 255, 255, 0.75),
-    inset 0 -2px 5px rgba(0, 0, 0, 0.55),
-    0 0 28px rgba(255, 35, 60, 0.45),
-    0 8px 24px rgba(0, 0, 0, 0.7) !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.btn-primary-wine:hover {
-  background: linear-gradient(180deg, #FF384D 0%, #D41A2D 45%, #9E0F1D 100%) !important;
-  box-shadow: 
-    inset 0 1px 3px rgba(255, 255, 255, 0.95),
-    inset 0 -2px 5px rgba(0, 0, 0, 0.55),
-    0 0 36px rgba(255, 35, 60, 0.65),
-    0 10px 28px rgba(0, 0, 0, 0.8) !important;
-  transform: translateY(-1px) scale(1.01) !important;
+/* ── Exaggerated Minimalism: Monumental Hollow Outline Typography ── */
+.stroke-text {
+  color: transparent !important;
+  -webkit-text-stroke: 1.5px #000000;
+  text-stroke: 1.5px #000000;
 }
 
-/* Secondary Button with Wine Red Outline */
-.btn-secondary-wine {
-  background-color: #111017 !important;
-  border: 1px solid rgba(196, 30, 58, 0.35) !important;
-  color: #CBD5E1 !important;
-  border-radius: 9px !important;
-  transition: all 0.2s ease-in-out !important;
+.stroke-text-thick {
+  color: transparent !important;
+  -webkit-text-stroke: 2.5px #000000;
+  text-stroke: 2.5px #000000;
 }
 
-.btn-secondary-wine:hover {
-  border-color: #E63946 !important;
+.stroke-text-white {
+  color: transparent !important;
+  -webkit-text-stroke: 2px #FFFFFF;
+  text-stroke: 2px #FFFFFF;
+}
+
+.stroke-text-red {
+  color: transparent !important;
+  -webkit-text-stroke: 2px #FF0000;
+  text-stroke: 2px #FF0000;
+}
+
+/* ── Exaggerated Minimalism Cards & Containers ── */
+.card-minimal, .pitch-card {
+  background-color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+  border-radius: 0px !important;
+  box-shadow: none !important;
+  transition: all 0.15s ease-in-out;
+}
+
+.card-minimal:hover, .pitch-card:hover {
+  box-shadow: 4px 4px 0px #000000 !important;
+  transform: translate(-2px, -2px);
+}
+
+.card-minimal-black {
+  background-color: #000000 !important;
   color: #FFFFFF !important;
-  background-color: rgba(184, 29, 36, 0.18) !important;
-  box-shadow: 0 0 14px rgba(230, 57, 70, 0.3) !important;
+  border: 1px solid #000000 !important;
+  border-radius: 0px !important;
 }
 
-/* Custom modern scrollbar matching Streamlit theme */
+/* ── Exaggerated Minimalism Buttons ── */
+.btn-statement-black, .btn-primary-wine {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+  border-radius: 0px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  padding: 0.65rem 1.4rem;
+  box-shadow: none !important;
+  transition: all 0.15s ease-in-out !important;
+  cursor: pointer;
+}
+
+.btn-statement-black:hover, .btn-primary-wine:hover {
+  background: #FF0000 !important;
+  border-color: #FF0000 !important;
+  color: #FFFFFF !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #000000 !important;
+}
+
+.btn-statement-outline, .btn-secondary-wine {
+  background-color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
+  border-radius: 0px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  padding: 0.65rem 1.4rem;
+  box-shadow: none !important;
+  transition: all 0.15s ease-in-out !important;
+  cursor: pointer;
+}
+
+.btn-statement-outline:hover, .btn-secondary-wine:hover {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border-color: #000000 !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #FF0000 !important;
+}
+
+.btn-statement-red {
+  background: #FF0000 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #FF0000 !important;
+  border-radius: 0px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.btn-statement-red:hover {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  color: #FFFFFF !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #000000 !important;
+}
+
+/* ── Minimalist Architectural Grid Lines ── */
+.border-b-grid {
+  border-bottom: 1px solid #000000;
+}
+.border-r-grid {
+  border-right: 1px solid #000000;
+}
+.border-l-grid {
+  border-left: 1px solid #000000;
+}
+.border-t-grid {
+  border-top: 1px solid #000000;
+}
+
+/* ── Custom Minimalist High-Contrast Scrollbar ── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #08080A;
+  background: #FFFFFF;
+  border-left: 1px solid #000000;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(196, 30, 58, 0.35);
-  border-radius: 9999px;
+  background: #000000;
+  border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(230, 57, 70, 0.6);
+  background: #FF0000;
 }
 
-/* Shimmer animation for skeleton loaders */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+/* Skeleton loader for high contrast minimalism */
+@keyframes minimal-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #15141E 25%, #282436 50%, #15141E 75%) !important;
-  background-size: 200% 100% !important;
-  animation: shimmer 1.5s infinite ease-in-out !important;
-  border-radius: 6px !important;
-}
-
-/* Vertical Volumetric Laser Beam */
-.laser-beam {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFA8B2 25%, #E63946 60%, transparent 100%);
-  box-shadow: 
-    0 0 10px #FFFFFF,
-    0 0 25px #E63946,
-    0 0 60px rgba(230, 57, 70, 0.7),
-    0 0 120px rgba(184, 29, 36, 0.5);
-  pointer-events: none;
+  background: #E5E5E5 !important;
+  animation: minimal-pulse 1.2s infinite ease-in-out !important;
+  border-radius: 0px !important;
 }
