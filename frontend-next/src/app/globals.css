@@ -1,0 +1,227 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 100% 50%; /* #FF0000 Statement Red */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 0%; /* Pure 1px Black Border */
+    --input: 0 0% 0%;
+    --ring: 0 100% 50%;
+    --radius: 0px;
+
+    /* Exaggerated Minimalism Palette */
+    --em-black: #000000;
+    --em-white: #FFFFFF;
+    --em-red: #FF0000;
+    --em-gray-light: #F8F8F8;
+    --em-gray-border: #E5E5E5;
+    --em-gray-muted: #666666;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 0 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
+    --ring: 0 100% 50%;
+  }
+}
+
+* {
+  border-color: #000000;
+  box-sizing: border-box;
+}
+
+html, body {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+  letter-spacing: -0.02em;
+}
+
+/* Statement Selection (Vibrant Red) */
+::selection {
+  background: #FF0000 !important;
+  color: #FFFFFF !important;
+}
+
+/* ── Exaggerated Minimalism: Monumental Hollow Outline Typography ── */
+.stroke-text {
+  color: transparent !important;
+  -webkit-text-stroke: 1.5px #000000;
+  text-stroke: 1.5px #000000;
+}
+
+.stroke-text-thick {
+  color: transparent !important;
+  -webkit-text-stroke: 2.5px #000000;
+  text-stroke: 2.5px #000000;
+}
+
+.stroke-text-white {
+  color: transparent !important;
+  -webkit-text-stroke: 2px #FFFFFF;
+  text-stroke: 2px #FFFFFF;
+}
+
+.stroke-text-red {
+  color: transparent !important;
+  -webkit-text-stroke: 2px #FF0000;
+  text-stroke: 2px #FF0000;
+}
+
+/* ── Exaggerated Minimalism Cards & Containers ── */
+.card-minimal, .pitch-card {
+  background-color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+  border-radius: 0px !important;
+  box-shadow: none !important;
+  transition: all 0.15s ease-in-out;
+}
+
+.card-minimal:hover, .pitch-card:hover {
+  box-shadow: 4px 4px 0px #000000 !important;
+  transform: translate(-2px, -2px);
+}
+
+.card-minimal-black {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+  border-radius: 0px !important;
+}
+
+/* ── Exaggerated Minimalism Buttons ── */
+.btn-statement-black, .btn-primary-wine {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+  border-radius: 0px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  padding: 0.65rem 1.4rem;
+  box-shadow: none !important;
+  transition: all 0.15s ease-in-out !important;
+  cursor: pointer;
+}
+
+.btn-statement-black:hover, .btn-primary-wine:hover {
+  background: #FF0000 !important;
+  border-color: #FF0000 !important;
+  color: #FFFFFF !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #000000 !important;
+}
+
+.btn-statement-outline, .btn-secondary-wine {
+  background-color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
+  border-radius: 0px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  padding: 0.65rem 1.4rem;
+  box-shadow: none !important;
+  transition: all 0.15s ease-in-out !important;
+  cursor: pointer;
+}
+
+.btn-statement-outline:hover, .btn-secondary-wine:hover {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border-color: #000000 !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #FF0000 !important;
+}
+
+.btn-statement-red {
+  background: #FF0000 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #FF0000 !important;
+  border-radius: 0px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.btn-statement-red:hover {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  color: #FFFFFF !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #000000 !important;
+}
+
+/* ── Minimalist Architectural Grid Lines ── */
+.border-b-grid {
+  border-bottom: 1px solid #000000;
+}
+.border-r-grid {
+  border-right: 1px solid #000000;
+}
+.border-l-grid {
+  border-left: 1px solid #000000;
+}
+.border-t-grid {
+  border-top: 1px solid #000000;
+}
+
+/* ── Custom Minimalist High-Contrast Scrollbar ── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #FFFFFF;
+  border-left: 1px solid #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #000000;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FF0000;
+}
+
+/* Skeleton loader for high contrast minimalism */
+@keyframes minimal-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.skeleton-shimmer {
+  background: #E5E5E5 !important;
+  animation: minimal-pulse 1.2s infinite ease-in-out !important;
+  border-radius: 0px !important;
+}

@@ -10,8 +10,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -70,3 +70,8 @@ coverage.xml
 *.cover
 *.log
 /logs/
+
+# Node.js & Next.js
+node_modules/
+.next/
+out/

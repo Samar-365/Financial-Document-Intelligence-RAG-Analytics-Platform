@@ -118,6 +118,26 @@ services:
     networks:
       - fdi-prod-network
 
+  frontend-next:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.next
+    container_name: fdi-frontend-next-prod
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+    networks:
+      - fdi-prod-network
+
   prometheus:
     image: prom/prometheus:v2.49.1
     container_name: fdi-prometheus

@@ -1,0 +1,15 @@
+{
+  "name": "financial-document-intelligence-rag-analytics-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Financial Document Intelligence & RAG Analytics Platform",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend-next",
+    "dev:frontend": "npm run dev --prefix frontend-next",
+    "dev:backend": "uvicorn app.main:app --reload --port 8000",
+    "seed": "python scripts/seed_db.py",
+    "build": "npm run build --prefix frontend-next",
+    "start": "npm run start --prefix frontend-next",
+    "lint": "npm run lint --prefix frontend-next"
+  }
+}

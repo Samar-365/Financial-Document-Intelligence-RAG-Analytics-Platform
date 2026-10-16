@@ -58,7 +58,7 @@ services:
     networks:
       - fdi-network
 
-  # 3. Streamlit Analytical Dashboard Frontend
+  # 3. Streamlit Analytical Dashboard Frontend (Legacy prototype)
   frontend:
     build:
       context: .
@@ -72,6 +72,23 @@ services:
     volumes:
       - ./frontend:/app/frontend
       - ./app:/app/app
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - fdi-network
+
+  # 4. Next.js 15 Enterprise Web Application
+  frontend-next:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.next
+    container_name: fdi-frontend-next
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
     depends_on:
       backend:
         condition: service_healthy
